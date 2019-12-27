@@ -1,0 +1,27 @@
+{
+  "name": "action-update-license-year",
+  "version": "0.0.1",
+  "description": "GitHub Action updating the year in the license file.",
+  "keywords": [
+    "github",
+    "actions",
+    "license"
+  ],
+  "homepage": "https://github.com/FantasticFiasco/action-update-license-year",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FantasticFiasco/action-update-license-year.git"
+  },
+  "bugs": {
+    "url": "https://github.com/FantasticFiasco/action-update-license-year/issues"
+  },
+  "author": "Mattias Kindborg <mattias.kindborg@gmail.com> (https://twitter.com/FantasticFiasco)",
+  "license": "Apache-2.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@actions/core": "1.2.0"
+  }
+}
