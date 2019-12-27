@@ -1,1 +1,1 @@
-# GitHub Action - Replace Text
+# GitHub Action - Update License Year
