@@ -24,18 +24,18 @@ function update() {
  * @returns {String}        The updated content of the license file.
  */
 function updateFile(fileName, year) {
-    core.info(`Update year to ${year} in licese file ${fileName}`);
+    core.info(`Lets update copyright year(s) to "${year}" in licese file "${fileName}"`);
 
     let license = readLicenseFile(fileName);
 
     if (copyrightYear.test(license)) {
-        core.info("Updating from a single year into a range of years");
+        core.info("About to update from a single year into a range of years");
         license = license.replace(copyrightYear, `$1$2-${year}$3`);
     } else if (copyrightYearRange.test(license)) {
-        core.info("Updating range of years");
+        core.info("About to update a range of years");
         license = license.replace(copyrightYearRange, `$1$2-${year}$4`);
     } else {
-        throw new Error(`Format of license file ${fileName} is not supported`);
+        throw new Error(`Format of license file "${fileName}" is not supported`);
     }
 
     writeLicenseFile(fileName, license);
@@ -44,12 +44,12 @@ function updateFile(fileName, year) {
 }
 
 function readLicenseFile(fileName) {
-    core.info(`Read content of file ${fileName}`);
+    core.info(`Read content of file "${fileName}"`);
     return fs.readFileSync(fileName).toString();
 }
 
 function writeLicenseFile(fileName, license) {
-    core.info(`Write content to file ${fileName}`);
+    core.info(`Write content to file "${fileName}"`);
     fs.writeFileSync(fileName, license);
 }
 

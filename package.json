@@ -1,10 +1,10 @@
 {
   "name": "action-update-license-year",
   "version": "0.0.1",
-  "description": "GitHub Action that in a pull request updates the copyright year in your license file.",
+  "description": "GitHub Action that in a pull request updates the copyright year(s) in your license file.",
   "keywords": [
     "github",
-    "actions",
+    "github-actions",
     "license"
   ],
   "homepage": "https://github.com/FantasticFiasco/action-update-license-year",
@@ -17,12 +17,16 @@
   },
   "author": "Mattias Kindborg <mattias.kindborg@gmail.com> (https://twitter.com/FantasticFiasco)",
   "license": "Apache-2.0",
-  "main": "src/index.js",
+  "main": "./dist/index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "dist": "ncc build ./src/index.js -o dist"
   },
   "dependencies": {
-    "@actions/core": "1.2.0",
+    "@actions/core": "1.2.0"
+  },
+  "devDependencies": {
+    "@zeit/ncc": "0.20.5",
     "jest": "24.9.0"
   }
 }

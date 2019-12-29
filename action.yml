@@ -3,4 +3,4 @@ description: "GitHub Action that in a pull request updates the copyright year in
 author: "Mattias Kindborg <mattias.kindborg@gmail.com> (https://twitter.com/FantasticFiasco)"
 runs:
   using: "node12"
-  main: "main.js"
+  main: "./dist/index.js"
