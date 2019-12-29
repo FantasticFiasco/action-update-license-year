@@ -1,5 +1,3 @@
-function sum(a, b) {
-    return a + b;
-}
+const license = require("./license");
 
-module.exports = sum;
+license.update();
