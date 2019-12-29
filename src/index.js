@@ -1,3 +1,9 @@
+const core = require("@actions/core");
 const license = require("./license");
 
-license.update();
+try {
+    license.update();
+}
+catch (err) {
+    core.setFailed(`Action failed with error: ${err}`);
+}
