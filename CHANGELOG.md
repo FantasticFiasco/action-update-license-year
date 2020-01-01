@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ## [Unreleased]
 
+### :zap: Added
+
+- Support for MIT licenses
+
 ## [1.0.0] - 2020-01-01
 
 Initial version
