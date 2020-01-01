@@ -13,6 +13,18 @@ test("updates Apache 2.0 license from a range of years into a new range of years
     expect(got).toBe(want);
 });
 
+test("updates BSD 2-clause \"Simplified\" license from a single year into a range of years", () => {
+    const got = new License().updateToYear(readTestFile("bsd-2-clause/SINGLE_YEAR"), 1001);
+    const want = readTestFile("bsd-2-clause/SINGLE_YEAR_EXPECTED");
+    expect(got).toBe(want);
+});
+
+test("updates BSD 2-clause \"Simplified\" from a range of years into a new range of years", () => {
+    const got = new License().updateToYear(readTestFile("bsd-2-clause/RANGE_OF_YEARS"), 2001);
+    const want = readTestFile("bsd-2-clause/RANGE_OF_YEARS_EXPECTED");
+    expect(got).toBe(want);
+});
+
 test("updates MIT license from a single year into a range of years", () => {
     const got = new License().updateToYear(readTestFile("mit/SINGLE_YEAR"), 1001);
     const want = readTestFile("mit/SINGLE_YEAR_EXPECTED");
