@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.org/FantasticFiasco/action-update-license-year.svg?branch=master)](https://travis-ci.org/FantasticFiasco/action-update-license-year)
 [![SemVer compatible](https://img.shields.io/badge/%E2%9C%85-SemVer%20compatible-blue)](https://semver.org/)
 
-So this seems to have happened. Instead of manually updating the license copyright years in my GitHub repositories I created this GitHub action.
+So this seems to have happened. Instead of manually updating the license copyright years in my GitHub repositories I created this GitHub Action.
 
 > Oh, the loath I have for manual processes...
 >
@@ -24,7 +24,7 @@ If you find that the license you have is incompatible with this GitHub Action, p
 
 ## Example usage
 
-Create a workflow file in path `./.github/workflows/update-copyright-years-in-license-file.yml` with a scheduled trigger that starts the workflow at 03:00 AM January 1.
+Create a workflow file in path `./.github/workflows/update-copyright-years-in-license-file.yml` with a scheduled trigger that starts the workflow at 03:00 AM every January 1.
 
 ```yaml
 name: Update copyright year(s) in license file
