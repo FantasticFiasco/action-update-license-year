@@ -1,6 +1,9 @@
-name: "Update license year(s)"
-description: "GitHub Action that in a pull request updates the copyright year in your license file."
+name: "Update license copyright year(s)"
+description: "Updates the copyright year(s) in your license file and creates a pull request."
 author: "Mattias Kindborg <mattias.kindborg@gmail.com> (https://twitter.com/FantasticFiasco)"
 runs:
   using: "node12"
   main: "./dist/index.js"
+branding:
+  icon: "sunrise"
+  color: "orange"
