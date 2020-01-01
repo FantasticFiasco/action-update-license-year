@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ## [Unreleased]
 
+## [1.1.0] - 2020-01-01
+
 ### :zap: Added
 
 - Support for BSD 2-clause "Simplified" licenses
@@ -14,4 +16,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ## [1.0.0] - 2020-01-01
 
-Initial version
+### :zap: Added
+
+- Support for Apache 2.0 licenses
