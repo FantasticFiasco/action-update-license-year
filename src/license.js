@@ -4,9 +4,10 @@ export class License {
         this.apacheCopyrightYear = /(Copyright )(\d{4})( \w+)/gm;
         this.apacheCopyrightYearRange = /(Copyright )(\d{4})-(\d{4})( \w+)/gm;
 
-        // Regular expressions finding the copyright year(s) in BSD 2-clause "Simplified" license files
-        this.bsd2CopyrightYear = /(Copyright \(c\) )(\d{4})(, \w+)/gm;
-        this.bsd2CopyrightYearRange = /(Copyright \(c\) )(\d{4})-(\d{4})(, \w+)/gm;
+        // Regular expressions finding the copyright year(s) in BSD 2-clause "Simplified" and
+        // BSD 3-clause "New" or "Revised" license files
+        this.bsdCopyrightYear = /(Copyright \(c\) )(\d{4})(, \w+)/gm;
+        this.bsdCopyrightYearRange = /(Copyright \(c\) )(\d{4})-(\d{4})(, \w+)/gm;
 
         // Regular expressions finding the copyright year(s) in MIT license files
         this.mitCopyrightYear = /(Copyright \(c\) )(\d{4})( \w+)/gm;
@@ -28,11 +29,12 @@ export class License {
         }
 
         // BSD 2-clause "Simplified"
-        if (this.bsd2CopyrightYear.test(license)) {
-            return license.replace(this.bsd2CopyrightYear, `$1$2-${year}$3`);
+        // BSD 3-clause "New" or "Revised"
+        if (this.bsdCopyrightYear.test(license)) {
+            return license.replace(this.bsdCopyrightYear, `$1$2-${year}$3`);
         }
-        if (this.bsd2CopyrightYearRange.test(license)) {
-            return license.replace(this.bsd2CopyrightYearRange, `$1$2-${year}$4`);
+        if (this.bsdCopyrightYearRange.test(license)) {
+            return license.replace(this.bsdCopyrightYearRange, `$1$2-${year}$4`);
         }
 
         // MIT

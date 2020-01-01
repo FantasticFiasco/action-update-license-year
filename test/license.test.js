@@ -19,9 +19,21 @@ test("updates BSD 2-clause \"Simplified\" license from a single year into a rang
     expect(got).toBe(want);
 });
 
-test("updates BSD 2-clause \"Simplified\" from a range of years into a new range of years", () => {
+test("updates BSD 2-clause \"Simplified\" license from a range of years into a new range of years", () => {
     const got = new License().updateToYear(readTestFile("bsd-2-clause/RANGE_OF_YEARS"), 2001);
     const want = readTestFile("bsd-2-clause/RANGE_OF_YEARS_EXPECTED");
+    expect(got).toBe(want);
+});
+
+test("updates BSD 3-clause \"New\" or \"Revised\" license from a single year into a range of years", () => {
+    const got = new License().updateToYear(readTestFile("bsd-3-clause/SINGLE_YEAR"), 1001);
+    const want = readTestFile("bsd-3-clause/SINGLE_YEAR_EXPECTED");
+    expect(got).toBe(want);
+});
+
+test("updates BSD 3-clause \"New\" or \"Revised\" license from a range of years into a new range of years", () => {
+    const got = new License().updateToYear(readTestFile("bsd-3-clause/RANGE_OF_YEARS"), 2001);
+    const want = readTestFile("bsd-3-clause/RANGE_OF_YEARS_EXPECTED");
     expect(got).toBe(want);
 });
 

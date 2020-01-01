@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ### :zap: Added
 
 - Support for BSD 2-clause "Simplified" licenses
+- Support for BSD 3-clause "New" or "Revised" licenses
 - Support for MIT licenses
 
 ## [1.0.0] - 2020-01-01
