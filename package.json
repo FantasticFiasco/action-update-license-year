@@ -1,6 +1,6 @@
 {
   "name": "action-update-license-year",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "GitHub Action that in a pull request updates the copyright year(s) in your license file.",
   "keywords": [
     "github",
