@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ### :policeman: Security
 
 - Security vulnerability in transient dependency `acorn`
+- Security vulnerability in transient dependency `minimist`
 
 ## [1.1.0] - 2020-01-01
 

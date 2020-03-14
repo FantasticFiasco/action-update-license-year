@@ -41,6 +41,7 @@
     "jest": "24.9.0"
   },
   "resolutions": {
-    "acorn": ">=7.1.1"
+    "acorn": ">=7.1.1",
+    "minimist": ">=1.2.2"
   }
 }
