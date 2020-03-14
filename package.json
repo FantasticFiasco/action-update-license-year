@@ -39,5 +39,8 @@
     "@zeit/ncc": "0.20.5",
     "eslint": "6.8.0",
     "jest": "24.9.0"
+  },
+  "resolutions": {
+    "acorn": ">=7.1.1"
   }
 }
