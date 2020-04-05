@@ -49,6 +49,11 @@ test("updates MIT license from a range of years into a new range of years", () =
     expect(got).toBe(want);
 });
 
+test("throws error given unsupported license", () => {
+    const fn = () => new License().update("invalid license file");
+    expect(fn).toThrow();
+});
+
 function readTestFile(fileName) {
     return fs.readFileSync(`./test/${fileName}`).toString();
 }
