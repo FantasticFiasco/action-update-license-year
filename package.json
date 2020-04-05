@@ -21,12 +21,15 @@
   "scripts": {
     "test": "jest",
     "lint": "eslint ./src/**",
+    "coverage": "jest --coverage && coveralls < coverage/lcov.info",
     "dist": "ncc build ./src/index.js -o dist"
   },
   "babel": {
     "env": {
       "test": {
-        "plugins": ["@babel/plugin-transform-modules-commonjs"]
+        "plugins": [
+          "@babel/plugin-transform-modules-commonjs"
+        ]
       }
     }
   },
@@ -37,6 +40,7 @@
   "devDependencies": {
     "@babel/plugin-transform-modules-commonjs": "7.9.0",
     "@zeit/ncc": "0.22.0",
+    "coveralls": "3.0.11",
     "eslint": "6.8.0",
     "jest": "25.2.7"
   },

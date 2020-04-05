@@ -5,5 +5,7 @@ node_js:
   - lts/*   # latest LTS release
 
 script:
-  - yarn test
+  - echo -e "$(curl --silent https://raw.githubusercontent.com/FantasticFiasco/logo/master/logo.ansi)"
+  - if [ "$TRAVIS_NODE_VERSION" == "node" ]; then yarn coverage; fi
+  - if [ "$TRAVIS_NODE_VERSION" != "node" ]; then yarn test; fi
   - yarn lint
