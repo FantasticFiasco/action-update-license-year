@@ -38,7 +38,7 @@
     "@actions/github": "2.1.1"
   },
   "devDependencies": {
-    "@babel/plugin-transform-modules-commonjs": "7.9.0",
+    "@babel/plugin-transform-modules-commonjs": "7.9.6",
     "@zeit/ncc": "0.22.1",
     "coveralls": "3.1.0",
     "eslint": "6.8.0",
