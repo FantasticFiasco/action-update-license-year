@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ## [Unreleased]
 
+### :policeman: Security
+
+- Security vulnerability in transient dependency `@actions/http-client`
+
 ## [1.1.1] - 2020-03-14
 
 ### :policeman: Security

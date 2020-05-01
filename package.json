@@ -45,6 +45,7 @@
     "jest": "25.5.3"
   },
   "resolutions": {
+    "@actions/http-client": ">=1.0.8",
     "acorn": ">=7.1.1",
     "kind-of": ">=6.0.3",
     "minimist": ">=1.2.2"
