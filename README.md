@@ -12,7 +12,7 @@ So this seems to have happened. Instead of manually updating the license copyrig
 >
 > **- Definitely not a Shakespeare quote**
 
-**Was is a success in terms of productivity?** - I *could* lie to you and say that it was.
+**Was it a success in terms of productivity?** - I *could* lie to you and say that it was.
 
 **Was it interesting to create?** - Well certainly, it activated the few brains cells I have.
 
