@@ -39,7 +39,7 @@
   },
   "devDependencies": {
     "@babel/plugin-transform-modules-commonjs": "7.9.6",
-    "@zeit/ncc": "0.22.2",
+    "@zeit/ncc": "0.22.3",
     "coveralls": "3.1.0",
     "eslint": "7.0.0",
     "jest": "26.0.1"
