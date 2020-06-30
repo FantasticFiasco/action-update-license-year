@@ -9,7 +9,8 @@ trim_trailing_whitespace = true
 insert_final_newline = true
 
 [*.js]
-indent_size = 4
+# Prettier (https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
+# is responsible for formatting TypeScript code
 
 [{*.json,*.yml}]
 indent_size = 2

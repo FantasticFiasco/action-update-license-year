@@ -24,15 +24,6 @@
     "coverage": "jest --coverage && coveralls < coverage/lcov.info",
     "dist": "ncc build ./src/index.js -o dist"
   },
-  "babel": {
-    "env": {
-      "test": {
-        "plugins": [
-          "@babel/plugin-transform-modules-commonjs"
-        ]
-      }
-    }
-  },
   "dependencies": {
     "@actions/core": "1.2.4",
     "@actions/github": "4.0.0"
@@ -42,12 +33,22 @@
     "@zeit/ncc": "0.22.3",
     "coveralls": "3.1.0",
     "eslint": "7.3.1",
-    "jest": "26.1.0"
+    "jest": "26.1.0",
+    "prettier": "2.0.5"
   },
   "resolutions": {
     "@actions/http-client": ">=1.0.8",
     "acorn": ">=7.1.1",
     "kind-of": ">=6.0.3",
     "minimist": ">=1.2.2"
+  },
+  "babel": {
+    "env": {
+      "test": {
+        "plugins": [
+          "@babel/plugin-transform-modules-commonjs"
+        ]
+      }
+    }
   }
 }

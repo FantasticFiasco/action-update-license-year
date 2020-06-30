@@ -45,6 +45,6 @@ export class License {
             return license.replace(this.mitCopyrightYearRange, `$1$2-${year}$4`);
         }
 
-        throw new Error("Specified license is not supported");
+        throw new Error('Specified license is not supported');
     }
 }
