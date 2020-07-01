@@ -1,8 +1,13 @@
-const github = require('@actions/github');
+import { getOctokit } from '@actions/github';
 
 export class GitHub {
+    /**
+     * @param {string} token
+     * @param {string} owner
+     * @param {string} repo
+     */
     constructor(token, owner, repo) {
-        this.octokit = new github.GitHub(token);
+        this.octokit = getOctokit(token);
         this.owner = owner;
         this.repo = repo;
         this.branch = `license/copyright-to-${new Date().getFullYear()}`;
@@ -26,7 +31,7 @@ export class GitHub {
     }
 
     async readLicenseFile() {
-        return await this.octokit.repos.getContents({
+        return await this.octokit.repos.getContent({
             owner: this.owner,
             repo: this.repo,
             ref: this.branchRef,
@@ -34,8 +39,12 @@ export class GitHub {
         });
     }
 
+    /**
+     * @param {string} sha
+     * @param {string} license
+     */
     async writeLicenseFile(sha, license) {
-        await this.octokit.repos.createOrUpdateFile({
+        await this.octokit.repos.createOrUpdateFileContents({
             owner: this.owner,
             repo: this.repo,
             branch: this.branch,
