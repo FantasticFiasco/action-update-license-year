@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ## [Unreleased]
 
+### :syringe: Fixed
+
+- Update action metadata with required `token` input
+
 ## [1.1.2] - 2020-05-01
 
 ### :policeman: Security
