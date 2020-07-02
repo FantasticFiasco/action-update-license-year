@@ -54,6 +54,9 @@ test('throws error given unsupported license', () => {
     expect(fn).toThrow();
 });
 
+/**
+ * @param {string} fileName
+ */
 function readTestFile(fileName) {
     return fs.readFileSync(`./test/${fileName}`).toString();
 }

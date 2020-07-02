@@ -17,7 +17,6 @@
   },
   "exclude": [
     "./coverage/*",
-    "./dist/*",
-    "./test/*"
+    "./dist/*"
   ]
 }
