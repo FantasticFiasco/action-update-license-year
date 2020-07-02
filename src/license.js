@@ -14,11 +14,18 @@ export class License {
         this.mitCopyrightYearRange = /(Copyright \(c\) )(\d{4})-(\d{4})( \w+)/gm;
     }
 
+    /**
+     * @param {string} license
+     */
     update(license) {
         const currentYear = new Date().getFullYear();
         return this.updateToYear(license, currentYear);
     }
 
+    /**
+     * @param {string} license
+     * @param {number} year
+     */
     updateToYear(license, year) {
         // Apache 2.0
         if (this.apacheCopyrightYear.test(license)) {

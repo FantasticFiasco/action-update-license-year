@@ -19,6 +19,7 @@
   "license": "Apache-2.0",
   "main": "./dist/index.js",
   "scripts": {
+    "type-check": "tsc --noEmit",
     "test": "jest",
     "lint": "eslint ./src/**",
     "coverage": "jest --coverage && coveralls < coverage/lcov.info",
@@ -34,7 +35,8 @@
     "coveralls": "3.1.0",
     "eslint": "7.3.1",
     "jest": "26.1.0",
-    "prettier": "2.0.5"
+    "prettier": "2.0.5",
+    "typescript": "3.9.6"
   },
   "resolutions": {
     "@actions/http-client": ">=1.0.8",
