@@ -16,25 +16,25 @@ describe('#getEnvironmentVariable', () => {
 describe('#parseRepoPath', () => {
     test('successfully parses a GitHub repository path based on lowercase letters', () => {
         const got = parseRepoPath('abc/def');
-        const want = { owner: 'abc', repo: 'def' };
+        const want = { owner: 'abc', name: 'def' };
         expect(got).toStrictEqual(want);
     });
 
     test('successfully parses a GitHub repository path based on uppercase letters', () => {
         const got = parseRepoPath('ABC/DEF');
-        const want = { owner: 'ABC', repo: 'DEF' };
+        const want = { owner: 'ABC', name: 'DEF' };
         expect(got).toStrictEqual(want);
     });
 
     test('successfully parses a GitHub repository path based on numbers', () => {
         const got = parseRepoPath('012/345');
-        const want = { owner: '012', repo: '345' };
+        const want = { owner: '012', name: '345' };
         expect(got).toStrictEqual(want);
     });
 
     test('successfully parses a GitHub repository path containing hyphens', () => {
         const got = parseRepoPath('a-0/b-1');
-        const want = { owner: 'a-0', repo: 'b-1' };
+        const want = { owner: 'a-0', name: 'b-1' };
         expect(got).toStrictEqual(want);
     });
 
