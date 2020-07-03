@@ -6,7 +6,6 @@ export const getEnvironmentVariable = (key) => {
     if (typeof value === 'undefined') {
         throw new Error(`Environment variable required and not supplied: ${key}`);
     }
-
     return value;
 };
 
