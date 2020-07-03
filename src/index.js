@@ -12,7 +12,7 @@ const main = async () => {
         const repoPath = getEnvironmentVariable('GITHUB_REPOSITORY');
 
         const repo = parseRepoPath(repoPath);
-        const github = new GitHub(token, repo.owner, repo.repo);
+        const github = new GitHub(token, repo.owner, repo.name);
         const license = new License();
 
         await github.createBranch();

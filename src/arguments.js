@@ -20,6 +20,6 @@ export const parseRepoPath = (repoPath) => {
 
     return {
         owner: match[1],
-        repo: match[2],
+        name: match[2],
     };
 };
