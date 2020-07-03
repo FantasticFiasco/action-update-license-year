@@ -8,7 +8,7 @@ describe('#getEnvironmentVariable', () => {
     });
 
     test('throws error when environment variable is unset', () => {
-        const act = () => getEnvironmentVariable('UNSET');
+        const act = () => getEnvironmentVariable('UNSET_VARIABLE');
         expect(act).toThrow();
     });
 });
