@@ -4,12 +4,12 @@ export class GitHub {
     /**
      * @param {string} token
      * @param {string} owner
-     * @param {string} repo
+     * @param {string} repoName
      */
-    constructor(token, owner, repo) {
+    constructor(token, owner, repoName) {
         this.octokit = getOctokit(token);
         this.owner = owner;
-        this.repo = repo;
+        this.repo = repoName;
         this.branch = `license/copyright-to-${new Date().getFullYear()}`;
         this.branchRef = `refs/heads/${this.branch}`;
         this.path = 'LICENSE';
