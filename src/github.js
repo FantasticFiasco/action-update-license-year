@@ -1,20 +1,5 @@
 import { getOctokit } from '@actions/github';
 
-/**
- * @param {string} repoPath The owner and repository name. For example, 'octocat/Hello-World'.
- */
-export const parseRepoPath = (repoPath) => {
-    const match = /([\w-]+)\/([\w-]+)/.exec(repoPath);
-    if (!match || !match[1] || !match[2]) {
-        throw new Error(`GitHub repository path ${repoPath} is invalid`);
-    }
-
-    return {
-        owner: match[1],
-        repo: match[2],
-    };
-};
-
 export class GitHub {
     /**
      * @param {string} token

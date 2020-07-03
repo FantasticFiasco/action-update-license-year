@@ -1,5 +1,6 @@
 import { getInput, setFailed } from '@actions/core';
-import { GitHub, parseRepoPath } from './github';
+import { getEnvironmentVariable, parseRepoPath } from './arguments';
+import { GitHub } from './github';
 import { License } from './license';
 
 const main = async () => {
@@ -23,17 +24,6 @@ const main = async () => {
     } catch (err) {
         setFailed(err);
     }
-};
-
-/**
- * @param {string} key
- */
-const getEnvironmentVariable = (key) => {
-    const value = process.env[key];
-    if (typeof value === 'undefined') {
-        throw new Error(`Environment variable required and not supplied: ${key}`);
-    }
-    return value;
 };
 
 main();
