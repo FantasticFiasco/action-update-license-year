@@ -46,6 +46,12 @@
     "kind-of": ">=6.0.3",
     "minimist": ">=1.2.2"
   },
+  "jest": {
+    "testEnvironment": "node",
+    "collectCoverageFrom": [
+      "./src/**/*.js"
+    ]
+  },
   "babel": {
     "env": {
       "test": {
