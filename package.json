@@ -46,6 +46,19 @@
     "kind-of": ">=6.0.3",
     "minimist": ">=1.2.2"
   },
+  "prettier": {
+    "printWidth": 140,
+    "singleQuote": true,
+    "tabWidth": 4,
+    "overrides": [
+      {
+        "files": ["*.json", "*.yml"],
+        "options": {
+          "tabWidth": 2
+        }
+      }
+    ]
+  },
   "eslintConfig": {
     "extends": "eslint:recommended",
     "parserOptions": {
