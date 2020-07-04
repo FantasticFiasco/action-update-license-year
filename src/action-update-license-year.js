@@ -1,18 +1,17 @@
 import { getInput, setFailed } from '@actions/core';
-import { getEnvironmentVariable, parseRepoPath } from './arguments';
+import { context } from '@actions/github';
 import { GitHub } from './github';
 import { License } from './license';
 
 export const run = async () => {
     try {
+        // Context
+        const { owner, repo } = context.repo;
+
         // Inputs
         const token = getInput('token', { required: true });
 
-        // Environment variables
-        const repoPath = getEnvironmentVariable('GITHUB_REPOSITORY');
-
-        const repo = parseRepoPath(repoPath);
-        const github = new GitHub(token, repo.owner, repo.name);
+        const github = new GitHub(token, owner, repo);
         const license = new License();
 
         await github.createBranch();
