@@ -24,7 +24,7 @@
     "test": "jest",
     "lint": "eslint ./src/**/*.js",
     "coverage": "jest --coverage && coveralls < coverage/lcov.info",
-    "dist": "ncc build ./src/index.js -o dist"
+    "dist": "ncc build ./src/main.js"
   },
   "dependencies": {
     "@actions/core": "1.2.4",
