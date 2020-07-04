@@ -12,11 +12,12 @@ export const run = async () => {
         const token = getInput('token', { required: true });
 
         const github = new GitHub(token, owner, repo);
-        const license = new License();
 
         await github.createBranch();
         const res = await github.readLicenseFile();
         const currentLicense = Buffer.from(res.data.content, 'base64').toString('ascii');
+
+        const license = new License();
         const updatedLicense = license.update(currentLicense);
         await github.writeLicenseFile(res.data.sha, updatedLicense);
         await github.createPullRequest();
