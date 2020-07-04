@@ -22,6 +22,6 @@ export const run = async () => {
         await github.writeLicenseFile(res.data.sha, updatedLicense);
         await github.createPullRequest();
     } catch (err) {
-        setFailed(err);
+        setFailed(err.message);
     }
 };
