@@ -7,6 +7,7 @@
     "github-actions",
     "license"
   ],
+  "private": true,
   "homepage": "https://github.com/FantasticFiasco/action-update-license-year",
   "repository": {
     "type": "git",

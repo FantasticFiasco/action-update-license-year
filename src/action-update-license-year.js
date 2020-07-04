@@ -3,7 +3,7 @@ import { getEnvironmentVariable, parseRepoPath } from './arguments';
 import { GitHub } from './github';
 import { License } from './license';
 
-const main = async () => {
+export const run = async () => {
     try {
         // Inputs
         const token = getInput('token', { required: true });
@@ -25,5 +25,3 @@ const main = async () => {
         setFailed(err);
     }
 };
-
-main();
