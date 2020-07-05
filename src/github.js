@@ -42,12 +42,17 @@ export class GitHub {
      * @param {string} path The file path
      */
     async getContent(branchName, path) {
-        return await this.octokit.repos.getContent({
-            owner: this.owner,
-            repo: this.repo,
-            ref: `refs/heads/${branchName}`,
-            path,
-        });
+        try {
+            return await this.octokit.repos.getContent({
+                owner: this.owner,
+                repo: this.repo,
+                ref: `refs/heads/${branchName}`,
+                path,
+            });
+        } catch (err) {
+            err.message = `Error when getting content from file ${path} on branch ${branchName}: ${err.message}`;
+            throw err;
+        }
     }
 
     /**
