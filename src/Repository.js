@@ -16,11 +16,31 @@ export class Repository {
      * @param {string} name The name of the branch
      */
     async getBranch(name) {
-        return await this.octokit.git.getRef({
-            owner: this.owner,
-            repo: this.name,
-            ref: `refs/heads/${name}`,
-        });
+        try {
+            return await this.octokit.git.getRef({
+                owner: this.owner,
+                repo: this.name,
+                ref: `heads/${name}`,
+            });
+        } catch (err) {
+            err.message = `Error when getting branch ${name}: ${err.message}`;
+            throw err;
+        }
+    }
+
+    /**
+     * @param {string} name The name of the branch
+     */
+    async hasBranch(name) {
+        try {
+            const res = await this.getBranch(name);
+            return res.status === 200;
+        } catch (err) {
+            if (err?.status === 404) {
+                return false;
+            }
+            throw err;
+        }
     }
 
     /**

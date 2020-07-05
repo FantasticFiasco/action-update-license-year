@@ -15,7 +15,7 @@ export const run = async () => {
 
         const repository = new Repository(owner, repo, token);
 
-        const branch = await repository.getBranch(BRANCH_NAME);
+        const hasBranch = await repository.hasBranch(BRANCH_NAME);
 
         // await github.createBranch(BRANCH_NAME);
         // const res = await github.getContent('master', FILENAME);
