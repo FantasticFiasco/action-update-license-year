@@ -1,7 +1,6 @@
 import { getInput, setFailed } from '@actions/core';
 import { context } from '@actions/github';
-import { GitHub } from './github';
-import { License } from './license';
+import { Repository } from './Repository';
 
 const FILENAME = 'LICENSE';
 const BRANCH_NAME = `license/copyright-to-${new Date().getFullYear()}`;
@@ -14,16 +13,18 @@ export const run = async () => {
         // Inputs
         const token = getInput('token', { required: true });
 
-        const github = new GitHub(owner, repo, token);
+        const repository = new Repository(owner, repo, token);
 
-        await github.createBranch(BRANCH_NAME);
-        const res = await github.getContent('master', FILENAME);
-        const currentLicense = Buffer.from(res.data.content, 'base64').toString('ascii');
+        const branch = await repository.getBranch(BRANCH_NAME);
 
-        const license = new License();
-        const updatedLicense = license.update(currentLicense);
-        await github.updateContent(BRANCH_NAME, FILENAME, res.data.sha, updatedLicense);
-        await github.createPullRequest(BRANCH_NAME);
+        // await github.createBranch(BRANCH_NAME);
+        // const res = await github.getContent('master', FILENAME);
+        // const currentLicense = Buffer.from(res.data.content, 'base64').toString('ascii');
+
+        // const license = new License();
+        // const updatedLicense = license.update(currentLicense);
+        // await github.updateContent(BRANCH_NAME, FILENAME, res.data.sha, updatedLicense);
+        // await github.createPullRequest(BRANCH_NAME);
     } catch (err) {
         setFailed(err.message);
     }

@@ -1,14 +1,14 @@
 import { getOctokit } from '@actions/github';
 
-export class GitHub {
+export class Repository {
     /**
      * @param {string} owner The owner of the repository
-     * @param {string} repo The name of the repository
+     * @param {string} name The name of the repository
      * @param {string} token The GitHub access token
      */
-    constructor(owner, repo, token) {
+    constructor(owner, name, token) {
         this.owner = owner;
-        this.repo = repo;
+        this.name = name;
         this.octokit = getOctokit(token);
     }
 
@@ -18,7 +18,7 @@ export class GitHub {
     async getBranch(name) {
         return await this.octokit.git.getRef({
             owner: this.owner,
-            repo: this.repo,
+            repo: this.name,
             ref: `refs/heads/${name}`,
         });
     }
@@ -31,7 +31,7 @@ export class GitHub {
 
         await this.octokit.git.createRef({
             owner: this.owner,
-            repo: this.repo,
+            repo: this.name,
             ref: `refs/heads/${name}`,
             sha: master.data.object.sha,
         });
@@ -45,7 +45,7 @@ export class GitHub {
         try {
             return await this.octokit.repos.getContent({
                 owner: this.owner,
-                repo: this.repo,
+                repo: this.name,
                 ref: `refs/heads/${branchName}`,
                 path,
             });
@@ -64,7 +64,7 @@ export class GitHub {
     async updateContent(branchName, path, sha, content) {
         await this.octokit.repos.createOrUpdateFileContents({
             owner: this.owner,
-            repo: this.repo,
+            repo: this.name,
             branch: branchName,
             path,
             message: 'docs(license): update copyright year(s)',
@@ -79,7 +79,7 @@ export class GitHub {
     async createPullRequest(sourceBranchName) {
         await this.octokit.pulls.create({
             owner: this.owner,
-            repo: this.repo,
+            repo: this.name,
             title: 'Update license copyright year(s)',
             head: sourceBranchName,
             base: 'master',
