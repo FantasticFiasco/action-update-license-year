@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ### :syringe: Fixed
 
 - Update action metadata with required `token` input
+- [#42](https://github.com/FantasticFiasco/action-update-license-year/issues/42) Improve error message displayed when license file doesn't exist in repository
 
 ## [1.1.2] - 2020-05-01
 
