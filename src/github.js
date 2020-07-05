@@ -2,65 +2,81 @@ import { getOctokit } from '@actions/github';
 
 export class GitHub {
     /**
-     * @param {string} token
-     * @param {string} owner
-     * @param {string} repoName
+     * @param {string} owner The owner of the repository
+     * @param {string} repo The name of the repository
+     * @param {string} token The GitHub access token
      */
-    constructor(token, owner, repoName) {
-        this.octokit = getOctokit(token);
+    constructor(owner, repo, token) {
         this.owner = owner;
-        this.repo = repoName;
-        this.branch = `license/copyright-to-${new Date().getFullYear()}`;
-        this.branchRef = `refs/heads/${this.branch}`;
-        this.path = 'LICENSE';
+        this.repo = repo;
+        this.octokit = getOctokit(token);
     }
 
-    async createBranch() {
-        const masterRef = await this.octokit.git.getRef({
+    /**
+     * @param {string} name The name of the branch
+     */
+    async getBranch(name) {
+        return await this.octokit.git.getRef({
             owner: this.owner,
             repo: this.repo,
-            ref: 'heads/master',
-        });
-
-        await this.octokit.git.createRef({
-            owner: this.owner,
-            repo: this.repo,
-            ref: this.branchRef,
-            sha: masterRef.data.object.sha,
-        });
-    }
-
-    async readLicenseFile() {
-        return await this.octokit.repos.getContent({
-            owner: this.owner,
-            repo: this.repo,
-            ref: this.branchRef,
-            path: this.path,
+            ref: `refs/heads/${name}`,
         });
     }
 
     /**
-     * @param {string} sha
-     * @param {string} license
+     * @param {string} name The name of the branch
      */
-    async writeLicenseFile(sha, license) {
+    async createBranch(name) {
+        const master = await this.getBranch('master');
+
+        await this.octokit.git.createRef({
+            owner: this.owner,
+            repo: this.repo,
+            ref: `refs/heads/${name}`,
+            sha: master.data.object.sha,
+        });
+    }
+
+    /**
+     * @param {string} branchName The name of the branch
+     * @param {string} path The file path
+     */
+    async getContent(branchName, path) {
+        return await this.octokit.repos.getContent({
+            owner: this.owner,
+            repo: this.repo,
+            ref: `refs/heads/${branchName}`,
+            path,
+        });
+    }
+
+    /**
+     * @param {string} branchName The name of the branch
+     * @param {string} path The file path
+     * @param {string} sha The SHA of the file being updated
+     * @param {string} content The file content
+     */
+    async updateContent(branchName, path, sha, content) {
         await this.octokit.repos.createOrUpdateFileContents({
             owner: this.owner,
             repo: this.repo,
-            branch: this.branch,
-            path: this.path,
+            branch: branchName,
+            path,
             message: 'docs(license): update copyright year(s)',
-            content: Buffer.from(license, 'ascii').toString('base64'),
+            content: Buffer.from(content, 'ascii').toString('base64'),
             sha,
         });
     }
 
-    async createPullRequest() {
+    /**
+     * @param {string} sourceBranchName The name of the source branch
+     */
+    async createPullRequest(sourceBranchName) {
         await this.octokit.pulls.create({
             owner: this.owner,
             repo: this.repo,
             title: 'Update license copyright year(s)',
-            head: this.branch,
+            head: sourceBranchName,
             base: 'master',
         });
     }
