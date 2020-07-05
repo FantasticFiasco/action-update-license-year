@@ -1,5 +1,6 @@
 import { getInput, setFailed } from '@actions/core';
 import { context } from '@actions/github';
+import { updateLicense } from './license';
 import { Repository } from './Repository';
 
 const FILENAME = 'LICENSE';
@@ -7,24 +8,38 @@ const BRANCH_NAME = `license/copyright-to-${new Date().getFullYear()}`;
 
 export const run = async () => {
     try {
-        // Context
         const { owner, repo } = context.repo;
 
-        // Inputs
+        // Read GitHub access token
         const token = getInput('token', { required: true });
 
         const repository = new Repository(owner, repo, token);
 
+        // Branch exists?
         const hasBranch = await repository.hasBranch(BRANCH_NAME);
 
-        // await github.createBranch(BRANCH_NAME);
-        // const res = await github.getContent('master', FILENAME);
-        // const currentLicense = Buffer.from(res.data.content, 'base64').toString('ascii');
+        // Download license
+        const res = await repository.getContent(hasBranch ? BRANCH_NAME : 'master', FILENAME);
+        const license = Buffer.from(res.data.content, 'base64').toString('ascii');
 
-        // const license = new License();
-        // const updatedLicense = license.update(currentLicense);
-        // await github.updateContent(BRANCH_NAME, FILENAME, res.data.sha, updatedLicense);
-        // await github.createPullRequest(BRANCH_NAME);
+        // Update license
+        const updatedLicense = updateLicense(license);
+
+        // License updated?
+        if (updatedLicense !== license) {
+            // Create branch if required
+            if (!hasBranch) {
+                await repository.createBranch(BRANCH_NAME);
+            }
+
+            // Upload license to branch
+            await repository.updateContent(BRANCH_NAME, FILENAME, res.data.sha, updatedLicense);
+
+            // Create PR if required
+            if (!(await repository.hasPullRequest(BRANCH_NAME))) {
+                await repository.createPullRequest(BRANCH_NAME);
+            }
+        }
     } catch (err) {
         setFailed(err.message);
     }

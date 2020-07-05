@@ -36,7 +36,7 @@ export class Repository {
             const res = await this.getBranch(name);
             return res.status === 200;
         } catch (err) {
-            if (err?.status === 404) {
+            if (err.status && err.status === 404) {
                 return false;
             }
             throw err;
@@ -91,6 +91,19 @@ export class Repository {
             content: Buffer.from(content, 'ascii').toString('base64'),
             sha,
         });
+    }
+
+    /**
+     * @param {string} sourceBranchName The name of the source branch
+     */
+    async hasPullRequest(sourceBranchName) {
+        const res = await this.octokit.pulls.list({
+            owner: this.owner,
+            repo: this.name,
+            head: `${this.owner}:${sourceBranchName}`,
+        });
+
+        return res.data.length === 1;
     }
 
     /**
