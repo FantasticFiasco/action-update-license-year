@@ -1,6 +1,6 @@
 # Action flowchart
 
-The action is implemented according to the following flowchart.
+The action runs according to the following flowchart.
 
 ```mermaid
 graph TB
