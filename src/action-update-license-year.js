@@ -1,45 +1,47 @@
-import { getInput, setFailed } from '@actions/core';
+import { setFailed } from '@actions/core';
 import { context } from '@actions/github';
-import { updateLicense } from './license';
-import { Repository } from './Repository';
 
 const FILENAME = 'LICENSE';
 const BRANCH_NAME = `license/copyright-to-${new Date().getFullYear()}`;
 
 export const run = async () => {
     try {
+        console.log(context);
+
         const { owner, repo } = context.repo;
 
-        // Read GitHub access token
-        const token = getInput('token', { required: true });
+        console.log(owner, repo);
 
-        const repository = new Repository(owner, repo, token);
+        // // Read GitHub access token
+        // const token = getInput('token', { required: true });
 
-        // Branch exists?
-        const hasBranch = await repository.hasBranch(BRANCH_NAME);
+        // const repository = new Repository(owner, repo, token);
 
-        // Download license
-        const res = await repository.getContent(hasBranch ? BRANCH_NAME : 'master', FILENAME);
-        const license = Buffer.from(res.data.content, 'base64').toString('ascii');
+        // // Branch exists?
+        // const hasBranch = await repository.hasBranch(BRANCH_NAME);
 
-        // Update license
-        const updatedLicense = updateLicense(license);
+        // // Download license
+        // const res = await repository.getContent(hasBranch ? BRANCH_NAME : 'master', FILENAME);
+        // const license = Buffer.from(res.data.content, 'base64').toString('ascii');
 
-        // License updated?
-        if (updatedLicense !== license) {
-            // Create branch if required
-            if (!hasBranch) {
-                await repository.createBranch(BRANCH_NAME);
-            }
+        // // Update license
+        // const updatedLicense = updateLicense(license);
 
-            // Upload license to branch
-            await repository.updateContent(BRANCH_NAME, FILENAME, res.data.sha, updatedLicense);
+        // // License updated?
+        // if (updatedLicense !== license) {
+        //     // Create branch if required
+        //     if (!hasBranch) {
+        //         await repository.createBranch(BRANCH_NAME);
+        //     }
 
-            // Create PR if required
-            if (!(await repository.hasPullRequest(BRANCH_NAME))) {
-                await repository.createPullRequest(BRANCH_NAME);
-            }
-        }
+        //     // Upload license to branch
+        //     await repository.updateContent(BRANCH_NAME, FILENAME, res.data.sha, updatedLicense);
+
+        //     // Create PR if required
+        //     if (!(await repository.hasPullRequest(BRANCH_NAME))) {
+        //         await repository.createPullRequest(BRANCH_NAME);
+        //     }
+        // }
     } catch (err) {
         setFailed(err.message);
     }

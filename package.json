@@ -31,9 +31,11 @@
     "@actions/github": "4.0.0"
   },
   "devDependencies": {
-    "@babel/plugin-transform-modules-commonjs": "7.10.4",
+    "@babel/core": "7.10.4",
+    "@babel/preset-env": "7.10.4",
     "@types/jest": "26.0.4",
     "@zeit/ncc": "0.22.3",
+    "babel-jest": "26.1.0",
     "coveralls": "3.1.0",
     "eslint": "7.4.0",
     "jest": "26.1.0",
@@ -52,7 +54,10 @@
     "tabWidth": 4,
     "overrides": [
       {
-        "files": ["*.json", "*.yml"],
+        "files": [
+          "*.json",
+          "*.yml"
+        ],
         "options": {
           "tabWidth": 2
         }
@@ -82,12 +87,15 @@
     ]
   },
   "babel": {
-    "env": {
-      "test": {
-        "plugins": [
-          "@babel/plugin-transform-modules-commonjs"
-        ]
-      }
-    }
+    "presets": [
+      [
+        "@babel/preset-env",
+        {
+          "targets": {
+            "node": "current"
+          }
+        }
+      ]
+    ]
   }
 }
