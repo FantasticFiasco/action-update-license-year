@@ -1,4 +1,4 @@
-import { setFailed } from '@actions/core';
+import { getInput, setFailed } from '@actions/core';
 import { context } from '@actions/github';
 
 const FILENAME = 'LICENSE';
@@ -6,14 +6,10 @@ const BRANCH_NAME = `license/copyright-to-${new Date().getFullYear()}`;
 
 export const run = async () => {
     try {
-        console.log(context);
-
         const { owner, repo } = context.repo;
 
-        console.log(owner, repo);
-
-        // // Read GitHub access token
-        // const token = getInput('token', { required: true });
+        // Read GitHub access token
+        const token = getInput('token', { required: true });
 
         // const repository = new Repository(owner, repo, token);
 
