@@ -1,5 +1,6 @@
 import { getInput, setFailed } from '@actions/core';
 import { context } from '@actions/github';
+import { Repository } from './Repository';
 
 const FILENAME = 'LICENSE';
 const BRANCH_NAME = `license/copyright-to-${new Date().getFullYear()}`;
@@ -11,10 +12,12 @@ export const run = async () => {
         // Read GitHub access token
         const token = getInput('token', { required: true });
 
-        // const repository = new Repository(owner, repo, token);
+        const repository = new Repository(owner, repo, token);
 
-        // // Branch exists?
-        // const hasBranch = await repository.hasBranch(BRANCH_NAME);
+        // Branch exists?
+        const hasBranch = await repository.hasBranch(BRANCH_NAME);
+
+        console.log(hasBranch);
 
         // // Download license
         // const res = await repository.getContent(hasBranch ? BRANCH_NAME : 'master', FILENAME);
@@ -39,6 +42,7 @@ export const run = async () => {
         //     }
         // }
     } catch (err) {
+        console.log(err);
         setFailed(err.message);
     }
 };
