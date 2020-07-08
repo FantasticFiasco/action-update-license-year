@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { setFailed } from '@actions/core';
 import { getOctokit } from '@actions/github';
 import { run } from '../src/action-update-license-year';
@@ -37,22 +38,55 @@ jest.mock('../src/license', () => ({
 
 describe('running action should', () => {
     test("create PR with updated license given branch doesn't exist", async () => {
-        getOctokit('').git.getRef.mockImplementation((params) => {
-            const res =
-                params && params.ref === 'heads/master'
-                    ? Promise.resolve({ status: 200, data: { object: { sha: 'sha' } } })
-                    : Promise.reject({ status: 404 });
-            return res;
-        });
-        getOctokit('').repos.getContent.mockResolvedValue({ data: { content: Buffer.from('license').toString('base64') } });
-        updateLicense.mockReturnValue('updated license');
-        getOctokit('').git.createRef.mockResolvedValue({});
-        getOctokit('').pulls.list.mockResolvedValue({ data: [] });
-        getOctokit('').pulls.create.mockResolvedValue({});
+        const octokit = getOctokit('some token');
+        mockBranch(octokit, false);
+        mockGetContent(octokit);
+        mockUpdateLicense(octokit);
+        mockCreateBranch(octokit);
+        octokit.pulls.list.mockResolvedValue({ data: [] });
+        octokit.pulls.create.mockResolvedValue({});
         await run();
-        expect(getOctokit('').git.createRef.mock.calls.length).toBe(1);
-        expect(getOctokit('').repos.createOrUpdateFileContents.mock.calls.length).toBe(1);
-        expect(getOctokit('').pulls.create.mock.calls.length).toBe(1);
+        expect(octokit.git.createRef.mock.calls.length).toBe(1);
+        expect(octokit.repos.createOrUpdateFileContents.mock.calls.length).toBe(1);
+        expect(octokit.pulls.create.mock.calls.length).toBe(1);
         expect(setFailed.mock.calls.length).toBe(0);
     });
 });
+
+/**
+ * @param {boolean} exists
+ */
+const mockBranch = (octokit, exists) => {
+    octokit.git.getRef.mockImplementation((params) => {
+        if (exists || params.ref === 'heads/master') {
+            return Promise.resolve({
+                status: 200,
+                data: {
+                    object: {
+                        sha: 'some sha',
+                    },
+                },
+            });
+        }
+
+        return Promise.reject({
+            status: 404,
+        });
+    });
+};
+
+const mockGetContent = (octokit) => {
+    octokit.repos.getContent.mockResolvedValue({
+        data: {
+            content: Buffer.from('some license').toString('base64'),
+        },
+    });
+};
+
+const mockUpdateLicense = () => {
+    updateLicense.mockReturnValue('some updated license');
+};
+
+const mockCreateBranch = (octokit) => {
+    octokit.git.createRef.mockResolvedValue();
+};
