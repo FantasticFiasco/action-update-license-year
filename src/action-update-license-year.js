@@ -19,8 +19,8 @@ async function run() {
         const hasBranch = await repository.hasBranch(BRANCH_NAME);
 
         // Download license
-        const res = await repository.getContent(hasBranch ? BRANCH_NAME : 'master', FILENAME);
-        const license = Buffer.from(res.data.content, 'base64').toString('ascii');
+        const licenseResponse = await repository.getContent(hasBranch ? BRANCH_NAME : 'master', FILENAME);
+        const license = Buffer.from(licenseResponse.data.content, 'base64').toString('ascii');
 
         // Update license
         const updatedLicense = updateLicense(license);
@@ -33,7 +33,7 @@ async function run() {
             }
 
             // Upload license to branch
-            await repository.updateContent(BRANCH_NAME, FILENAME, res.data.sha, updatedLicense);
+            await repository.updateContent(BRANCH_NAME, FILENAME, licenseResponse.data.sha, updatedLicense);
 
             // Create PR if required
             if (!(await repository.hasPullRequest(BRANCH_NAME))) {
