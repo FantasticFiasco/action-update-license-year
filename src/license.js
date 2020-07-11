@@ -14,16 +14,16 @@ const MIT_COPYRIGHT_YEAR_RANGE = /(Copyright \(c\) )(\d{4})-(\d{4})( \w+)/gm;
 /**
  * @param {string} license
  */
-export const updateLicense = (license) => {
+function updateLicense(license) {
     const currentYear = new Date().getFullYear();
     return updateLicenseToYear(license, currentYear);
-};
+}
 
 /**
  * @param {string} license
  * @param {number} year
  */
-export const updateLicenseToYear = (license, year) => {
+function updateLicenseToYear(license, year) {
     // Apache 2.0
     if (APACHE_COPYRIGHT_YEAR.test(license)) {
         return license.replace(APACHE_COPYRIGHT_YEAR, `$1$2-${year}$3`);
@@ -50,4 +50,9 @@ export const updateLicenseToYear = (license, year) => {
     }
 
     throw new Error('Specified license is not supported');
+}
+
+module.exports = {
+    updateLicense,
+    updateLicenseToYear,
 };

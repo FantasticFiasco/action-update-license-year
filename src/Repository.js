@@ -1,6 +1,6 @@
-import { getOctokit } from '@actions/github';
+const { getOctokit } = require('@actions/github');
 
-export class Repository {
+class Repository {
     /**
      * @param {string} owner The owner of the repository
      * @param {string} name The name of the repository
@@ -119,3 +119,5 @@ export class Repository {
         });
     }
 }
+
+module.exports = Repository;

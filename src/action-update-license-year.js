@@ -1,12 +1,12 @@
-import { getInput, setFailed } from '@actions/core';
-import { context } from '@actions/github';
-import { updateLicense } from './license';
-import { Repository } from './Repository';
+const { getInput, setFailed } = require('@actions/core');
+const { context } = require('@actions/github');
+const { updateLicense } = require('./license');
+const Repository = require('./Repository');
 
 const FILENAME = 'LICENSE';
 const BRANCH_NAME = `license/copyright-to-${new Date().getFullYear()}`;
 
-export const run = async () => {
+async function run() {
     try {
         const { owner, repo } = context.repo;
 
@@ -43,4 +43,6 @@ export const run = async () => {
     } catch (err) {
         setFailed(err.message);
     }
-};
+}
+
+module.exports = run;
