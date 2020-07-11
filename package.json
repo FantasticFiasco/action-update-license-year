@@ -22,7 +22,7 @@
   "scripts": {
     "type-check": "tsc --noEmit",
     "test": "jest",
-    "lint": "eslint ./src/**/*.js",
+    "lint": "prettier --check ./src/**/*.js ./test/**/*.js",
     "coverage": "jest --coverage && coveralls < coverage/lcov.info",
     "dist": "ncc build ./src/main.js"
   },
