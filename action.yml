@@ -3,7 +3,7 @@ description: "Updates the copyright year(s) in your license file and creates a p
 author: "Mattias Kindborg <mattias.kindborg@gmail.com> (https://twitter.com/FantasticFiasco)"
 inputs:
   token:
-    description: 'Token for the repository. Can be passed in using ${{ secrets.GITHUB_TOKEN }}'
+    description: "Token for the repository. Can be passed in using ${{ secrets.GITHUB_TOKEN }}"
     required: true
 runs:
   using: "node12"
