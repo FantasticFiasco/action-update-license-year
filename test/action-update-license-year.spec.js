@@ -1,33 +1,4 @@
-// @ts-nocheck
-import { run } from '../src/action-update-license-year';
-
-jest.mock('@actions/core', () => ({
-    getInput: jest.fn(),
-    setFailed: jest.fn(),
-}));
-
-jest.mock('@actions/github', () => ({
-    context: {
-        repo: {
-            owner: 'FantasticFiasco',
-            repo: 'action-update-license-year',
-        },
-    },
-}));
-
-jest.mock('../src/license', () => ({
-    updateLicense: jest.fn(),
-}));
-
-jest.mock('../src/Repository', () => ({
-    getBranch: jest.fn(),
-    hasBranch: jest.fn(),
-    createBranch: jest.fn(),
-    getContent: jest.fn(),
-    updateContent: jest.fn(),
-    hasPullRequest: jest.fn(),
-    createPullRequest: jest.fn(),
-}));
+const { run } = require('../src/action-update-license-year');
 
 describe('running action should', () => {
     test("create PR with updated license given branch doesn't exist", async () => {
@@ -49,35 +20,3 @@ describe('running action should', () => {
         // expect(setFailed).toBeCalledTimes(0);
     });
 });
-
-const res = {
-    git: {
-        getRef: {
-            success: Promise.resolve({
-                status: 200,
-                data: {
-                    object: {
-                        sha: 'some sha',
-                    },
-                },
-            }),
-            failure: Promise.reject({
-                status: 404,
-            }),
-        },
-        getContent: {
-            success: {
-                data: {
-                    content: Buffer.from('some license').toString('base64'),
-                },
-            },
-        },
-    },
-    pulls: {
-        list: {
-            notEmpty: {
-                data: [],
-            },
-        },
-    },
-};
