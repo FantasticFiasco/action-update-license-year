@@ -7,7 +7,12 @@ jest.mock('@actions/core', () => {
 });
 
 const mockGithub = {
-    context: jest.fn(),
+    context: {
+        repo: {
+            owner: 'FantasticFiasco',
+            repo: 'action-update-license-year',
+        },
+    },
 };
 jest.mock('@actions/github', () => {
     return mockGithub;
@@ -34,27 +39,78 @@ jest.mock('../src/license', () => {
     return mockLicense;
 });
 
-const { run } = require('../src/action-update-license-year');
+const { run, FILENAME, BRANCH_NAME } = require('../src/action-update-license-year');
 
-describe('running action should', () => {
-    test("create PR with updated license given branch doesn't exist", async () => {
-        mockGithub.context.mockImplementation(() => {
-            return {
-                repo: { owner: 'FantasticFiasco', repo: 'action-update-license-year' },
-            };
-        });
-        mockCore.getInput.mockReturnValue('some token');
+describe('action should', () => {
+    test('read input', async () => {
+        await run();
+        expect(mockCore.getInput).toBeCalledWith('token', { required: true });
+    });
+
+    test('download license from branch given branch exists', async () => {
+        mockRepository.hasBranch.mockReturnValue(true);
+        await run();
+        expect(mockRepository.getContent).toBeCalledWith(BRANCH_NAME, FILENAME);
+    });
+
+    test("download license from master given branch doesn't exist", async () => {
         mockRepository.hasBranch.mockReturnValue(false);
-        mockRepository.getContent.mockReturnValue({
-            data: {
-                content: Buffer.from('some license').toString('base64'),
-            },
-        });
-        mockLicense.updateLicense.mockReturnValue('some updated license');
+        await run();
+        expect(mockRepository.getContent).toBeCalledWith('master', FILENAME);
+    });
+
+    test("create branch given it doesn't exist", async () => {
+        mockRepository.hasBranch.mockReturnValue(false);
         await run();
         expect(mockRepository.createBranch).toBeCalledTimes(1);
-        expect(mockRepository.updateContent).toBeCalledTimes(1);
-        expect(mockRepository.createPullRequest).toBeCalledTimes(1);
-        expect(mockCore.setFailed).toBeCalledTimes(0);
     });
+
+    test('skip creating branch given it exists', async () => {
+        mockRepository.hasBranch.mockReturnValue(true);
+        await run();
+        expect(mockRepository.createBranch).toBeCalledTimes(0);
+    });
+
+    test('skip creating branch given license is unchanged', async () => {
+        mockLicense.updateLicense.mockReturnValue(CONTENT);
+        await run();
+        expect(mockRepository.createBranch).toBeCalledTimes(0);
+    });
+
+    test("create pull request given it doesn't exist", async () => {
+        // TODO: Mock that pr doesn't exist
+        await run();
+        expect(mockRepository.createPullRequest).toBeCalledTimes(1);
+    });
+
+    test('skip creating pull request given it exists', async () => {
+        // TODO: Mock that pr exists
+        await run();
+        expect(mockRepository.createPullRequest).toBeCalledTimes(0);
+    });
+
+    test('skip creating pull request given license is unchanged', async () => {
+        mockLicense.updateLicense.mockReturnValue(CONTENT);
+        await run();
+        expect(mockRepository.createPullRequest).toBeCalledTimes(0);
+    });
+
+    // test('create pull request given branch exist', async () => {
+    //     mockCore.getInput.mockReturnValue('some token');
+    //     mockRepository.hasBranch.mockReturnValue(true);
+    //     mockRepository.getContent.mockReturnValue(GET_CONTENT_SUCCESS_RESPONSE);
+    //     mockLicense.updateLicense.mockReturnValue('some updated license');
+    //     await run();
+    //     expect(mockRepository.getContent).toBeCalledWith(BRANCH_NAME, FILENAME);
+    //     expect(mockRepository.createBranch).toBeCalledTimes(0);
+    //     expect(mockRepository.updateContent).toBeCalledTimes(1);
+    //     expect(mockRepository.createPullRequest).toBeCalledTimes(1);
+    //     expect(mockCore.setFailed).toBeCalledTimes(0);
+    // });
 });
+const CONTENT = 'some license';
+const GET_CONTENT_SUCCESS_RESPONSE = {
+    data: {
+        content: Buffer.from(CONTENT).toString('base64'),
+    },
+};
