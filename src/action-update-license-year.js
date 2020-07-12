@@ -27,10 +27,16 @@ async function run() {
             await repository.createBranch(BRANCH_NAME);
         }
 
-        await repository.updateContent(BRANCH_NAME, FILENAME, licenseResponse.data.sha, updatedLicense);
+        await repository.updateContent(
+            BRANCH_NAME,
+            FILENAME,
+            licenseResponse.data.sha,
+            updatedLicense,
+            'docs(license): update copyright year(s)'
+        );
 
         if (!(await repository.hasPullRequest(BRANCH_NAME))) {
-            await repository.createPullRequest(BRANCH_NAME);
+            await repository.createPullRequest(BRANCH_NAME, 'Update license copyright year(s)');
         }
     } catch (err) {
         setFailed(err.message);

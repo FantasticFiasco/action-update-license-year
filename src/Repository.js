@@ -80,14 +80,15 @@ class Repository {
      * @param {string} path The file path
      * @param {string} sha The SHA of the file being updated
      * @param {string} content The file content
+     * @param {string} commitMessage The commit message
      */
-    async updateContent(branchName, path, sha, content) {
+    async updateContent(branchName, path, sha, content, commitMessage) {
         await this.octokit.repos.createOrUpdateFileContents({
             owner: this.owner,
             repo: this.name,
             branch: branchName,
             path,
-            message: 'docs(license): update copyright year(s)',
+            message: commitMessage,
             content: Buffer.from(content, 'ascii').toString('base64'),
             sha,
         });
@@ -108,12 +109,13 @@ class Repository {
 
     /**
      * @param {string} sourceBranchName The name of the source branch
+     * @param {string} title The title of the pull request
      */
-    async createPullRequest(sourceBranchName) {
+    async createPullRequest(sourceBranchName, title) {
         await this.octokit.pulls.create({
             owner: this.owner,
             repo: this.name,
-            title: 'Update license copyright year(s)',
+            title,
             head: sourceBranchName,
             base: 'master',
         });
