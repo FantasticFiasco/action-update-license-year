@@ -43,7 +43,7 @@ const { run, FILENAME, BRANCH_NAME } = require('../src/action-update-license-yea
 
 describe('action should', () => {
     beforeEach(() => {
-        jest.clearAllMocks();
+        jest.resetAllMocks();
     });
 
     test('read input', async () => {
@@ -84,13 +84,13 @@ describe('action should', () => {
     });
 
     test("create pull request given it doesn't exist", async () => {
-        // TODO: Mock that pr doesn't exist
+        mockRepository.hasPullRequest.mockReturnValue(false);
         await run();
         expect(mockRepository.createPullRequest).toBeCalledTimes(1);
     });
 
     test('skip creating pull request given it exists', async () => {
-        // TODO: Mock that pr exists
+        mockRepository.hasPullRequest.mockReturnValue(true);
         await run();
         expect(mockRepository.createPullRequest).toBeCalledTimes(0);
     });
