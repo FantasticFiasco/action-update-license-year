@@ -42,6 +42,10 @@ jest.mock('../src/license', () => {
 const { run, FILENAME, BRANCH_NAME } = require('../src/action-update-license-year');
 
 describe('action should', () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+    });
+
     test('read input', async () => {
         await run();
         expect(mockCore.getInput).toBeCalledWith('token', { required: true });
@@ -61,12 +65,14 @@ describe('action should', () => {
 
     test("create branch given it doesn't exist", async () => {
         mockRepository.hasBranch.mockReturnValue(false);
+        mockRepository.getContent.mockReturnValue(GET_CONTENT_SUCCESS_RESPONSE);
         await run();
         expect(mockRepository.createBranch).toBeCalledTimes(1);
     });
 
     test('skip creating branch given it exists', async () => {
         mockRepository.hasBranch.mockReturnValue(true);
+        mockRepository.getContent.mockReturnValue(GET_CONTENT_SUCCESS_RESPONSE);
         await run();
         expect(mockRepository.createBranch).toBeCalledTimes(0);
     });
