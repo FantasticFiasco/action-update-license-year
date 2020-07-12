@@ -27,9 +27,9 @@ const mockRepository = {
     createPullRequest: jest.fn(),
 };
 jest.mock('../src/Repository', () => {
-    return jest.fn().mockImplementation(() => {
+    return function () {
         return mockRepository;
-    });
+    };
 });
 
 const mockLicense = {
@@ -39,11 +39,14 @@ jest.mock('../src/license', () => {
     return mockLicense;
 });
 
+const { setFailed } = require('@actions/core');
 const { run, FILENAME, BRANCH_NAME } = require('../src/action-update-license-year');
 
 describe('action should', () => {
     beforeEach(() => {
         jest.resetAllMocks();
+
+        mockRepository.getContent.mockReturnValue(GET_LICENSE_CONTENT_SUCCESS_RESPONSE);
     });
 
     test('read input', async () => {
@@ -65,20 +68,18 @@ describe('action should', () => {
 
     test("create branch given it doesn't exist", async () => {
         mockRepository.hasBranch.mockReturnValue(false);
-        mockRepository.getContent.mockReturnValue(GET_CONTENT_SUCCESS_RESPONSE);
         await run();
         expect(mockRepository.createBranch).toBeCalledTimes(1);
     });
 
     test('skip creating branch given it exists', async () => {
         mockRepository.hasBranch.mockReturnValue(true);
-        mockRepository.getContent.mockReturnValue(GET_CONTENT_SUCCESS_RESPONSE);
         await run();
         expect(mockRepository.createBranch).toBeCalledTimes(0);
     });
 
     test('skip creating branch given license is unchanged', async () => {
-        mockLicense.updateLicense.mockReturnValue(CONTENT);
+        mockLicense.updateLicense.mockReturnValue(LICESE_CONTENT);
         await run();
         expect(mockRepository.createBranch).toBeCalledTimes(0);
     });
@@ -87,36 +88,28 @@ describe('action should', () => {
         mockRepository.hasPullRequest.mockReturnValue(false);
         await run();
         expect(mockRepository.createPullRequest).toBeCalledTimes(1);
+        expect(setFailed).toBeCalledTimes(0);
     });
 
     test('skip creating pull request given it exists', async () => {
         mockRepository.hasPullRequest.mockReturnValue(true);
         await run();
         expect(mockRepository.createPullRequest).toBeCalledTimes(0);
+        expect(setFailed).toBeCalledTimes(0);
     });
 
     test('skip creating pull request given license is unchanged', async () => {
-        mockLicense.updateLicense.mockReturnValue(CONTENT);
+        mockLicense.updateLicense.mockReturnValue(LICESE_CONTENT);
         await run();
         expect(mockRepository.createPullRequest).toBeCalledTimes(0);
+        expect(setFailed).toBeCalledTimes(0);
     });
-
-    // test('create pull request given branch exist', async () => {
-    //     mockCore.getInput.mockReturnValue('some token');
-    //     mockRepository.hasBranch.mockReturnValue(true);
-    //     mockRepository.getContent.mockReturnValue(GET_CONTENT_SUCCESS_RESPONSE);
-    //     mockLicense.updateLicense.mockReturnValue('some updated license');
-    //     await run();
-    //     expect(mockRepository.getContent).toBeCalledWith(BRANCH_NAME, FILENAME);
-    //     expect(mockRepository.createBranch).toBeCalledTimes(0);
-    //     expect(mockRepository.updateContent).toBeCalledTimes(1);
-    //     expect(mockRepository.createPullRequest).toBeCalledTimes(1);
-    //     expect(mockCore.setFailed).toBeCalledTimes(0);
-    // });
 });
-const CONTENT = 'some license';
-const GET_CONTENT_SUCCESS_RESPONSE = {
+
+const LICESE_CONTENT = 'some license';
+
+const GET_LICENSE_CONTENT_SUCCESS_RESPONSE = {
     data: {
-        content: Buffer.from(CONTENT).toString('base64'),
+        content: Buffer.from(LICESE_CONTENT).toString('base64'),
     },
 };
