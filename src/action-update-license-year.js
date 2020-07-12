@@ -1,7 +1,7 @@
 const { getInput, setFailed } = require('@actions/core');
 const { context } = require('@actions/github');
 const { updateLicense } = require('./license');
-const Repository = require('./Repository');
+const { Repository } = require('./Repository');
 
 const FILENAME = 'LICENSE';
 const BRANCH_NAME = `license/copyright-to-${new Date().getFullYear()}`;
