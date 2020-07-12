@@ -120,6 +120,4 @@ class Repository {
     }
 }
 
-module.exports = {
-    Repository,
-};
+module.exports = Repository;
