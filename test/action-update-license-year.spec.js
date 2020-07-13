@@ -59,30 +59,47 @@ describe('action should', () => {
         mockRepository.hasBranch.mockReturnValue(true);
         await run();
         expect(mockRepository.getContent).toBeCalledWith(BRANCH_NAME, FILENAME);
+        expect(setFailed).toBeCalledTimes(0);
     });
 
     test("download license from master given branch doesn't exist", async () => {
         mockRepository.hasBranch.mockReturnValue(false);
         await run();
         expect(mockRepository.getContent).toBeCalledWith('master', FILENAME);
+        expect(setFailed).toBeCalledTimes(0);
+    });
+
+    test('set failed given download license fails', async () => {
+        mockRepository.getContent.mockRejectedValue({});
+        await run();
+        expect(setFailed).toBeCalledTimes(1);
     });
 
     test("create branch given it doesn't exist", async () => {
         mockRepository.hasBranch.mockReturnValue(false);
         await run();
         expect(mockRepository.createBranch).toBeCalledTimes(1);
+        expect(setFailed).toBeCalledTimes(0);
     });
 
     test('skip creating branch given it exists', async () => {
         mockRepository.hasBranch.mockReturnValue(true);
         await run();
         expect(mockRepository.createBranch).toBeCalledTimes(0);
+        expect(setFailed).toBeCalledTimes(0);
     });
 
     test('skip creating branch given license is unchanged', async () => {
         mockLicense.updateLicense.mockReturnValue(LICESE_CONTENT);
         await run();
         expect(mockRepository.createBranch).toBeCalledTimes(0);
+        expect(setFailed).toBeCalledTimes(0);
+    });
+
+    test('set failed given creating branch fails', async () => {
+        mockRepository.createBranch.mockRejectedValue({});
+        await run();
+        expect(setFailed).toBeCalledTimes(1);
     });
 
     test("create pull request given it doesn't exist", async () => {
@@ -104,6 +121,12 @@ describe('action should', () => {
         await run();
         expect(mockRepository.createPullRequest).toBeCalledTimes(0);
         expect(setFailed).toBeCalledTimes(0);
+    });
+
+    test('set failed given creating pull request fails', async () => {
+        mockRepository.createPullRequest.mockRejectedValue({});
+        await run();
+        expect(setFailed).toBeCalledTimes(1);
     });
 });
 
