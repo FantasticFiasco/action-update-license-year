@@ -52,7 +52,7 @@ class Repository {
         try {
             const master = await this.getBranch(MASTER);
 
-            await this.octokit.git.createRef({
+            return await this.octokit.git.createRef({
                 owner: this.owner,
                 repo: this.name,
                 ref: `refs/heads/${name}`,
@@ -91,7 +91,7 @@ class Repository {
      */
     async updateContent(branchName, path, sha, content, commitMessage) {
         try {
-            await this.octokit.repos.createOrUpdateFileContents({
+            return await this.octokit.repos.createOrUpdateFileContents({
                 owner: this.owner,
                 repo: this.name,
                 branch: branchName,
@@ -125,7 +125,7 @@ class Repository {
      */
     async createPullRequest(sourceBranchName, title) {
         try {
-            await this.octokit.pulls.create({
+            return await this.octokit.pulls.create({
                 owner: this.owner,
                 repo: this.name,
                 title,

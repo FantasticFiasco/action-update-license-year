@@ -22,6 +22,7 @@ jest.mock('@actions/github', () => {
 });
 
 const Repository = require('../src/Repository');
+const { ExitCode } = require('@actions/core');
 
 beforeEach(() => {
     jest.resetAllMocks();
@@ -31,71 +32,113 @@ describe('#getBranch should', () => {
     test('return branch given branch exists', async () => {
         mockOctokit.git.getRef.mockResolvedValue(GET_REF_SUCCESS_RESPONSE);
         const repository = new Repository('some owner', 'some name', 'some token');
-        const actual = await repository.getBranch('master');
-        expect(actual).toBe(GET_REF_SUCCESS_RESPONSE);
+        const promise = repository.getBranch('master');
+        await expect(promise).resolves.toBe(GET_REF_SUCCESS_RESPONSE);
     });
 
     test("throw error given branch doesn't exist", async () => {
-        mockOctokit.git.createRef.mockRejectedValue(GET_REF_FAILURE_RESPONSE);
+        mockOctokit.git.getRef.mockRejectedValue(GET_REF_FAILURE_RESPONSE);
         const repository = new Repository('some owner', 'some name', 'some token');
-        const fn = repository.getBranch('unknown-branch');
-        await expect(fn).rejects.toThrow();
+        const promise = repository.getBranch('unknown-branch');
+        await expect(promise).rejects.toBeDefined();
     });
 });
 
 describe('#hasBranch should', () => {
-    test('return true given branch exists', () => {
-        throw Error('Not implemented');
+    test('return true given branch exists', async () => {
+        mockOctokit.git.getRef.mockResolvedValue(GET_REF_SUCCESS_RESPONSE);
+        const repository = new Repository('some owner', 'some name', 'some token');
+        const promise = repository.hasBranch('master');
+        await expect(promise).resolves.toBe(true);
     });
 
-    test("return false given branch doesn't exist", () => {
-        throw Error('Not implemented');
+    test("return false given branch doesn't exist", async () => {
+        mockOctokit.git.getRef.mockRejectedValue(GET_REF_FAILURE_RESPONSE);
+        const repository = new Repository('some owner', 'some name', 'some token');
+        const promise = repository.hasBranch('unknown-branch');
+        await expect(promise).resolves.toBe(false);
     });
 });
 
 describe('#createBranch should', () => {
-    test('successfully complete', () => {
-        throw Error('Not implemented');
+    test('successfully complete', async () => {
+        mockOctokit.git.getRef.mockResolvedValue(GET_REF_SUCCESS_RESPONSE);
+        mockOctokit.git.createRef.mockResolvedValue({});
+        const repository = new Repository('some owner', 'some name', 'some token');
+        const promise = repository.createBranch('some-branch');
+        await expect(promise).resolves.toBeDefined();
+    });
+
+    test('throw error given some Octokit error', async () => {
+        mockOctokit.git.getRef.mockResolvedValue(GET_REF_SUCCESS_RESPONSE);
+        mockOctokit.git.createRef.mockRejectedValue({});
+        const repository = new Repository('some owner', 'some name', 'some token');
+        const promise = repository.createBranch('some-branch');
+        await expect(promise).rejects.toBeDefined();
     });
 });
 
 describe('#getContent should', () => {
-    test('return content given file exists', () => {
-        throw Error('Not implemented');
+    test('return content given file exists', async () => {
+        mockOctokit.repos.getContent.mockResolvedValue({});
+        const repository = new Repository('some owner', 'some name', 'some token');
+        const promise = repository.getContent('master', 'LICENSE');
+        await expect(promise).resolves.toBeDefined();
     });
 
-    test("throw error given file doesn't exist", () => {
-        throw Error('Not implemented');
+    test("throw error given file doesn't exist", async () => {
+        mockOctokit.repos.getContent.mockRejectedValue({});
+        const repository = new Repository('some owner', 'some name', 'some token');
+        const promise = repository.getContent('master', 'unknown-file');
+        await expect(promise).rejects.toBeDefined();
     });
 });
 
 describe('#updateContent should', () => {
-    test('successfully complete given file exists', () => {
-        throw Error('Not implemented');
+    test('successfully complete given file exists', async () => {
+        mockOctokit.repos.createOrUpdateFileContents.mockResolvedValue({});
+        const repository = new Repository('some owner', 'some name', 'some token');
+        const promise = repository.updateContent('master', 'LICENSE', 'some sha', 'some content', 'some commit message');
+        await expect(promise).resolves.toBeDefined();
     });
 
-    test("throw error given file doesn't exist", () => {
-        throw Error('Not implemented');
+    test("throw error given file doesn't exist", async () => {
+        mockOctokit.repos.createOrUpdateFileContents.mockRejectedValue({});
+        const repository = new Repository('some owner', 'some name', 'some token');
+        const promise = repository.updateContent('master', 'LICENSE', 'some sha', 'some content', 'some commit message');
+        await expect(promise).rejects.toBeDefined();
     });
 });
 
 describe('#hasPullRequest should', () => {
-    test('return true given pull request exists', () => {
-        throw Error('Not implemented');
+    test('return true given pull request exists', async () => {
+        mockOctokit.pulls.list.mockResolvedValue({ data: ['some pull request'] });
+        const repository = new Repository('some owner', 'some name', 'some token');
+        const promise = repository.hasPullRequest('some-branch');
+        await expect(promise).resolves.toBe(true);
     });
 
-    test("return false given pull request doesn't exist", () => {
-        throw Error('Not implemented');
+    test("return false given pull request doesn't exist", async () => {
+        mockOctokit.pulls.list.mockResolvedValue({ data: [] });
+        const repository = new Repository('some owner', 'some name', 'some token');
+        const promise = repository.hasPullRequest('some-branch');
+        await expect(promise).resolves.toBe(false);
     });
 });
 
 describe('#createPullRequest should', () => {
-    test('successfully complete given source branch exists', () => {
-        throw Error('Not implemented');
+    test('successfully complete', async () => {
+        mockOctokit.pulls.create.mockResolvedValue({});
+        const repository = new Repository('some owner', 'some name', 'some token');
+        const promise = repository.createPullRequest('some-branch', 'some title');
+        await expect(promise).resolves.toBeDefined();
     });
 
-    test("throw error given source branch doesn't exist", () => {
-        throw Error('Not implemented');
+    test('throw error given some Octokit error', async () => {
+        mockOctokit.pulls.create.mockRejectedValue({});
+        const repository = new Repository('some owner', 'some name', 'some token');
+        const promise = repository.createPullRequest('some-branch', 'some title');
+        await expect(promise).rejects.toBeDefined();
     });
 });
 
@@ -111,67 +154,3 @@ const GET_REF_SUCCESS_RESPONSE = {
 const GET_REF_FAILURE_RESPONSE = {
     status: 404,
 };
-
-// jest.mock('@actions/core', () => ({
-//     getInput: jest.fn().mockReturnValue('some token'),
-//     setFailed: jest.fn(),
-// }));
-
-// jest.mock('@actions/github', () => ({
-//     context: {
-//         repo: {
-//             owner: 'FantasticFiasco',
-//             repo: 'action-update-license-year',
-//         },
-//     },
-//     getOctokit: jest.fn().mockReturnValue({
-//         git: {
-//             createRef: jest.fn(),
-//             getRef: jest.fn(),
-//         },
-//         repos: {
-//             getContent: jest.fn(),
-//             createOrUpdateFileContents: jest.fn(),
-//         },
-//         pulls: {
-//             list: jest.fn(),
-//             create: jest.fn(),
-//         },
-//     }),
-// }));
-
-// jest.mock('../src/license', () => ({
-//     updateLicense: jest.fn(),
-// }));
-
-// const res = {
-//     git: {
-//         getRef: {
-//             success: Promise.resolve({
-//                 status: 200,
-//                 data: {
-//                     object: {
-//                         sha: 'some sha',
-//                     },
-//                 },
-//             }),
-//             failure: Promise.reject({
-//                 status: 404,
-//             }),
-//         },
-//         getContent: {
-//             success: {
-//                 data: {
-//                     content: Buffer.from('some license').toString('base64'),
-//                 },
-//             },
-//         },
-//     },
-//     pulls: {
-//         list: {
-//             notEmpty: {
-//                 data: [],
-//             },
-//         },
-//     },
-// };
