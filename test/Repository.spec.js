@@ -58,6 +58,13 @@ describe('#hasBranch should', () => {
         const promise = repository.hasBranch('unknown-branch');
         await expect(promise).resolves.toBe(false);
     });
+
+    test('throw error given bad status code', async () => {
+        mockOctokit.git.getRef.mockRejectedValue({ status: '500' });
+        const repository = new Repository('some owner', 'some name', 'some token');
+        const promise = repository.hasBranch('master');
+        await expect(promise).rejects.toBeDefined();
+    });
 });
 
 describe('#createBranch should', () => {

@@ -1,5 +1,6 @@
 const mockCore = {
     getInput: jest.fn(),
+    info: jest.fn(),
     setFailed: jest.fn(),
 };
 jest.mock('@actions/core', () => {
