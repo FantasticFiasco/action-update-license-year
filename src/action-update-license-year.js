@@ -1,12 +1,10 @@
-const { getInput, setFailed } = require('@actions/core');
+const { getInput, setFailed, info } = require('@actions/core');
 const { context } = require('@actions/github');
 const { updateLicense } = require('./license');
 const Repository = require('./Repository');
 
 const FILENAME = 'LICENSE';
 const BRANCH_NAME = `license/copyright-to-${new Date().getFullYear()}`;
-
-// TODO: Write to output, e.g. when a license wasn't updated
 
 async function run() {
     try {
@@ -20,10 +18,12 @@ async function run() {
 
         const updatedLicense = updateLicense(license);
         if (updatedLicense === license) {
+            info('License file is already up-to-date, my work here is done');
             return;
         }
 
         if (!hasBranch) {
+            info(`Create new branch named ${BRANCH_NAME}`);
             await repository.createBranch(BRANCH_NAME);
         }
 
@@ -36,6 +36,7 @@ async function run() {
         );
 
         if (!(await repository.hasPullRequest(BRANCH_NAME))) {
+            info('Create new pull request');
             await repository.createPullRequest(BRANCH_NAME, 'Update license copyright year(s)');
         }
     } catch (err) {
