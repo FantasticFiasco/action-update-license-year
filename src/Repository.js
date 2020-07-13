@@ -1,5 +1,7 @@
 const { getOctokit } = require('@actions/github');
 
+const MASTER = 'master';
+
 class Repository {
     /**
      * @param {string} owner The owner of the repository
@@ -47,7 +49,7 @@ class Repository {
      * @param {string} name The name of the branch
      */
     async createBranch(name) {
-        const master = await this.getBranch('master');
+        const master = await this.getBranch(MASTER);
 
         await this.octokit.git.createRef({
             owner: this.owner,
@@ -83,15 +85,20 @@ class Repository {
      * @param {string} commitMessage The commit message
      */
     async updateContent(branchName, path, sha, content, commitMessage) {
-        await this.octokit.repos.createOrUpdateFileContents({
-            owner: this.owner,
-            repo: this.name,
-            branch: branchName,
-            path,
-            message: commitMessage,
-            content: Buffer.from(content, 'ascii').toString('base64'),
-            sha,
-        });
+        try {
+            await this.octokit.repos.createOrUpdateFileContents({
+                owner: this.owner,
+                repo: this.name,
+                branch: branchName,
+                path,
+                message: commitMessage,
+                content: Buffer.from(content, 'ascii').toString('base64'),
+                sha,
+            });
+        } catch (err) {
+            err.message = `Error when updating content of file ${path} on branch ${branchName}: ${err.message}`;
+            throw err;
+        }
     }
 
     /**
@@ -112,13 +119,18 @@ class Repository {
      * @param {string} title The title of the pull request
      */
     async createPullRequest(sourceBranchName, title) {
-        await this.octokit.pulls.create({
-            owner: this.owner,
-            repo: this.name,
-            title,
-            head: sourceBranchName,
-            base: 'master',
-        });
+        try {
+            await this.octokit.pulls.create({
+                owner: this.owner,
+                repo: this.name,
+                title,
+                head: sourceBranchName,
+                base: MASTER,
+            });
+        } catch (err) {
+            err.message = `Error when creating pull request from ${sourceBranchName} to ${MASTER}: ${err.message}`;
+            throw err;
+        }
     }
 }
 
