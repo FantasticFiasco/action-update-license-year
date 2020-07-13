@@ -49,14 +49,19 @@ class Repository {
      * @param {string} name The name of the branch
      */
     async createBranch(name) {
-        const master = await this.getBranch(MASTER);
+        try {
+            const master = await this.getBranch(MASTER);
 
-        await this.octokit.git.createRef({
-            owner: this.owner,
-            repo: this.name,
-            ref: `refs/heads/${name}`,
-            sha: master.data.object.sha,
-        });
+            await this.octokit.git.createRef({
+                owner: this.owner,
+                repo: this.name,
+                ref: `refs/heads/${name}`,
+                sha: master.data.object.sha,
+            });
+        } catch (err) {
+            err.message = `Error creating branch ${name}: ${err.message}`;
+            throw err;
+        }
     }
 
     /**
