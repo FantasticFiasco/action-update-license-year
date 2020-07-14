@@ -78,7 +78,7 @@ class Repository {
                 path: filePath,
             });
         } catch (err) {
-            err.message = `Error when getting content from file ${path} on branch ${branchName}: ${err.message}`;
+            err.message = `Error when getting content from file ${filePath} on branch ${branchName}: ${err.message}`;
             throw err;
         }
     }
