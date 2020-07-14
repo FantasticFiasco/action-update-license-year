@@ -25,7 +25,7 @@
     "lint": "prettier --check ./src/**/*.js ./test/**/*.js",
     "coverage": "jest --coverage && coveralls < coverage/lcov.info",
     "dist": "ncc build ./src/main.js",
-    "preversion": "yarn dist && git add ./dist"
+    "preversion": "yarn dist && git add ./dist && git add ./CHANGELOG.md"
   },
   "dependencies": {
     "@actions/core": "1.2.4",
