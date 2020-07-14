@@ -41,31 +41,32 @@ jest.mock('../src/license', () => {
 });
 
 const { setFailed } = require('@actions/core');
-const { run, FILENAME, BRANCH_NAME } = require('../src/action-update-license-year');
+const { run, BRANCH_NAME } = require('../src/action-update-license-year');
 
 describe('action should', () => {
     beforeEach(() => {
         jest.resetAllMocks();
 
-        mockRepository.getContent.mockReturnValue(GET_LICENSE_CONTENT_SUCCESS_RESPONSE);
+        mockRepository.getContent.mockReturnValue(GET_CONTENT_SUCCESS_RESPONSE);
     });
 
     test('read input', async () => {
         await run();
         expect(mockCore.getInput).toBeCalledWith('token', { required: true });
-    });
-
-    test('download license from branch given branch exists', async () => {
-        mockRepository.hasBranch.mockReturnValue(true);
-        await run();
-        expect(mockRepository.getContent).toBeCalledWith(BRANCH_NAME, FILENAME);
         expect(setFailed).toBeCalledTimes(0);
     });
 
-    test("download license from master given branch doesn't exist", async () => {
+    test('get license content from branch given branch exists', async () => {
+        mockRepository.hasBranch.mockReturnValue(true);
+        await run();
+        expect(mockRepository.getContent).toBeCalledWith(BRANCH_NAME, 'LICENSE');
+        expect(setFailed).toBeCalledTimes(0);
+    });
+
+    test("get license content from master given branch doesn't exist", async () => {
         mockRepository.hasBranch.mockReturnValue(false);
         await run();
-        expect(mockRepository.getContent).toBeCalledWith('master', FILENAME);
+        expect(mockRepository.getContent).toBeCalledWith('master', 'LICENSE');
         expect(setFailed).toBeCalledTimes(0);
     });
 
@@ -132,7 +133,7 @@ describe('action should', () => {
 
 const LICESE_CONTENT = 'some license';
 
-const GET_LICENSE_CONTENT_SUCCESS_RESPONSE = {
+const GET_CONTENT_SUCCESS_RESPONSE = {
     data: {
         content: Buffer.from(LICESE_CONTENT).toString('base64'),
     },

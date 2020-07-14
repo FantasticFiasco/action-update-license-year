@@ -4,6 +4,7 @@ const { updateLicense } = require('./license');
 const Repository = require('./Repository');
 
 const FILENAME = 'LICENSE';
+const MASTER = 'master';
 const BRANCH_NAME = `license/copyright-to-${new Date().getFullYear()}`;
 
 async function run() {
@@ -13,7 +14,7 @@ async function run() {
 
         const repository = new Repository(owner, repo, token);
         const hasBranch = await repository.hasBranch(BRANCH_NAME);
-        const licenseResponse = await repository.getContent(hasBranch ? BRANCH_NAME : 'master', FILENAME);
+        const licenseResponse = await repository.getContent(hasBranch ? BRANCH_NAME : MASTER, FILENAME);
         const license = Buffer.from(licenseResponse.data.content, 'base64').toString('ascii');
 
         const updatedLicense = updateLicense(license);
@@ -46,6 +47,5 @@ async function run() {
 
 module.exports = {
     run,
-    FILENAME,
     BRANCH_NAME,
 };
