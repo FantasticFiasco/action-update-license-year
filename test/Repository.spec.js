@@ -86,10 +86,15 @@ describe('#createBranch should', () => {
 
 describe('#getContent should', () => {
     test('return content given file exists', async () => {
-        mockOctokit.repos.getContent.mockResolvedValue({});
+        const content = {
+            data: {
+                content: 'some content',
+            },
+        };
+        mockOctokit.repos.getContent.mockResolvedValue(content);
         const repository = new Repository('some owner', 'some name', 'some token');
         const promise = repository.getContent('master', 'LICENSE');
-        await expect(promise).resolves.toBeDefined();
+        await expect(promise).resolves.toBe(content);
     });
 
     test("throw error given file doesn't exist", async () => {
@@ -111,21 +116,25 @@ describe('#updateContent should', () => {
     test("throw error given file doesn't exist", async () => {
         mockOctokit.repos.createOrUpdateFileContents.mockRejectedValue({});
         const repository = new Repository('some owner', 'some name', 'some token');
-        const promise = repository.updateContent('master', 'LICENSE', 'some sha', 'some content', 'some commit message');
+        const promise = repository.updateContent('master', 'unknown-file', 'some sha', 'some content', 'some commit message');
         await expect(promise).rejects.toBeDefined();
     });
 });
 
 describe('#hasPullRequest should', () => {
     test('return true given pull request exists', async () => {
-        mockOctokit.pulls.list.mockResolvedValue({ data: ['some pull request'] });
+        mockOctokit.pulls.list.mockResolvedValue({
+            data: ['some pull request'],
+        });
         const repository = new Repository('some owner', 'some name', 'some token');
         const promise = repository.hasPullRequest('some-branch');
         await expect(promise).resolves.toBe(true);
     });
 
     test("return false given pull request doesn't exist", async () => {
-        mockOctokit.pulls.list.mockResolvedValue({ data: [] });
+        mockOctokit.pulls.list.mockResolvedValue({
+            data: [],
+        });
         const repository = new Repository('some owner', 'some name', 'some token');
         const promise = repository.hasPullRequest('some-branch');
         await expect(promise).resolves.toBe(false);
@@ -140,7 +149,7 @@ describe('#createPullRequest should', () => {
         await expect(promise).resolves.toBeDefined();
     });
 
-    test('throw error given some Octokit error', async () => {
+    test('throw error given unexpected Octokit error', async () => {
         mockOctokit.pulls.create.mockRejectedValue({});
         const repository = new Repository('some owner', 'some name', 'some token');
         const promise = repository.createPullRequest('some-branch', 'some title');
