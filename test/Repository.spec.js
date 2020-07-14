@@ -22,7 +22,6 @@ jest.mock('@actions/github', () => {
 });
 
 const Repository = require('../src/Repository');
-const { ExitCode } = require('@actions/core');
 
 beforeEach(() => {
     jest.resetAllMocks();
