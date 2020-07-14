@@ -1,30 +1,51 @@
-import { getInput, setFailed } from '@actions/core';
-import { context } from '@actions/github';
-import { GitHub } from './github';
-import { License } from './license';
+const { getInput, setFailed, info } = require('@actions/core');
+const { context } = require('@actions/github');
+const { updateLicense } = require('./license');
+const Repository = require('./Repository');
 
 const FILENAME = 'LICENSE';
+const MASTER = 'master';
 const BRANCH_NAME = `license/copyright-to-${new Date().getFullYear()}`;
 
-export const run = async () => {
+async function run() {
     try {
-        // Context
         const { owner, repo } = context.repo;
-
-        // Inputs
         const token = getInput('token', { required: true });
 
-        const github = new GitHub(owner, repo, token);
+        const repository = new Repository(owner, repo, token);
+        const hasBranch = await repository.hasBranch(BRANCH_NAME);
+        const licenseResponse = await repository.getContent(hasBranch ? BRANCH_NAME : MASTER, FILENAME);
+        const license = Buffer.from(licenseResponse.data.content, 'base64').toString('ascii');
 
-        await github.createBranch(BRANCH_NAME);
-        const res = await github.getContent('master', FILENAME);
-        const currentLicense = Buffer.from(res.data.content, 'base64').toString('ascii');
+        const updatedLicense = updateLicense(license);
+        if (updatedLicense === license) {
+            info('License file is already up-to-date, my work here is done');
+            return;
+        }
 
-        const license = new License();
-        const updatedLicense = license.update(currentLicense);
-        await github.updateContent(BRANCH_NAME, FILENAME, res.data.sha, updatedLicense);
-        await github.createPullRequest(BRANCH_NAME);
+        if (!hasBranch) {
+            info(`Create new branch named ${BRANCH_NAME}`);
+            await repository.createBranch(BRANCH_NAME);
+        }
+
+        await repository.updateContent(
+            BRANCH_NAME,
+            FILENAME,
+            licenseResponse.data.sha,
+            updatedLicense,
+            'docs(license): update copyright year(s)'
+        );
+
+        if (!(await repository.hasPullRequest(BRANCH_NAME))) {
+            info('Create new pull request');
+            await repository.createPullRequest(BRANCH_NAME, 'Update license copyright year(s)');
+        }
     } catch (err) {
         setFailed(err.message);
     }
+}
+
+module.exports = {
+    run,
+    BRANCH_NAME,
 };

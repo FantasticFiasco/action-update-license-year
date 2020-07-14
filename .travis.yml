@@ -1,8 +1,10 @@
 language: node_js
 
 node_js:
-  - node    # latest stable release
-  - lts/*   # latest LTS release
+  # latest stable release
+  - node
+  # latest LTS release
+  - lts/*
 
 script:
   - echo -e "$(curl --silent https://raw.githubusercontent.com/FantasticFiasco/logo/master/logo.ansi)"

@@ -22,7 +22,7 @@
   "scripts": {
     "type-check": "tsc --noEmit",
     "test": "jest",
-    "lint": "eslint ./src/**/*.js",
+    "lint": "prettier --check ./src/**/*.js ./test/**/*.js",
     "coverage": "jest --coverage && coveralls < coverage/lcov.info",
     "dist": "ncc build ./src/main.js"
   },
@@ -31,11 +31,9 @@
     "@actions/github": "4.0.0"
   },
   "devDependencies": {
-    "@babel/plugin-transform-modules-commonjs": "7.10.4",
     "@types/jest": "26.0.4",
     "@zeit/ncc": "0.22.3",
     "coveralls": "3.1.0",
-    "eslint": "7.4.0",
     "jest": "26.1.0",
     "prettier": "2.0.5",
     "typescript": "3.9.6"
@@ -45,49 +43,5 @@
     "acorn": ">=7.1.1",
     "kind-of": ">=6.0.3",
     "minimist": ">=1.2.2"
-  },
-  "prettier": {
-    "printWidth": 140,
-    "singleQuote": true,
-    "tabWidth": 4,
-    "overrides": [
-      {
-        "files": ["*.json", "*.yml"],
-        "options": {
-          "tabWidth": 2
-        }
-      }
-    ]
-  },
-  "eslintConfig": {
-    "extends": "eslint:recommended",
-    "parserOptions": {
-      "sourceType": "module"
-    },
-    "env": {
-      "commonjs": true,
-      "node": true,
-      "es2017": true
-    },
-    "globals": {
-      "Atomics": "readonly",
-      "SharedArrayBuffer": "readonly"
-    },
-    "rules": {}
-  },
-  "jest": {
-    "testEnvironment": "node",
-    "collectCoverageFrom": [
-      "./src/**/*.js"
-    ]
-  },
-  "babel": {
-    "env": {
-      "test": {
-        "plugins": [
-          "@babel/plugin-transform-modules-commonjs"
-        ]
-      }
-    }
   }
 }

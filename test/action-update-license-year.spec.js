@@ -1,0 +1,140 @@
+const mockCore = {
+    getInput: jest.fn(),
+    info: jest.fn(),
+    setFailed: jest.fn(),
+};
+jest.mock('@actions/core', () => {
+    return mockCore;
+});
+
+const mockGithub = {
+    context: {
+        repo: {
+            owner: 'FantasticFiasco',
+            repo: 'action-update-license-year',
+        },
+    },
+};
+jest.mock('@actions/github', () => {
+    return mockGithub;
+});
+
+const mockRepository = {
+    hasBranch: jest.fn(),
+    createBranch: jest.fn(),
+    getContent: jest.fn(),
+    updateContent: jest.fn(),
+    hasPullRequest: jest.fn(),
+    createPullRequest: jest.fn(),
+};
+jest.mock('../src/Repository', () => {
+    return function () {
+        return mockRepository;
+    };
+});
+
+const mockLicense = {
+    updateLicense: jest.fn(),
+};
+jest.mock('../src/license', () => {
+    return mockLicense;
+});
+
+const { setFailed } = require('@actions/core');
+const { run, BRANCH_NAME } = require('../src/action-update-license-year');
+
+describe('action should', () => {
+    beforeEach(() => {
+        jest.resetAllMocks();
+
+        mockRepository.getContent.mockReturnValue(GET_CONTENT_SUCCESS_RESPONSE);
+    });
+
+    test('read input', async () => {
+        await run();
+        expect(mockCore.getInput).toBeCalledWith('token', { required: true });
+        expect(setFailed).toBeCalledTimes(0);
+    });
+
+    test('get license content from branch given branch exists', async () => {
+        mockRepository.hasBranch.mockReturnValue(true);
+        await run();
+        expect(mockRepository.getContent).toBeCalledWith(BRANCH_NAME, 'LICENSE');
+        expect(setFailed).toBeCalledTimes(0);
+    });
+
+    test("get license content from master given branch doesn't exist", async () => {
+        mockRepository.hasBranch.mockReturnValue(false);
+        await run();
+        expect(mockRepository.getContent).toBeCalledWith('master', 'LICENSE');
+        expect(setFailed).toBeCalledTimes(0);
+    });
+
+    test('set failed given download license fails', async () => {
+        mockRepository.getContent.mockRejectedValue({});
+        await run();
+        expect(setFailed).toBeCalledTimes(1);
+    });
+
+    test("create branch given branch doesn't exist", async () => {
+        mockRepository.hasBranch.mockReturnValue(false);
+        await run();
+        expect(mockRepository.createBranch).toBeCalledTimes(1);
+        expect(setFailed).toBeCalledTimes(0);
+    });
+
+    test('skip creating branch given branch exists', async () => {
+        mockRepository.hasBranch.mockReturnValue(true);
+        await run();
+        expect(mockRepository.createBranch).toBeCalledTimes(0);
+        expect(setFailed).toBeCalledTimes(0);
+    });
+
+    test('skip creating branch given license is unchanged', async () => {
+        mockLicense.updateLicense.mockReturnValue(LICESE_CONTENT);
+        await run();
+        expect(mockRepository.createBranch).toBeCalledTimes(0);
+        expect(setFailed).toBeCalledTimes(0);
+    });
+
+    test('set failed given creating branch fails', async () => {
+        mockRepository.createBranch.mockRejectedValue({});
+        await run();
+        expect(setFailed).toBeCalledTimes(1);
+    });
+
+    test("create pull request given pull request doesn't exist", async () => {
+        mockRepository.hasPullRequest.mockReturnValue(false);
+        await run();
+        expect(mockRepository.createPullRequest).toBeCalledTimes(1);
+        expect(setFailed).toBeCalledTimes(0);
+    });
+
+    test('skip creating pull request given pull request exists', async () => {
+        mockRepository.hasPullRequest.mockReturnValue(true);
+        await run();
+        expect(mockRepository.createPullRequest).toBeCalledTimes(0);
+        expect(setFailed).toBeCalledTimes(0);
+    });
+
+    test('skip creating pull request given license is unchanged', async () => {
+        mockLicense.updateLicense.mockReturnValue(LICESE_CONTENT);
+        await run();
+        expect(mockRepository.createPullRequest).toBeCalledTimes(0);
+        expect(setFailed).toBeCalledTimes(0);
+    });
+
+    test('set failed given creating pull request fails', async () => {
+        mockRepository.createPullRequest.mockRejectedValue({});
+        await run();
+        expect(setFailed).toBeCalledTimes(1);
+    });
+});
+
+const LICESE_CONTENT = 'some license';
+
+const GET_CONTENT_SUCCESS_RESPONSE = {
+    data: {
+        content: Buffer.from(LICESE_CONTENT).toString('base64'),
+    },
+};

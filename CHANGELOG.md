@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 - Update action metadata with required `token` input
 - [#42](https://github.com/FantasticFiasco/action-update-license-year/issues/42) Improve error message displayed when license file doesn't exist in repository
+- [#40](https://github.com/FantasticFiasco/action-update-license-year/issues/40) Only create pull request if license is updated
 
 ## [1.1.2] - 2020-05-01
 

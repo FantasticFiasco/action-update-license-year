@@ -1,57 +1,58 @@
-export class License {
-    constructor() {
-        // Regular expressions finding the copyright year(s) in Apache 2.0 license files
-        this.apacheCopyrightYear = /(Copyright )(\d{4})( \w+)/gm;
-        this.apacheCopyrightYearRange = /(Copyright )(\d{4})-(\d{4})( \w+)/gm;
+// Regular expressions finding the copyright year(s) in Apache 2.0 license files
+const APACHE_COPYRIGHT_YEAR = /(Copyright )(\d{4})( \w+)/gm;
+const APACHE_COPYRIGHT_YEAR_RANGE = /(Copyright )(\d{4})-(\d{4})( \w+)/gm;
 
-        // Regular expressions finding the copyright year(s) in BSD 2-clause "Simplified" and
-        // BSD 3-clause "New" or "Revised" license files
-        this.bsdCopyrightYear = /(Copyright \(c\) )(\d{4})(, \w+)/gm;
-        this.bsdCopyrightYearRange = /(Copyright \(c\) )(\d{4})-(\d{4})(, \w+)/gm;
+// Regular expressions finding the copyright year(s) in BSD 2-clause "Simplified" and
+// BSD 3-clause "New" or "Revised" license files
+const BSD_COPYRIGHT_YEAR = /(Copyright \(c\) )(\d{4})(, \w+)/gm;
+const BSD_COPYRIGHT_YEAR_RANGE = /(Copyright \(c\) )(\d{4})-(\d{4})(, \w+)/gm;
 
-        // Regular expressions finding the copyright year(s) in MIT license files
-        this.mitCopyrightYear = /(Copyright \(c\) )(\d{4})( \w+)/gm;
-        this.mitCopyrightYearRange = /(Copyright \(c\) )(\d{4})-(\d{4})( \w+)/gm;
-    }
+// Regular expressions finding the copyright year(s) in MIT license files
+const MIT_COPYRIGHT_YEAR = /(Copyright \(c\) )(\d{4})( \w+)/gm;
+const MIT_COPYRIGHT_YEAR_RANGE = /(Copyright \(c\) )(\d{4})-(\d{4})( \w+)/gm;
 
-    /**
-     * @param {string} license
-     */
-    update(license) {
-        const currentYear = new Date().getFullYear();
-        return this.updateToYear(license, currentYear);
-    }
-
-    /**
-     * @param {string} license
-     * @param {number} year
-     */
-    updateToYear(license, year) {
-        // Apache 2.0
-        if (this.apacheCopyrightYear.test(license)) {
-            return license.replace(this.apacheCopyrightYear, `$1$2-${year}$3`);
-        }
-        if (this.apacheCopyrightYearRange.test(license)) {
-            return license.replace(this.apacheCopyrightYearRange, `$1$2-${year}$4`);
-        }
-
-        // BSD 2-clause "Simplified"
-        // BSD 3-clause "New" or "Revised"
-        if (this.bsdCopyrightYear.test(license)) {
-            return license.replace(this.bsdCopyrightYear, `$1$2-${year}$3`);
-        }
-        if (this.bsdCopyrightYearRange.test(license)) {
-            return license.replace(this.bsdCopyrightYearRange, `$1$2-${year}$4`);
-        }
-
-        // MIT
-        if (this.mitCopyrightYear.test(license)) {
-            return license.replace(this.mitCopyrightYear, `$1$2-${year}$3`);
-        }
-        if (this.mitCopyrightYearRange.test(license)) {
-            return license.replace(this.mitCopyrightYearRange, `$1$2-${year}$4`);
-        }
-
-        throw new Error('Specified license is not supported');
-    }
+/**
+ * @param {string} license
+ */
+function updateLicense(license) {
+    const currentYear = new Date().getFullYear();
+    return updateLicenseToYear(license, currentYear);
 }
+
+/**
+ * @param {string} license
+ * @param {number} year
+ */
+function updateLicenseToYear(license, year) {
+    // Apache 2.0
+    if (APACHE_COPYRIGHT_YEAR.test(license)) {
+        return license.replace(APACHE_COPYRIGHT_YEAR, `$1$2-${year}$3`);
+    }
+    if (APACHE_COPYRIGHT_YEAR_RANGE.test(license)) {
+        return license.replace(APACHE_COPYRIGHT_YEAR_RANGE, `$1$2-${year}$4`);
+    }
+
+    // BSD 2-clause "Simplified"
+    // BSD 3-clause "New" or "Revised"
+    if (BSD_COPYRIGHT_YEAR.test(license)) {
+        return license.replace(BSD_COPYRIGHT_YEAR, `$1$2-${year}$3`);
+    }
+    if (BSD_COPYRIGHT_YEAR_RANGE.test(license)) {
+        return license.replace(BSD_COPYRIGHT_YEAR_RANGE, `$1$2-${year}$4`);
+    }
+
+    // MIT
+    if (MIT_COPYRIGHT_YEAR.test(license)) {
+        return license.replace(MIT_COPYRIGHT_YEAR, `$1$2-${year}$3`);
+    }
+    if (MIT_COPYRIGHT_YEAR_RANGE.test(license)) {
+        return license.replace(MIT_COPYRIGHT_YEAR_RANGE, `$1$2-${year}$4`);
+    }
+
+    throw new Error('Specified license is not supported');
+}
+
+module.exports = {
+    updateLicense,
+    updateLicenseToYear,
+};
