@@ -111,13 +111,18 @@ class Repository {
      * @param {string} sourceBranchName The name of the source branch
      */
     async hasPullRequest(sourceBranchName) {
-        const res = await this.octokit.pulls.list({
-            owner: this.owner,
-            repo: this.name,
-            head: `${this.owner}:${sourceBranchName}`,
-        });
+        try {
+            const res = await this.octokit.pulls.list({
+                owner: this.owner,
+                repo: this.name,
+                head: `${this.owner}:${sourceBranchName}`,
+            });
 
-        return res.data.length === 1;
+            return res.data.length === 1;
+        } catch (err) {
+            err.message = `Error when checking whether pull request from ${sourceBranchName} to ${MASTER} exists: ${err.message}`;
+            throw err;
+        }
     }
 
     /**
