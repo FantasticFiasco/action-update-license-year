@@ -75,7 +75,7 @@ describe('#createBranch should', () => {
         await expect(promise).resolves.toBeDefined();
     });
 
-    test('throw error given some Octokit error', async () => {
+    test('throw error given unexpected Octokit error', async () => {
         mockOctokit.git.getRef.mockResolvedValue(GET_REF_SUCCESS_RESPONSE);
         mockOctokit.git.createRef.mockRejectedValue({});
         const repository = new Repository('some owner', 'some name', 'some token');
