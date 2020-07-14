@@ -67,15 +67,15 @@ class Repository {
 
     /**
      * @param {string} branchName The name of the branch
-     * @param {string} path The file path
+     * @param {string} filePath The file path
      */
-    async getContent(branchName, path) {
+    async getContent(branchName, filePath) {
         try {
             return await this.octokit.repos.getContent({
                 owner: this.owner,
                 repo: this.name,
                 ref: `refs/heads/${branchName}`,
-                path,
+                path: filePath,
             });
         } catch (err) {
             err.message = `Error when getting content from file ${path} on branch ${branchName}: ${err.message}`;
