@@ -24,7 +24,8 @@
     "test": "jest",
     "lint": "prettier --check ./src/**/*.js ./test/**/*.js",
     "coverage": "jest --coverage && coveralls < coverage/lcov.info",
-    "dist": "ncc build ./src/main.js"
+    "dist": "ncc build ./src/main.js",
+    "preversion": "yarn dist && git add ./dist"
   },
   "dependencies": {
     "@actions/core": "1.2.4",
