@@ -58,7 +58,7 @@ describe('#hasBranch should', () => {
         await expect(promise).resolves.toBe(false);
     });
 
-    test('throw error given bad status code', async () => {
+    test('throw error given unexpected status code', async () => {
         mockOctokit.git.getRef.mockRejectedValue({ status: '500' });
         const repository = new Repository('some owner', 'some name', 'some token');
         const promise = repository.hasBranch('master');
