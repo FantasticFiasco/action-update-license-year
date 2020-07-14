@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ## [Unreleased]
 
+## [1.1.3] - 2020-07-14
+
 ### :syringe: Fixed
 
 - Update action metadata with required `token` input
