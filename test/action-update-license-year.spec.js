@@ -76,14 +76,14 @@ describe('action should', () => {
         expect(setFailed).toBeCalledTimes(1);
     });
 
-    test("create branch given it doesn't exist", async () => {
+    test("create branch given branch doesn't exist", async () => {
         mockRepository.hasBranch.mockReturnValue(false);
         await run();
         expect(mockRepository.createBranch).toBeCalledTimes(1);
         expect(setFailed).toBeCalledTimes(0);
     });
 
-    test('skip creating branch given it exists', async () => {
+    test('skip creating branch given branch exists', async () => {
         mockRepository.hasBranch.mockReturnValue(true);
         await run();
         expect(mockRepository.createBranch).toBeCalledTimes(0);
@@ -103,14 +103,14 @@ describe('action should', () => {
         expect(setFailed).toBeCalledTimes(1);
     });
 
-    test("create pull request given it doesn't exist", async () => {
+    test("create pull request given pull request doesn't exist", async () => {
         mockRepository.hasPullRequest.mockReturnValue(false);
         await run();
         expect(mockRepository.createPullRequest).toBeCalledTimes(1);
         expect(setFailed).toBeCalledTimes(0);
     });
 
-    test('skip creating pull request given it exists', async () => {
+    test('skip creating pull request given pull request exists', async () => {
         mockRepository.hasPullRequest.mockReturnValue(true);
         await run();
         expect(mockRepository.createPullRequest).toBeCalledTimes(0);
