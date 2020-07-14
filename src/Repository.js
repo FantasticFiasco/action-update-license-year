@@ -41,6 +41,7 @@ class Repository {
             if (err.status && err.status === 404) {
                 return false;
             }
+            err.message = `Error when checking whether branch ${name} exists: ${err.message}`;
             throw err;
         }
     }
