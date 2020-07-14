@@ -139,6 +139,13 @@ describe('#hasPullRequest should', () => {
         const promise = repository.hasPullRequest('some-branch');
         await expect(promise).resolves.toBe(false);
     });
+
+    test('throw error given unexpected Octokit error', async () => {
+        mockOctokit.pulls.list.mockRejectedValue({});
+        const repository = new Repository('some owner', 'some name', 'some token');
+        const promise = repository.hasPullRequest('some-branch');
+        await expect(promise).rejects.toBeDefined();
+    });
 });
 
 describe('#createPullRequest should', () => {
