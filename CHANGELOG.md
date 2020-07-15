@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ## [Unreleased]
 
+### :zap: Added
+
+- Support for GNU Affero General Public License v3.0 only (AGPL-3.0-only) licenses
+
 ## [1.1.3] - 2020-07-14
 
 ### :syringe: Fixed
@@ -31,12 +35,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ### :zap: Added
 
-- Support for BSD 2-clause "Simplified" licenses
-- Support for BSD 3-clause "New" or "Revised" licenses
-- Support for MIT licenses
+- Support for BSD 2-clause "Simplified" (BSD-2-Clause) licenses
+- Support for BSD 3-clause "New" or "Revised" (BSD-3-Clause) licenses
+- Support for MIT (MIT) licenses
 
 ## [1.0.0] - 2020-01-01
 
 ### :zap: Added
 
-- Support for Apache 2.0 licenses
+- Support for Apache 2.0 (Apache-2.0) licenses
