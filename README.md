@@ -18,10 +18,11 @@ So this seems to have happened. Instead of manually updating the license copyrig
 
 **Can I use it?** - You can if your repository has any of the following licenses:
 
-- Apache 2.0
-- BSD 2-clause "Simplified"
-- BSD 3-clause "New" or "Revised"
-- MIT
+- Apache 2.0 ((Apache-2.0))
+- BSD 2-clause "Simplified" (BSD-2-Clause)
+- BSD 3-clause "New" or "Revised" (BSD-3-Clause)
+- GNU Affero General Public License v3.0 only (AGPL-3.0-only)
+- MIT (MIT)
 
 If you find that the license you have is incompatible with this GitHub Action, please don't hesitate to create a new issue.
 
