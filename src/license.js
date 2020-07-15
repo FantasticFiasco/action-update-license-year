@@ -1,7 +1,7 @@
 // Regular expressions finding the copyright year(s) in GNU Affero General Public License v3.0 only
 // (AGPL-3.0-only) license files
-const GNU_AGPLv3_COPYRIGHT_YEAR = /(Copyright \(C\)\s+)(\d{4})(?:\s+Free Software Foundation|\s+\w+)/gm;
-const GNU_AGPLv3_COPYRIGHT_YEAR_RANGE = /(Copyright \(C\)\s+)(\d{4})-(\d{4})(\s+\w+)/gm;
+const GNU_AGPLv3_COPYRIGHT_YEAR = /(Copyright\s+\(C\)\s+)(\d{4})(?!\s+Free Software Foundation)(\s+\w+)/gm;
+const GNU_AGPLv3_COPYRIGHT_YEAR_RANGE = /(Copyright\s+\(C\)\s+)(\d{4})-(\d{4})(?!\s+Free Software Foundation)(\s+\w+)/gm;
 
 // Regular expressions finding the copyright year(s) in Apache 2.0 (Apache-2.0) license files
 const APACHE_COPYRIGHT_YEAR = /(Copyright\s+)(\d{4})(\s+\w+)/gm;
