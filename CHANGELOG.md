@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ## [Unreleased]
 
+### :syringe: Fixed
+
+- GitHub Actions tries to interpolate `${{ secrets.GITHUB_TOKEN }}` in the metadata description
+
 ## [1.2.0] - 2020-07-18
 
 ### :zap: Added

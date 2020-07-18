@@ -1,10 +1,21 @@
-name: "Update license copyright year(s)"
+name: Update license copyright year(s)
 description: "Updates the copyright year(s) in your license file and creates a pull request."
 author: "Mattias Kindborg <mattias.kindborg@gmail.com> (https://twitter.com/FantasticFiasco)"
 inputs:
   token:
-    description: "Token for the repository. Can be passed in using ${{ secrets.GITHUB_TOKEN }}"
-    required: true
+    description: >
+      Personal access token (PAT) used to fetch the repository. The PAT is configured
+      with the local git config, which enables your scripts to run authenticated git
+      commands. The post-job step removes the PAT.
+
+
+      We recommend using a service account with the least permissions necessary.
+      Also when generating a new PAT, select the least scopes necessary.
+
+
+      [Learn more about creating and using encrypted secrets](https://help.github.com/en/actions/automating-your-workflow-with-github-actions/creating-and-using-encrypted-secrets)
+    default: ${{ github.token }}
+    required: false
 runs:
   using: "node12"
   main: "./dist/index.js"
