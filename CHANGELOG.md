@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ## [Unreleased]
 
+## [1.2.0] - 2020-07-18
+
 ### :zap: Added
 
 - Support for GNU Affero General Public License v3.0 only (AGPL-3.0-only) licenses
