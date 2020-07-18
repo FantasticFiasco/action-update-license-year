@@ -42,7 +42,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: FantasticFiasco/action-update-license-year@v1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-
 ```
