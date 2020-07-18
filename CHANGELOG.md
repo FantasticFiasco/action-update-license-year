@@ -10,6 +10,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 - Support for GNU Affero General Public License v3.0 only (AGPL-3.0-only) licenses
 
+### :policeman: Security
+
+- Security vulnerability in transient dependency `lodash`
+
 ## [1.1.3] - 2020-07-14
 
 ### :syringe: Fixed
