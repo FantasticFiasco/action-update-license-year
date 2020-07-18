@@ -33,7 +33,7 @@
     "@actions/github": "4.0.0"
   },
   "devDependencies": {
-    "@types/jest": "26.0.4",
+    "@types/jest": "26.0.5",
     "@zeit/ncc": "0.22.3",
     "coveralls": "3.1.0",
     "jest": "26.1.0",
