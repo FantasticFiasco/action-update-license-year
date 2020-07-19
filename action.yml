@@ -1,6 +1,6 @@
 name: Update license copyright year(s)
-description: "Updates the copyright year(s) in your license file and creates a pull request."
-author: "Mattias Kindborg <mattias.kindborg@gmail.com> (https://twitter.com/FantasticFiasco)"
+description: Updates the copyright year(s) in your license file and creates a pull request.
+author: Mattias Kindborg <mattias.kindborg@gmail.com> (https://twitter.com/FantasticFiasco)
 inputs:
   token:
     description: >
@@ -17,8 +17,8 @@ inputs:
     default: ${{ github.token }}
     required: false
 runs:
-  using: "node12"
-  main: "./dist/index.js"
+  using: node12
+  main: ./dist/index.js
 branding:
-  icon: "sunrise"
-  color: "orange"
+  icon: sunrise
+  color: orange
