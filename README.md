@@ -36,6 +36,7 @@ For the majority of repositories on GitHub the following code will do the job. I
 
 ## Usage
 
+<!-- start usage -->
 ```yaml
 - uses: FantasticFiasco/action-update-license-year@v1
   with:
@@ -43,14 +44,16 @@ For the majority of repositories on GitHub the following code will do the job. I
     # with the local git config, which enables your scripts to run authenticated git
     # commands. The post-job step removes the PAT.
     #
-    # We recommend using a service account with the least permissions necessary.
-    # Also when generating a new PAT, select the least scopes necessary.
+    # We recommend using a service account with the least permissions necessary. Also
+    # when generating a new PAT, select the least scopes necessary.
     #
     # [Learn more about creating and using encrypted secrets](https://help.github.com/en/actions/automating-your-workflow-with-github-actions/creating-and-using-encrypted-secrets)
+    #
     # Required: false
     # Default: ${{ github.token }}
     token: ''
 ```
+<!-- end usage -->
 
 ## Scenarios
 

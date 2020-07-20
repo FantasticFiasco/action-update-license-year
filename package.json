@@ -25,7 +25,7 @@
     "lint": "prettier --check ./src/**/*.js ./test/**/*.js",
     "coverage": "jest --coverage && coveralls < coverage/lcov.info",
     "dist": "ncc build ./src/main.js",
-    "preversion": "yarn dist && git add ./dist && git add ./CHANGELOG.md",
+    "preversion": "yarn dist && git add ./dist && git add ./CHANGELOG.md && node ./scripts/generate-docs.js && git add ./README.md",
     "postversion": "git push --follow-tags"
   },
   "dependencies": {
@@ -34,9 +34,11 @@
   },
   "devDependencies": {
     "@types/jest": "26.0.5",
+    "@types/js-yaml": "3.12.5",
     "@zeit/ncc": "0.22.3",
     "coveralls": "3.1.0",
     "jest": "26.1.0",
+    "js-yaml": "3.14.0",
     "prettier": "2.0.5",
     "typescript": "3.9.7"
   },
