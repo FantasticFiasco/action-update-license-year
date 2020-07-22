@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ## [Unreleased]
 
+## [1.2.2] - 2020-07-22
+
 ### :syringe: Fixed
 
 - [#59](https://github.com/FantasticFiasco/action-update-license-year/issues/59) Single year in license is updated into a range of years even though year hasn't changed (discovered by [@tenshiAMD](https://github.com/tenshiAMD))
