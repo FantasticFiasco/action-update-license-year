@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ## [Unreleased]
 
+### :syringe: Fixed
+
+- [#59](https://github.com/FantasticFiasco/action-update-license-year/issues/59) Single year in license is updated into a range of years even though year hasn't changed (discovered by [@tenshiAMD](https://github.com/tenshiAMD))
+
 ## [1.2.1] - 2020-07-19
 
 ### :syringe: Fixed
@@ -28,7 +32,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 - Update action metadata with required `token` input
 - [#42](https://github.com/FantasticFiasco/action-update-license-year/issues/42) Improve error message displayed when license file doesn't exist in repository
-- [#40](https://github.com/FantasticFiasco/action-update-license-year/issues/40) Only create pull request if license is updated
+- [#40](https://github.com/FantasticFiasco/action-update-license-year/issues/40) Only create pull request if license is updated (discovered by [@spl](https://github.com/spl))
 
 ## [1.1.2] - 2020-05-01
 
