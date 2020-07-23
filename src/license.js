@@ -7,12 +7,12 @@ const TRANSFORMS = [gnuAgpl3, apache, bsd, mit];
 
 /**
  * @param {string} license
- * @param {number} year
+ * @param {number} currentYear
  */
-function transformLicense(license, year) {
+function transformLicense(license, currentYear) {
     for (const transform of TRANSFORMS) {
         if (transform.canTransform(license)) {
-            return transform.transform(license, year);
+            return transform.transform(license, currentYear);
         }
     }
 

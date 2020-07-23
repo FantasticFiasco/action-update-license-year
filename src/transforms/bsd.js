@@ -2,8 +2,6 @@
 // - BSD 2-clause "Simplified" (BSD-2-Clause)
 // - BSD 3-clause "New" or "Revised" (BSD-3-Clause)
 
-const { isYearUnchanged } = require('./utils');
-
 const COPYRIGHT_YEAR = /(Copyright\s+\(c\)\s+)(\d{4})(,\s+\w+)/m;
 const COPYRIGHT_YEARS = /(Copyright\s+\(c\)\s+)(\d{4})-(\d{4})(,\s+\w+)/m;
 
@@ -16,18 +14,19 @@ function canTransform(license) {
 
 /**
  * @param {string} license
- * @param {number} year
+ * @param {number} currentYear
  */
-function transform(license, year) {
+function transform(license, currentYear) {
     const match = COPYRIGHT_YEAR.exec(license);
     if (match !== null) {
-        if (isYearUnchanged(match, year)) {
+        const licenseYear = Number(match[2]);
+        if (licenseYear === currentYear) {
             return license;
         }
-        return license.replace(COPYRIGHT_YEAR, `$1$2-${year}$3`);
+        return license.replace(COPYRIGHT_YEAR, `$1$2-${currentYear}$3`);
     }
     if (COPYRIGHT_YEARS.test(license)) {
-        return license.replace(COPYRIGHT_YEARS, `$1$2-${year}$4`);
+        return license.replace(COPYRIGHT_YEARS, `$1$2-${currentYear}$4`);
     }
 
     throw new Error('Transforming BSD-2-Clause or BSD-3-Clause license failed');
