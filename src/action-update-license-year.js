@@ -1,20 +1,41 @@
-const { getInput, setFailed, info } = require('@actions/core');
+const { setFailed, info } = require('@actions/core');
 const { context } = require('@actions/github');
+const { parseConfig } = require('./config');
 const { transformLicense } = require('./license');
 const Repository = require('./Repository');
 
 const FILENAME = 'LICENSE';
 const MASTER = 'master';
-const BRANCH_NAME = `license/copyright-to-${new Date().getFullYear()}`;
 
 async function run() {
     try {
         const { owner, repo } = context.repo;
-        const token = getInput('token', { required: true });
+        const {
+            token,
+            branchName,
+            commitMessage,
+            commitBody,
+            pullRequestTitle,
+            pullRequestBody,
+            assignees,
+            labels,
+        } = parseConfig();
+
+        info(
+            `Configuration: ${JSON.stringify({
+                branchName,
+                commitMessage,
+                commitBody,
+                pullRequestTitle,
+                pullRequestBody,
+                assignees,
+                labels,
+            })}`
+        );
 
         const repository = new Repository(owner, repo, token);
-        const hasBranch = await repository.hasBranch(BRANCH_NAME);
-        const licenseResponse = await repository.getContent(hasBranch ? BRANCH_NAME : MASTER, FILENAME);
+        const hasBranch = await repository.hasBranch(branchName);
+        const licenseResponse = await repository.getContent(hasBranch ? branchName : MASTER, FILENAME);
         const license = Buffer.from(licenseResponse.data.content, 'base64').toString('ascii');
 
         const currentYear = new Date().getFullYear();
@@ -25,21 +46,35 @@ async function run() {
         }
 
         if (!hasBranch) {
-            info(`Create new branch named ${BRANCH_NAME}`);
-            await repository.createBranch(BRANCH_NAME);
+            info(`Create new branch named ${branchName}`);
+            await repository.createBranch(branchName);
         }
 
         await repository.updateContent(
-            BRANCH_NAME,
+            branchName,
             FILENAME,
             licenseResponse.data.sha,
             updatedLicense,
-            'docs(license): update copyright year(s)'
+            commitBody ? `${commitMessage}\n\n${commitBody}` : commitMessage
         );
 
-        if (!(await repository.hasPullRequest(BRANCH_NAME))) {
+        if (!(await repository.hasPullRequest(branchName))) {
             info('Create new pull request');
-            await repository.createPullRequest(BRANCH_NAME, 'Update license copyright year(s)');
+            const createPullRequestResponse = await repository.createPullRequest(
+                branchName,
+                pullRequestTitle,
+                pullRequestBody
+            );
+
+            if (assignees.length > 0) {
+                info('Add assignees');
+                await repository.addAssignees(createPullRequestResponse.data.id, assignees);
+            }
+
+            if (labels.length > 0) {
+                info('Add labels');
+                await repository.addLabels(createPullRequestResponse.data.id, labels);
+            }
         }
     } catch (err) {
         setFailed(err.message);
@@ -48,5 +83,6 @@ async function run() {
 
 module.exports = {
     run,
-    BRANCH_NAME,
+    MASTER,
+    FILENAME,
 };
