@@ -34,7 +34,7 @@ jest.mock('../src/Repository', () => {
 });
 
 const mockLicense = {
-    updateLicense: jest.fn(),
+    transformLicense: jest.fn(),
 };
 jest.mock('../src/license', () => {
     return mockLicense;
@@ -91,7 +91,7 @@ describe('action should', () => {
     });
 
     test('skip creating branch given license is unchanged', async () => {
-        mockLicense.updateLicense.mockReturnValue(LICESE_CONTENT);
+        mockLicense.transformLicense.mockReturnValue(LICESE_CONTENT);
         await run();
         expect(mockRepository.createBranch).toBeCalledTimes(0);
         expect(setFailed).toBeCalledTimes(0);
@@ -118,7 +118,7 @@ describe('action should', () => {
     });
 
     test('skip creating pull request given license is unchanged', async () => {
-        mockLicense.updateLicense.mockReturnValue(LICESE_CONTENT);
+        mockLicense.transformLicense.mockReturnValue(LICESE_CONTENT);
         await run();
         expect(mockRepository.createPullRequest).toBeCalledTimes(0);
         expect(setFailed).toBeCalledTimes(0);

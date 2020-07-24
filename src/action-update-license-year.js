@@ -1,6 +1,6 @@
 const { getInput, setFailed, info } = require('@actions/core');
 const { context } = require('@actions/github');
-const { updateLicense } = require('./license');
+const { transformLicense } = require('./license');
 const Repository = require('./Repository');
 
 const FILENAME = 'LICENSE';
@@ -17,7 +17,8 @@ async function run() {
         const licenseResponse = await repository.getContent(hasBranch ? BRANCH_NAME : MASTER, FILENAME);
         const license = Buffer.from(licenseResponse.data.content, 'base64').toString('ascii');
 
-        const updatedLicense = updateLicense(license);
+        const currentYear = new Date().getFullYear();
+        const updatedLicense = transformLicense(license, currentYear);
         if (updatedLicense === license) {
             info('License file is already up-to-date, my work here is done');
             return;
