@@ -18,7 +18,7 @@ So this seems to have happened. Instead of manually updating the license copyrig
 
 **Can I use it?** - You can if your repository has any of the following licenses:
 
-- Apache 2.0 ((Apache-2.0))
+- Apache 2.0 (Apache-2.0)
 - BSD 2-clause "Simplified" (BSD-2-Clause)
 - BSD 3-clause "New" or "Revised" (BSD-3-Clause)
 - GNU Affero General Public License v3.0 only (AGPL-3.0-only)
@@ -67,7 +67,7 @@ For the majority of repositories on GitHub the following code will do the job. I
     # The git commit body that will be appended to commit title, separated by two line
     # returns
     # Required: false
-    # Default: 
+    # Default:
     commitBody: ''
 
     # The title of the new pull request
@@ -77,18 +77,18 @@ For the majority of repositories on GitHub the following code will do the job. I
 
     # The contents of the pull request
     # Required: false
-    # Default: 
+    # Default:
     prBody: ''
 
     # Comma-separated list with usernames of people to assign when pull request is
     # created
     # Required: false
-    # Default: 
+    # Default:
     assignees: ''
 
     # Comma-separated list of labels to add when pull request is created
     # Required: false
-    # Default: 
+    # Default:
     labels: ''
 ```
 <!-- end usage -->
