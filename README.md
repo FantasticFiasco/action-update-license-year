@@ -66,7 +66,7 @@ For the majority of repositories on GitHub the following code will do the job. I
     # The git commit body that will be appended to commit title, separated by two line
     # returns
     # Required: false
-    # Default: 
+    # Default:
     commitBody: ''
 
     # The title of the new pull request
@@ -76,18 +76,18 @@ For the majority of repositories on GitHub the following code will do the job. I
 
     # The contents of the pull request
     # Required: false
-    # Default: 
+    # Default:
     prBody: ''
 
     # Comma-separated list with usernames of people to assign when pull request is
     # created
     # Required: false
-    # Default: 
+    # Default:
     assignees: ''
 
     # Comma-separated list of labels to add when pull request is created
     # Required: false
-    # Default: 
+    # Default:
     labels: ''
 ```
 <!-- end usage -->
@@ -95,8 +95,9 @@ For the majority of repositories on GitHub the following code will do the job. I
 ## Scenarios
 
 - [I'm new to GitHub Actions and don't know where to start](#Im-new-to-github-actions-and-dont-know-where-to-start)
-- [Annually update license at 03:00 AM on January 1](#annually-update-license-at-0300-am-on-january-1)
-- [Manually trigger updating the license](#manually-trigger-updating-the-license)
+- [I want to update my license annually at 03:00 AM on January 1](#i-want-to-update-my-license-annually-at-0300-am-on-january-1)
+- [I want to update my license using a manual trigger](#i-want-to-update-my-license-using-a-manual-trigger)
+- [I want my pull requests to follow a convention](#i-want-my-pull-requests-to-follow-a-convention)
 
 ### I'm new to GitHub Actions and don't know where to start
 
@@ -104,7 +105,7 @@ GitHub Actions is in detail described on the [GitHub Actions documentation](http
 
 The following scenarios will provide you with some examples.
 
-### Annually update license at 03:00 AM on January 1
+### I want to update my license annually at 03:00 AM on January 1
 
 This would be the most common usage of the action, given that you can put up with receiving a pull request during the new year festivities.
 
@@ -122,7 +123,7 @@ jobs:
       - uses: FantasticFiasco/action-update-license-year@v1
 ```
 
-### Manually trigger updating the license
+### I want to update my license using a manual trigger
 
 A year is a long time and January 1 might be far off. Now that [GitHub Actions supports manual triggers](https://github.blog/changelog/2020-07-06-github-actions-manual-triggers-with-workflow_dispatch/), we can use `workflow_dispatch` to manually trigger our workflow.
 
@@ -136,4 +137,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: FantasticFiasco/action-update-license-year@v1
+```
+
+### I want my pull requests to follow a convention
+
+Your pull requests might follow some convention. It might require some specific title, or perhaps you wish the pull request to be assigned to a specific maintainer? Whatever the reason, we've got you covered.
+
+```yaml
+steps:
+  - uses: FantasticFiasco/action-update-license-year@v1
+    with:
+      branchName: license/{{currentYear}}
+      commitTitle: update my license
+      commitBody: Let's keep legal happy.
+      prTitle: Update my license
+      prBody: It's that time of the year, let's update the license.
+      assignees: MyUser, SomeMaintainer
+      labels: documentation, legal
 ```
