@@ -66,7 +66,7 @@ class Repository {
     }
 
     /**
-     * @param {string} branchName The name of the branch
+     * @param {string} branchName The branch name
      * @param {string} filePath The file path
      */
     async getContent(branchName, filePath) {
@@ -84,10 +84,10 @@ class Repository {
     }
 
     /**
-     * @param {string} branchName The name of the branch
+     * @param {string} branchName The branch name
      * @param {string} filePath The file path
-     * @param {string} sha The SHA of the file being updated
-     * @param {string} content The file content
+     * @param {string} sha The blob SHA of the file being replaced
+     * @param {string} content The new file content, using ASCII encoding
      * @param {string} commitMessage The commit message
      */
     async updateContent(branchName, filePath, sha, content, commitMessage) {
@@ -108,7 +108,7 @@ class Repository {
     }
 
     /**
-     * @param {string} sourceBranchName The name of the source branch
+     * @param {string} sourceBranchName The name of the branch where your changes are implemented
      */
     async hasPullRequest(sourceBranchName) {
         try {
@@ -126,20 +126,62 @@ class Repository {
     }
 
     /**
-     * @param {string} sourceBranchName The name of the source branch
-     * @param {string} title The title of the pull request
+     * @param {string} sourceBranchName The name of the branch where your changes are implemented
+     * @param {string} title The title of the new pull request
+     * @param {string} body The contents of the pull request
      */
-    async createPullRequest(sourceBranchName, title) {
+    async createPullRequest(sourceBranchName, title, body) {
         try {
             return await this.octokit.pulls.create({
                 owner: this.owner,
                 repo: this.name,
                 title,
+                body,
                 head: sourceBranchName,
                 base: MASTER,
             });
         } catch (err) {
             err.message = `Error when creating pull request from ${sourceBranchName} to ${MASTER}: ${err.message}`;
+            throw err;
+        }
+    }
+
+    /**
+     * @param {number} issueNumber The issue number
+     * @param {string[]} assignees Usernames of people to assign this issue to. NOTE: Only users
+     *     with push access can add assignees to an issue. Assignees are silently ignored
+     *     otherwise.
+     */
+    async addAssignees(issueNumber, assignees) {
+        try {
+            return await this.octokit.issues.addAssignees({
+                owner: this.owner,
+                repo: this.name,
+                issue_number: issueNumber,
+                assignees,
+            });
+        } catch (err) {
+            err.message = `Error when adding assignees to issue ${issueNumber}: ${err.message}`;
+            throw err;
+        }
+    }
+
+    /**
+     * @param {number} issueNumber The issue number
+     * @param {string[]} labels The name of the label to add to the issue. Must contain at least
+     *     one label. Note: Alternatively, you can pass a single label as a string or an array of
+     *     labels directly, but GitHub recommends passing an object with the labels key.
+     */
+    async addLabels(issueNumber, labels) {
+        try {
+            return await this.octokit.issues.addLabels({
+                owner: this.owner,
+                repo: this.name,
+                issue_number: issueNumber,
+                labels,
+            });
+        } catch (err) {
+            err.message = `Error when adding labels to issue ${issueNumber}: ${err.message}`;
             throw err;
         }
     }

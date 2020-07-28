@@ -3,13 +3,17 @@ const mockOctokit = {
         getRef: jest.fn(),
         createRef: jest.fn(),
     },
-    repos: {
-        getContent: jest.fn(),
-        createOrUpdateFileContents: jest.fn(),
-    },
     pulls: {
         list: jest.fn(),
         create: jest.fn(),
+    },
+    issues: {
+        addAssignees: jest.fn(),
+        addLabels: jest.fn(),
+    },
+    repos: {
+        getContent: jest.fn(),
+        createOrUpdateFileContents: jest.fn(),
     },
 };
 const mockGithub = {
@@ -109,14 +113,26 @@ describe('#updateContent should', () => {
     test('successfully complete given file exists', async () => {
         mockOctokit.repos.createOrUpdateFileContents.mockResolvedValue({});
         const repository = new Repository('some owner', 'some name', 'some token');
-        const promise = repository.updateContent('master', 'LICENSE', 'some sha', 'some content', 'some commit message');
+        const promise = repository.updateContent(
+            'master',
+            'LICENSE',
+            'some sha',
+            'some content',
+            'some commit message'
+        );
         await expect(promise).resolves.toBeDefined();
     });
 
     test("throw error given file doesn't exist", async () => {
         mockOctokit.repos.createOrUpdateFileContents.mockRejectedValue({});
         const repository = new Repository('some owner', 'some name', 'some token');
-        const promise = repository.updateContent('master', 'unknown-file', 'some sha', 'some content', 'some commit message');
+        const promise = repository.updateContent(
+            'master',
+            'unknown-file',
+            'some sha',
+            'some content',
+            'some commit message'
+        );
         await expect(promise).rejects.toBeDefined();
     });
 });
@@ -152,14 +168,46 @@ describe('#createPullRequest should', () => {
     test('successfully complete', async () => {
         mockOctokit.pulls.create.mockResolvedValue({});
         const repository = new Repository('some owner', 'some name', 'some token');
-        const promise = repository.createPullRequest('some-branch', 'some title');
+        const promise = repository.createPullRequest('some-branch', 'some title', 'some body');
         await expect(promise).resolves.toBeDefined();
     });
 
     test('throw error given unexpected Octokit error', async () => {
         mockOctokit.pulls.create.mockRejectedValue({});
         const repository = new Repository('some owner', 'some name', 'some token');
-        const promise = repository.createPullRequest('some-branch', 'some title');
+        const promise = repository.createPullRequest('some-branch', 'some title', 'some body');
+        await expect(promise).rejects.toBeDefined();
+    });
+});
+
+describe('#addAssignees should', () => {
+    test('successfully complete', async () => {
+        mockOctokit.issues.addAssignees.mockResolvedValue({});
+        const repository = new Repository('some owner', 'some name', 'some token');
+        const promise = repository.addAssignees(42, ['assignee1', 'assignee2', 'assignee3']);
+        await expect(promise).resolves.toBeDefined();
+    });
+
+    test('throw error given unexpected Octokit error', async () => {
+        mockOctokit.issues.addAssignees.mockRejectedValue({});
+        const repository = new Repository('some owner', 'some name', 'some token');
+        const promise = repository.addAssignees(42, ['assignee1', 'assignee2', 'assignee3']);
+        await expect(promise).rejects.toBeDefined();
+    });
+});
+
+describe('#addLabels should', () => {
+    test('successfully complete', async () => {
+        mockOctokit.issues.addLabels.mockResolvedValue({});
+        const repository = new Repository('some owner', 'some name', 'some token');
+        const promise = repository.addLabels(42, ['some label 1', 'some label 2', 'some label 3']);
+        await expect(promise).resolves.toBeDefined();
+    });
+
+    test('throw error given unexpected Octokit error', async () => {
+        mockOctokit.issues.addLabels.mockRejectedValue({});
+        const repository = new Repository('some owner', 'some name', 'some token');
+        const promise = repository.addLabels(42, ['some label 1', 'some label 2', 'some label 3']);
         await expect(promise).rejects.toBeDefined();
     });
 });
