@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ## [Unreleased]
 
+## [1.3.0] - 2020-07-28
+
 ### :zap: Added
 
 - [#57](https://github.com/FantasticFiasco/action-update-license-year/issues/57) Support for configuring pull request

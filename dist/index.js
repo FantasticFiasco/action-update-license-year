@@ -399,47 +399,78 @@ module.exports = require("os");
 /***/ 95:
 /***/ (function(module, __unusedexports, __webpack_require__) {
 
-const { getInput, setFailed, info } = __webpack_require__(470);
+const { setFailed, info } = __webpack_require__(470);
 const { context } = __webpack_require__(469);
-const { updateLicense } = __webpack_require__(890);
+const { parseConfig } = __webpack_require__(659);
+const { transformLicense } = __webpack_require__(890);
 const Repository = __webpack_require__(180);
 
 const FILENAME = 'LICENSE';
 const MASTER = 'master';
-const BRANCH_NAME = `license/copyright-to-${new Date().getFullYear()}`;
 
 async function run() {
     try {
         const { owner, repo } = context.repo;
-        const token = getInput('token', { required: true });
+        const {
+            token,
+            branchName,
+            commitTitle,
+            commitBody,
+            pullRequestTitle,
+            pullRequestBody,
+            assignees,
+            labels,
+        } = parseConfig();
+
+        info(
+            `Configuration: ${JSON.stringify({
+                branchName,
+                commitTitle,
+                commitBody,
+                pullRequestTitle,
+                pullRequestBody,
+                assignees,
+                labels,
+            })}`
+        );
 
         const repository = new Repository(owner, repo, token);
-        const hasBranch = await repository.hasBranch(BRANCH_NAME);
-        const licenseResponse = await repository.getContent(hasBranch ? BRANCH_NAME : MASTER, FILENAME);
+        const hasBranch = await repository.hasBranch(branchName);
+        const licenseResponse = await repository.getContent(hasBranch ? branchName : MASTER, FILENAME);
         const license = Buffer.from(licenseResponse.data.content, 'base64').toString('ascii');
 
-        const updatedLicense = updateLicense(license);
+        const currentYear = new Date().getFullYear();
+        const updatedLicense = transformLicense(license, currentYear);
         if (updatedLicense === license) {
             info('License file is already up-to-date, my work here is done');
             return;
         }
 
         if (!hasBranch) {
-            info(`Create new branch named ${BRANCH_NAME}`);
-            await repository.createBranch(BRANCH_NAME);
+            info(`Create new branch named ${branchName}`);
+            await repository.createBranch(branchName);
         }
 
-        await repository.updateContent(
-            BRANCH_NAME,
-            FILENAME,
-            licenseResponse.data.sha,
-            updatedLicense,
-            'docs(license): update copyright year(s)'
-        );
+        const commitMessage = commitBody ? `${commitTitle}\n\n${commitBody}` : commitTitle;
+        await repository.updateContent(branchName, FILENAME, licenseResponse.data.sha, updatedLicense, commitMessage);
 
-        if (!(await repository.hasPullRequest(BRANCH_NAME))) {
+        if (!(await repository.hasPullRequest(branchName))) {
             info('Create new pull request');
-            await repository.createPullRequest(BRANCH_NAME, 'Update license copyright year(s)');
+            const createPullRequestResponse = await repository.createPullRequest(
+                branchName,
+                pullRequestTitle,
+                pullRequestBody
+            );
+
+            if (assignees.length > 0) {
+                info('Add assignees');
+                await repository.addAssignees(createPullRequestResponse.data.id, assignees);
+            }
+
+            if (labels.length > 0) {
+                info('Add labels');
+                await repository.addLabels(createPullRequestResponse.data.id, labels);
+            }
         }
     } catch (err) {
         setFailed(err.message);
@@ -448,7 +479,8 @@ async function run() {
 
 module.exports = {
     run,
-    BRANCH_NAME,
+    MASTER,
+    FILENAME,
 };
 
 
@@ -1317,6 +1349,50 @@ module.exports = opts => {
 
 /***/ }),
 
+/***/ 173:
+/***/ (function(module) {
+
+// Module capable of transforming the following license files:
+// - GNU Affero General Public License v3.0 only (AGPL-3.0-only)
+
+const COPYRIGHT_YEAR = /(Copyright\s+\(C\)\s+)(\d{4})(?!\s+Free Software Foundation)(\s+\w+)/m;
+const COPYRIGHT_YEARS = /(Copyright\s+\(C\)\s+)(\d{4})-(\d{4})(?!\s+Free Software Foundation)(\s+\w+)/m;
+
+/**
+ * @param {string} license
+ */
+function canTransform(license) {
+    return COPYRIGHT_YEAR.test(license) || COPYRIGHT_YEARS.test(license);
+}
+
+/**
+ * @param {string} license
+ * @param {number} currentYear
+ */
+function transform(license, currentYear) {
+    const match = COPYRIGHT_YEAR.exec(license);
+    if (match !== null) {
+        const licenseYear = Number(match[2]);
+        if (licenseYear === currentYear) {
+            return license;
+        }
+        return license.replace(COPYRIGHT_YEAR, `$1$2-${currentYear}$3`);
+    }
+    if (COPYRIGHT_YEARS.test(license)) {
+        return license.replace(COPYRIGHT_YEARS, `$1$2-${currentYear}$4`);
+    }
+
+    throw new Error('Transforming AGPL-3.0-only license failed');
+}
+
+module.exports = {
+    canTransform,
+    transform,
+};
+
+
+/***/ }),
+
 /***/ 180:
 /***/ (function(module, __unusedexports, __webpack_require__) {
 
@@ -1388,7 +1464,7 @@ class Repository {
     }
 
     /**
-     * @param {string} branchName The name of the branch
+     * @param {string} branchName The branch name
      * @param {string} filePath The file path
      */
     async getContent(branchName, filePath) {
@@ -1406,10 +1482,10 @@ class Repository {
     }
 
     /**
-     * @param {string} branchName The name of the branch
+     * @param {string} branchName The branch name
      * @param {string} filePath The file path
-     * @param {string} sha The SHA of the file being updated
-     * @param {string} content The file content
+     * @param {string} sha The blob SHA of the file being replaced
+     * @param {string} content The new file content, using ASCII encoding
      * @param {string} commitMessage The commit message
      */
     async updateContent(branchName, filePath, sha, content, commitMessage) {
@@ -1430,7 +1506,7 @@ class Repository {
     }
 
     /**
-     * @param {string} sourceBranchName The name of the source branch
+     * @param {string} sourceBranchName The name of the branch where your changes are implemented
      */
     async hasPullRequest(sourceBranchName) {
         try {
@@ -1448,15 +1524,17 @@ class Repository {
     }
 
     /**
-     * @param {string} sourceBranchName The name of the source branch
-     * @param {string} title The title of the pull request
+     * @param {string} sourceBranchName The name of the branch where your changes are implemented
+     * @param {string} title The title of the new pull request
+     * @param {string} body The contents of the pull request
      */
-    async createPullRequest(sourceBranchName, title) {
+    async createPullRequest(sourceBranchName, title, body) {
         try {
             return await this.octokit.pulls.create({
                 owner: this.owner,
                 repo: this.name,
                 title,
+                body,
                 head: sourceBranchName,
                 base: MASTER,
             });
@@ -1465,9 +1543,93 @@ class Repository {
             throw err;
         }
     }
+
+    /**
+     * @param {number} issueNumber The issue number
+     * @param {string[]} assignees Usernames of people to assign this issue to. NOTE: Only users
+     *     with push access can add assignees to an issue. Assignees are silently ignored
+     *     otherwise.
+     */
+    async addAssignees(issueNumber, assignees) {
+        try {
+            return await this.octokit.issues.addAssignees({
+                owner: this.owner,
+                repo: this.name,
+                issue_number: issueNumber,
+                assignees,
+            });
+        } catch (err) {
+            err.message = `Error when adding assignees to issue ${issueNumber}: ${err.message}`;
+            throw err;
+        }
+    }
+
+    /**
+     * @param {number} issueNumber The issue number
+     * @param {string[]} labels The name of the label to add to the issue. Must contain at least
+     *     one label. Note: Alternatively, you can pass a single label as a string or an array of
+     *     labels directly, but GitHub recommends passing an object with the labels key.
+     */
+    async addLabels(issueNumber, labels) {
+        try {
+            return await this.octokit.issues.addLabels({
+                owner: this.owner,
+                repo: this.name,
+                issue_number: issueNumber,
+                labels,
+            });
+        } catch (err) {
+            err.message = `Error when adding labels to issue ${issueNumber}: ${err.message}`;
+            throw err;
+        }
+    }
 }
 
 module.exports = Repository;
+
+
+/***/ }),
+
+/***/ 196:
+/***/ (function(module) {
+
+// Module capable of transforming the following license files:
+// - Apache 2.0 (Apache-2.0)
+
+const COPYRIGHT_YEAR = /(Copyright\s+)(\d{4})(\s+\w+)/m;
+const COPYRIGHT_YEARS = /(Copyright\s+)(\d{4})-(\d{4})(\s+\w+)/m;
+
+/**
+ * @param {string} license
+ */
+function canTransform(license) {
+    return COPYRIGHT_YEAR.test(license) || COPYRIGHT_YEARS.test(license);
+}
+
+/**
+ * @param {string} license
+ * @param {number} currentYear
+ */
+function transform(license, currentYear) {
+    const match = COPYRIGHT_YEAR.exec(license);
+    if (match !== null) {
+        const licenseYear = Number(match[2]);
+        if (licenseYear === currentYear) {
+            return license;
+        }
+        return license.replace(COPYRIGHT_YEAR, `$1$2-${currentYear}$3`);
+    }
+    if (COPYRIGHT_YEARS.test(license)) {
+        return license.replace(COPYRIGHT_YEARS, `$1$2-${currentYear}$4`);
+    }
+
+    throw new Error('Transforming Apache-2.0 license failed');
+}
+
+module.exports = {
+    canTransform,
+    transform,
+};
 
 
 /***/ }),
@@ -7304,6 +7466,50 @@ module.exports = parse;
 
 /***/ }),
 
+/***/ 586:
+/***/ (function(module) {
+
+// Module capable of transforming the following license files:
+// - MIT (MIT)
+
+const COPYRIGHT_YEAR = /(Copyright\s+\(c\)\s+)(\d{4})(\s+\w+)/m;
+const COPYRIGHT_YEARS = /(Copyright\s+\(c\)\s+)(\d{4})-(\d{4})(\s+\w+)/m;
+
+/**
+ * @param {string} license
+ */
+function canTransform(license) {
+    return COPYRIGHT_YEAR.test(license) || COPYRIGHT_YEARS.test(license);
+}
+
+/**
+ * @param {string} license
+ * @param {number} currentYear
+ */
+function transform(license, currentYear) {
+    const match = COPYRIGHT_YEAR.exec(license);
+    if (match !== null) {
+        const licenseYear = Number(match[2]);
+        if (licenseYear === currentYear) {
+            return license;
+        }
+        return license.replace(COPYRIGHT_YEAR, `$1$2-${currentYear}$3`);
+    }
+    if (COPYRIGHT_YEARS.test(license)) {
+        return license.replace(COPYRIGHT_YEARS, `$1$2-${currentYear}$4`);
+    }
+
+    throw new Error('Transforming MIT license failed');
+}
+
+module.exports = {
+    canTransform,
+    transform,
+};
+
+
+/***/ }),
+
 /***/ 605:
 /***/ (function(module) {
 
@@ -7591,6 +7797,89 @@ if (process.platform === 'linux') {
     'SIGUNUSED'
   )
 }
+
+
+/***/ }),
+
+/***/ 659:
+/***/ (function(module, __unusedexports, __webpack_require__) {
+
+const { getInput } = __webpack_require__(470);
+
+const CURRENT_YEAR = new Date().getFullYear();
+
+const DEFAULT_BRANCH_NAME = 'license/copyright-to-{ currentYear }';
+const DEFAULT_COMMIT_TITLE = 'docs(license): update copyright year(s)';
+const DEFAULT_COMMIT_BODY = '';
+const DEFAULT_PR_TITLE = 'Update license copyright year(s)';
+const DEFAULT_PR_BODY = '';
+const DEFAULT_ASSIGNEES = '';
+const DEFAULT_LABELS = '';
+
+function parseConfig() {
+    const token = getInput('token', { required: true });
+    const branchName = substituteVariable(
+        getInput('branchName') || DEFAULT_BRANCH_NAME,
+        'currentYear',
+        CURRENT_YEAR.toString()
+    );
+    const commitTitle = getInput('commitTitle') || DEFAULT_COMMIT_TITLE;
+    const commitBody = getInput('commitBody') || DEFAULT_COMMIT_BODY;
+    const pullRequestTitle = getInput('prTitle') || DEFAULT_PR_TITLE;
+    const pullRequestBody = getInput('prBody') || DEFAULT_PR_BODY;
+    const assignees = splitCsv(getInput('assignees') || DEFAULT_ASSIGNEES);
+    const labels = splitCsv(getInput('labels') || DEFAULT_LABELS);
+
+    return {
+        token,
+        branchName,
+        commitTitle,
+        commitBody,
+        pullRequestTitle,
+        pullRequestBody,
+        assignees,
+        labels,
+    };
+}
+
+/**
+ * @param {string} text
+ * @param {string} variableName
+ * @param {string} variableValue
+ */
+function substituteVariable(text, variableName, variableValue) {
+    const variableRegExp = /{\s*(\w+)\s*}/;
+    const match = text.match(variableRegExp);
+    if (!match) {
+        return text;
+    }
+    if (match[1] !== variableName) {
+        throw new Error(`Configuration "${text}" contains unknown variable "${match[1]}"`);
+    }
+    return text.replace(variableRegExp, variableValue);
+}
+
+/**
+ * @param {string} values A comma-separated list of values
+ */
+function splitCsv(values) {
+    return values
+        .split(',')
+        .map((value) => value.trim()) // Allow whitespaces in comma-separated list of values
+        .filter((value) => value !== ''); // Remove empty entries
+}
+
+module.exports = {
+    parseConfig,
+    CURRENT_YEAR,
+    DEFAULT_BRANCH_NAME,
+    DEFAULT_COMMIT_TITLE,
+    DEFAULT_COMMIT_BODY,
+    DEFAULT_PR_TITLE,
+    DEFAULT_PR_BODY,
+    DEFAULT_ASSIGNEES,
+    DEFAULT_LABELS,
+};
 
 
 /***/ }),
@@ -9528,104 +9817,31 @@ module.exports = {
 /***/ }),
 
 /***/ 890:
-/***/ (function(module) {
+/***/ (function(module, __unusedexports, __webpack_require__) {
 
-// Regular expressions finding the copyright year(s) in GNU Affero General Public License v3.0 only
-// (AGPL-3.0-only) license files
-const GNU_AGPLv3_COPYRIGHT_YEAR = /(Copyright\s+\(C\)\s+)(\d{4})(?!\s+Free Software Foundation)(\s+\w+)/m;
-const GNU_AGPLv3_COPYRIGHT_YEAR_RANGE = /(Copyright\s+\(C\)\s+)(\d{4})-(\d{4})(?!\s+Free Software Foundation)(\s+\w+)/m;
+const apache = __webpack_require__(196);
+const bsd = __webpack_require__(904);
+const gnuAgpl3 = __webpack_require__(173);
+const mit = __webpack_require__(586);
 
-// Regular expressions finding the copyright year(s) in Apache 2.0 (Apache-2.0) license files
-const APACHE_COPYRIGHT_YEAR = /(Copyright\s+)(\d{4})(\s+\w+)/m;
-const APACHE_COPYRIGHT_YEAR_RANGE = /(Copyright\s+)(\d{4})-(\d{4})(\s+\w+)/m;
-
-// Regular expressions finding the copyright year(s) in BSD 2-clause "Simplified" (BSD-2-Clause)
-// and BSD 3-clause "New" or "Revised" (BSD-3-Clause) license files
-const BSD_COPYRIGHT_YEAR = /(Copyright\s+\(c\)\s+)(\d{4})(,\s+\w+)/m;
-const BSD_COPYRIGHT_YEAR_RANGE = /(Copyright\s+\(c\)\s+)(\d{4})-(\d{4})(,\s+\w+)/m;
-
-// Regular expressions finding the copyright year(s) in MIT (MIT) license files
-const MIT_COPYRIGHT_YEAR = /(Copyright\s+\(c\)\s+)(\d{4})(\s+\w+)/m;
-const MIT_COPYRIGHT_YEAR_RANGE = /(Copyright\s+\(c\)\s+)(\d{4})-(\d{4})(\s+\w+)/m;
+const TRANSFORMS = [gnuAgpl3, apache, bsd, mit];
 
 /**
  * @param {string} license
+ * @param {number} currentYear
  */
-function updateLicense(license) {
-    const currentYear = new Date().getFullYear();
-    return updateLicenseToYear(license, currentYear);
-}
-
-/**
- * @param {string} license
- * @param {number} year
- */
-function updateLicenseToYear(license, year) {
-    // GNU Affero General Public License v3.0 only
-    let match = GNU_AGPLv3_COPYRIGHT_YEAR.exec(license);
-    if (match !== null) {
-        if (isYearUnchanged(match, year)) {
-            return license;
+function transformLicense(license, currentYear) {
+    for (const transform of TRANSFORMS) {
+        if (transform.canTransform(license)) {
+            return transform.transform(license, currentYear);
         }
-        return license.replace(GNU_AGPLv3_COPYRIGHT_YEAR, `$1$2-${year}$3`);
-    }
-    if (GNU_AGPLv3_COPYRIGHT_YEAR_RANGE.test(license)) {
-        return license.replace(GNU_AGPLv3_COPYRIGHT_YEAR_RANGE, `$1$2-${year}$4`);
-    }
-
-    // Apache 2.0
-    match = APACHE_COPYRIGHT_YEAR.exec(license);
-    if (match !== null) {
-        if (isYearUnchanged(match, year)) {
-            return license;
-        }
-        return license.replace(APACHE_COPYRIGHT_YEAR, `$1$2-${year}$3`);
-    }
-    if (APACHE_COPYRIGHT_YEAR_RANGE.test(license)) {
-        return license.replace(APACHE_COPYRIGHT_YEAR_RANGE, `$1$2-${year}$4`);
-    }
-
-    // BSD 2-clause "Simplified"
-    // BSD 3-clause "New" or "Revised"
-    match = BSD_COPYRIGHT_YEAR.exec(license);
-    if (match !== null) {
-        if (isYearUnchanged(match, year)) {
-            return license;
-        }
-        return license.replace(BSD_COPYRIGHT_YEAR, `$1$2-${year}$3`);
-    }
-    if (BSD_COPYRIGHT_YEAR_RANGE.test(license)) {
-        return license.replace(BSD_COPYRIGHT_YEAR_RANGE, `$1$2-${year}$4`);
-    }
-
-    // MIT
-    match = MIT_COPYRIGHT_YEAR.exec(license);
-    if (match !== null) {
-        if (isYearUnchanged(match, year)) {
-            return license;
-        }
-        return license.replace(MIT_COPYRIGHT_YEAR, `$1$2-${year}$3`);
-    }
-    if (MIT_COPYRIGHT_YEAR_RANGE.test(license)) {
-        return license.replace(MIT_COPYRIGHT_YEAR_RANGE, `$1$2-${year}$4`);
     }
 
     throw new Error('Specified license is not supported');
 }
 
-/**
- *
- * @param {string[]} match
- * @param {number} year
- */
-function isYearUnchanged(match, year) {
-    const yearInLicense = Number(match[2]);
-    return yearInLicense === year;
-}
-
 module.exports = {
-    updateLicense,
-    updateLicenseToYear,
+    transformLicense,
 };
 
 
@@ -9720,6 +9936,51 @@ function withCustomRequest(customRequest) {
 exports.graphql = graphql$1;
 exports.withCustomRequest = withCustomRequest;
 //# sourceMappingURL=index.js.map
+
+
+/***/ }),
+
+/***/ 904:
+/***/ (function(module) {
+
+// Module capable of transforming the following license files:
+// - BSD 2-clause "Simplified" (BSD-2-Clause)
+// - BSD 3-clause "New" or "Revised" (BSD-3-Clause)
+
+const COPYRIGHT_YEAR = /(Copyright\s+\(c\)\s+)(\d{4})(,\s+\w+)/m;
+const COPYRIGHT_YEARS = /(Copyright\s+\(c\)\s+)(\d{4})-(\d{4})(,\s+\w+)/m;
+
+/**
+ * @param {string} license
+ */
+function canTransform(license) {
+    return COPYRIGHT_YEAR.test(license) || COPYRIGHT_YEARS.test(license);
+}
+
+/**
+ * @param {string} license
+ * @param {number} currentYear
+ */
+function transform(license, currentYear) {
+    const match = COPYRIGHT_YEAR.exec(license);
+    if (match !== null) {
+        const licenseYear = Number(match[2]);
+        if (licenseYear === currentYear) {
+            return license;
+        }
+        return license.replace(COPYRIGHT_YEAR, `$1$2-${currentYear}$3`);
+    }
+    if (COPYRIGHT_YEARS.test(license)) {
+        return license.replace(COPYRIGHT_YEARS, `$1$2-${currentYear}$4`);
+    }
+
+    throw new Error('Transforming BSD-2-Clause or BSD-3-Clause license failed');
+}
+
+module.exports = {
+    canTransform,
+    transform,
+};
 
 
 /***/ }),
