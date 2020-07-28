@@ -21,18 +21,6 @@ async function run() {
             labels,
         } = parseConfig();
 
-        info(
-            `Configuration: ${JSON.stringify({
-                branchName,
-                commitTitle,
-                commitBody,
-                pullRequestTitle,
-                pullRequestBody,
-                assignees,
-                labels,
-            })}`
-        );
-
         const repository = new Repository(owner, repo, token);
         const hasBranch = await repository.hasBranch(branchName);
         const licenseResponse = await repository.getContent(hasBranch ? branchName : MASTER, FILENAME);
