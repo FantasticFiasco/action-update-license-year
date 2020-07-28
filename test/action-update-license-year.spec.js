@@ -21,7 +21,7 @@ jest.mock('@actions/github', () => {
 const mockConfig = {
     CURRENT_YEAR: jest.requireActual('../src/config').CURRENT_YEAR,
     DEFAULT_BRANCH_NAME: jest.requireActual('../src/config').DEFAULT_BRANCH_NAME,
-    DEFAULT_COMMIT_MESSAGE: jest.requireActual('../src/config').DEFAULT_COMMIT_MESSAGE,
+    DEFAULT_COMMIT_TITLE: jest.requireActual('../src/config').DEFAULT_COMMIT_TITLE,
     DEFAULT_COMMIT_BODY: jest.requireActual('../src/config').DEFAULT_COMMIT_BODY,
     DEFAULT_PR_TITLE: jest.requireActual('../src/config').DEFAULT_PR_TITLE,
     DEFAULT_PR_BODY: jest.requireActual('../src/config').DEFAULT_PR_BODY,
@@ -59,7 +59,7 @@ jest.mock('../src/license', () => {
 const { setFailed } = require('@actions/core');
 const { run, MASTER, FILENAME } = require('../src/action-update-license-year');
 const {
-    DEFAULT_COMMIT_MESSAGE,
+    DEFAULT_COMMIT_TITLE,
     DEFAULT_COMMIT_BODY,
     DEFAULT_PR_TITLE,
     DEFAULT_PR_BODY,
@@ -138,7 +138,7 @@ describe('action should', () => {
         expect(setFailed).toBeCalledTimes(1);
     });
 
-    test('update content with default commit message and body', async () => {
+    test('update content with default commit title and body', async () => {
         await run();
         expect(setFailed).toBeCalledTimes(0);
         expect(mockRepository.updateContent).toBeCalledWith(
@@ -146,12 +146,12 @@ describe('action should', () => {
             FILENAME,
             undefined,
             undefined,
-            DEFAULT_COMMIT_MESSAGE
+            DEFAULT_COMMIT_TITLE
         );
     });
 
-    test('update content with custom commit message and default body', async () => {
-        mockConfigReturnValue({ commitMessage: 'some commit message' });
+    test('update content with custom commit title and default body', async () => {
+        mockConfigReturnValue({ commitTitle: 'some commit title' });
         await run();
         expect(setFailed).toBeCalledTimes(0);
         expect(mockRepository.updateContent).toBeCalledWith(
@@ -159,11 +159,11 @@ describe('action should', () => {
             FILENAME,
             undefined,
             undefined,
-            'some commit message'
+            'some commit title'
         );
     });
 
-    test('update content with default commit message and custom body', async () => {
+    test('update content with default commit title and custom body', async () => {
         mockConfigReturnValue({ commitBody: 'some commit body' });
         await run();
         expect(setFailed).toBeCalledTimes(0);
@@ -172,12 +172,12 @@ describe('action should', () => {
             FILENAME,
             undefined,
             undefined,
-            `${DEFAULT_COMMIT_MESSAGE}\n\nsome commit body`
+            `${DEFAULT_COMMIT_TITLE}\n\nsome commit body`
         );
     });
 
-    test('update content with custom commit message and body', async () => {
-        mockConfigReturnValue({ commitMessage: 'some commit message', commitBody: 'some commit body' });
+    test('update content with custom commit title and body', async () => {
+        mockConfigReturnValue({ commitTitle: 'some commit title', commitBody: 'some commit body' });
         await run();
         expect(setFailed).toBeCalledTimes(0);
         expect(mockRepository.updateContent).toBeCalledWith(
@@ -185,7 +185,7 @@ describe('action should', () => {
             FILENAME,
             undefined,
             undefined,
-            'some commit message\n\nsome commit body'
+            'some commit title\n\nsome commit body'
         );
     });
 
@@ -309,7 +309,7 @@ const GET_CONTENT_SUCCESS_RESPONSE = {
  * @typedef configType
  * @property {string} [token]
  * @property {string} [branchName]
- * @property {string} [commitMessage]
+ * @property {string} [commitTitle]
  * @property {string} [commitBody]
  * @property {string} [pullRequestTitle]
  * @property {string} [pullRequestBody]
@@ -320,7 +320,7 @@ function mockConfigReturnValue(config) {
     mockConfig.parseConfig.mockReturnValue({
         token: config.token || 'some token',
         branchName: config.branchName || DEFAULT_BRANCH_NAME,
-        commitMessage: config.commitMessage || DEFAULT_COMMIT_MESSAGE,
+        commitTitle: config.commitTitle || DEFAULT_COMMIT_TITLE,
         commitBody: config.commitBody || DEFAULT_COMMIT_BODY,
         pullRequestTitle: config.pullRequestTitle || DEFAULT_PR_TITLE,
         pullRequestBody: config.pullRequestBody || DEFAULT_PR_BODY,

@@ -8,7 +8,7 @@ jest.mock('@actions/core', () => {
 const {
     parseConfig,
     CURRENT_YEAR,
-    DEFAULT_COMMIT_MESSAGE,
+    DEFAULT_COMMIT_TITLE,
     DEFAULT_COMMIT_BODY,
     DEFAULT_PR_TITLE,
     DEFAULT_PR_BODY,
@@ -20,7 +20,7 @@ describe('#parseConfig should', () => {
             mockCore.getInput.mockReturnValueOnce('some token'); // Token is required
             const {
                 branchName,
-                commitMessage,
+                commitTitle,
                 commitBody,
                 pullRequestTitle,
                 pullRequestBody,
@@ -28,7 +28,7 @@ describe('#parseConfig should', () => {
                 labels,
             } = parseConfig();
             expect(branchName).toBe(`license/copyright-to-${CURRENT_YEAR}`);
-            expect(commitMessage).toBe(DEFAULT_COMMIT_MESSAGE);
+            expect(commitTitle).toBe(DEFAULT_COMMIT_TITLE);
             expect(commitBody).toBe(DEFAULT_COMMIT_BODY);
             expect(pullRequestTitle).toBe(DEFAULT_PR_TITLE);
             expect(pullRequestBody).toBe(DEFAULT_PR_BODY);
@@ -78,11 +78,11 @@ describe('#parseConfig should', () => {
             expect(fn).toThrow();
         });
 
-        test('return commit message', () => {
-            getInputSkip(2).mockReturnValueOnce('some commit message');
-            const { commitMessage } = parseConfig();
-            expect(mockCore.getInput).toBeCalledWith('commitMessage');
-            expect(commitMessage).toBe('some commit message');
+        test('return commit title', () => {
+            getInputSkip(2).mockReturnValueOnce('some commit title');
+            const { commitTitle } = parseConfig();
+            expect(mockCore.getInput).toBeCalledWith('commitTitle');
+            expect(commitTitle).toBe('some commit title');
         });
 
         test('return commit body', () => {

@@ -3,7 +3,7 @@ const { getInput } = require('@actions/core');
 const CURRENT_YEAR = new Date().getFullYear();
 
 const DEFAULT_BRANCH_NAME = 'license/copyright-to-{ currentYear }';
-const DEFAULT_COMMIT_MESSAGE = 'docs(license): update copyright year(s)';
+const DEFAULT_COMMIT_TITLE = 'docs(license): update copyright year(s)';
 const DEFAULT_COMMIT_BODY = '';
 const DEFAULT_PR_TITLE = 'Update license copyright year(s)';
 const DEFAULT_PR_BODY = '';
@@ -17,7 +17,7 @@ function parseConfig() {
         'currentYear',
         CURRENT_YEAR.toString()
     );
-    const commitMessage = getInput('commitMessage') || DEFAULT_COMMIT_MESSAGE;
+    const commitTitle = getInput('commitTitle') || DEFAULT_COMMIT_TITLE;
     const commitBody = getInput('commitBody') || DEFAULT_COMMIT_BODY;
     const pullRequestTitle = getInput('prTitle') || DEFAULT_PR_TITLE;
     const pullRequestBody = getInput('prBody') || DEFAULT_PR_BODY;
@@ -27,7 +27,7 @@ function parseConfig() {
     return {
         token,
         branchName,
-        commitMessage,
+        commitTitle,
         commitBody,
         pullRequestTitle,
         pullRequestBody,
@@ -67,7 +67,7 @@ module.exports = {
     parseConfig,
     CURRENT_YEAR,
     DEFAULT_BRANCH_NAME,
-    DEFAULT_COMMIT_MESSAGE,
+    DEFAULT_COMMIT_TITLE,
     DEFAULT_COMMIT_BODY,
     DEFAULT_PR_TITLE,
     DEFAULT_PR_BODY,

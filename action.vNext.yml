@@ -20,13 +20,13 @@ inputs:
     description: The branch name template with support for substituting variable {{ currentYear }}.
     default: license/copyright-to-{{ currentYear }}
     required: false
-  commitMessage:
-    description: The git commit message
+  commitTitle:
+    description: The git commit title
     default: "docs(license): update copyright year(s)"
     required: false
   commitBody:
     description: >
-      The git commit body that will be appended to commit message, separated by two line returns
+      The git commit body that will be appended to commit title, separated by two line returns
     default: ""
     required: false
   prTitle:

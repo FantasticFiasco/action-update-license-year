@@ -13,7 +13,7 @@ async function run() {
         const {
             token,
             branchName,
-            commitMessage,
+            commitTitle,
             commitBody,
             pullRequestTitle,
             pullRequestBody,
@@ -24,7 +24,7 @@ async function run() {
         info(
             `Configuration: ${JSON.stringify({
                 branchName,
-                commitMessage,
+                commitTitle,
                 commitBody,
                 pullRequestTitle,
                 pullRequestBody,
@@ -50,13 +50,8 @@ async function run() {
             await repository.createBranch(branchName);
         }
 
-        await repository.updateContent(
-            branchName,
-            FILENAME,
-            licenseResponse.data.sha,
-            updatedLicense,
-            commitBody ? `${commitMessage}\n\n${commitBody}` : commitMessage
-        );
+        const commitMessage = commitBody ? `${commitTitle}\n\n${commitBody}` : commitTitle;
+        await repository.updateContent(branchName, FILENAME, licenseResponse.data.sha, updatedLicense, commitMessage);
 
         if (!(await repository.hasPullRequest(branchName))) {
             info('Create new pull request');
