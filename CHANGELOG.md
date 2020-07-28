@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ## [Unreleased]
 
+## [1.3.1] - 2020-07-28
+
 ### :syringe: Fixed
 
 - Action fails when assignees are configured
