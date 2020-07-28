@@ -19,6 +19,7 @@ jest.mock('@actions/github', () => {
 });
 
 const mockConfig = {
+    parseConfig: jest.fn(),
     CURRENT_YEAR: jest.requireActual('../src/config').CURRENT_YEAR,
     DEFAULT_BRANCH_NAME: jest.requireActual('../src/config').DEFAULT_BRANCH_NAME,
     DEFAULT_COMMIT_TITLE: jest.requireActual('../src/config').DEFAULT_COMMIT_TITLE,
@@ -27,7 +28,6 @@ const mockConfig = {
     DEFAULT_PR_BODY: jest.requireActual('../src/config').DEFAULT_PR_BODY,
     DEFAULT_ASSIGNEES: jest.requireActual('../src/config').DEFAULT_ASSIGNEES,
     DEFAULT_LABELS: jest.requireActual('../src/config').DEFAULT_LABELS,
-    parseConfig: jest.fn(),
 };
 jest.mock('../src/config', () => {
     return mockConfig;
