@@ -53,10 +53,9 @@ For the majority of repositories on GitHub the following code will do the job. I
     # Default: ${{ github.token }}
     token: ''
 
-    # The branch name template with support for substituting variable {{ currentYear
-    # }}.
+    # The branch name template with support for substituting variable {{currentYear}}.
     # Required: false
-    # Default: license/copyright-to-{{ currentYear }}
+    # Default: license/copyright-to-{{currentYear}}
     branchName: ''
 
     # The git commit title
@@ -67,7 +66,7 @@ For the majority of repositories on GitHub the following code will do the job. I
     # The git commit body that will be appended to commit title, separated by two line
     # returns
     # Required: false
-    # Default:
+    # Default: 
     commitBody: ''
 
     # The title of the new pull request
@@ -77,18 +76,18 @@ For the majority of repositories on GitHub the following code will do the job. I
 
     # The contents of the pull request
     # Required: false
-    # Default:
+    # Default: 
     prBody: ''
 
     # Comma-separated list with usernames of people to assign when pull request is
     # created
     # Required: false
-    # Default:
+    # Default: 
     assignees: ''
 
     # Comma-separated list of labels to add when pull request is created
     # Required: false
-    # Default:
+    # Default: 
     labels: ''
 ```
 <!-- end usage -->

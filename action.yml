@@ -17,8 +17,8 @@ inputs:
     default: ${{ github.token }}
     required: false
   branchName:
-    description: The branch name template with support for substituting variable {{ currentYear }}.
-    default: license/copyright-to-{{ currentYear }}
+    description: The branch name template with support for substituting variable {{currentYear}}.
+    default: license/copyright-to-{{currentYear}}
     required: false
   commitTitle:
     description: The git commit title
