@@ -53,27 +53,27 @@ describe('#parseConfig should', () => {
         });
 
         test('return branch name given variable', () => {
-            getInputSkip(1).mockReturnValueOnce('some-branch-name-{currentYear}');
+            getInputSkip(1).mockReturnValueOnce('some-branch-name-{{currentYear}}');
             const { branchName } = parseConfig();
             expect(mockCore.getInput).toBeCalledWith('branchName');
             expect(branchName).toBe(`some-branch-name-${CURRENT_YEAR}`);
         });
 
         test('return branch name given variable with leading and trailing spaces', () => {
-            getInputSkip(1).mockReturnValueOnce('some-branch-name-{ currentYear }');
+            getInputSkip(1).mockReturnValueOnce('some-branch-name-{{ currentYear }}');
             const { branchName } = parseConfig();
             expect(mockCore.getInput).toBeCalledWith('branchName');
             expect(branchName).toBe(`some-branch-name-${CURRENT_YEAR}`);
         });
 
         test('throw error given invalid branch name variable', () => {
-            getInputSkip(1).mockReturnValueOnce('some-branch-name-{invalidVariableName}');
+            getInputSkip(1).mockReturnValueOnce('some-branch-name-{{invalidVariableName}}');
             const fn = () => parseConfig();
             expect(fn).toThrow();
         });
 
         test('throw error given invalid branch name variable with leading and trailing spaces', () => {
-            getInputSkip(1).mockReturnValueOnce('some-branch-name-{ invalidVariableName }');
+            getInputSkip(1).mockReturnValueOnce('some-branch-name-{{ invalidVariableName }}');
             const fn = () => parseConfig();
             expect(fn).toThrow();
         });

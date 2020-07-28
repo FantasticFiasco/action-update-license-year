@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ## [Unreleased]
 
+### :syringe: Fixed
+
+- Variable `currentYear` in branch name is not substituted correctly
+
 ## [1.3.1] - 2020-07-28
 
 ### :syringe: Fixed
