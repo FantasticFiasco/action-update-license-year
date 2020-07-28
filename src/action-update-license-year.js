@@ -51,12 +51,12 @@ async function run() {
 
             if (assignees.length > 0) {
                 info('Add assignees');
-                await repository.addAssignees(createPullRequestResponse.data.id, assignees);
+                await repository.addAssignees(createPullRequestResponse.data.number, assignees);
             }
 
             if (labels.length > 0) {
                 info('Add labels');
-                await repository.addLabels(createPullRequestResponse.data.id, labels);
+                await repository.addLabels(createPullRequestResponse.data.number, labels);
             }
         }
     } catch (err) {

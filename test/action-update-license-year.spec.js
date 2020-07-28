@@ -251,7 +251,7 @@ describe('action should', () => {
 
         test('create pull request and add assignees given configuration', async () => {
             mockConfigReturnValue({ assignees: ['assignee1', 'assignee2', 'assignee3'] });
-            mockRepository.createPullRequest.mockResolvedValue({ data: { id: 42 } });
+            mockRepository.createPullRequest.mockResolvedValue({ data: { number: 42 } });
             await run();
             expect(setFailed).toBeCalledTimes(0);
             expect(mockRepository.addAssignees).toBeCalledTimes(1);
@@ -266,7 +266,7 @@ describe('action should', () => {
 
         test('create pull request and add labels given configuration', async () => {
             mockConfigReturnValue({ labels: ['some label 1', 'some label 2', 'some label 3'] });
-            mockRepository.createPullRequest.mockResolvedValue({ data: { id: 42 } });
+            mockRepository.createPullRequest.mockResolvedValue({ data: { number: 42 } });
             await run();
             expect(setFailed).toBeCalledTimes(0);
             expect(mockRepository.addLabels).toBeCalledTimes(1);
