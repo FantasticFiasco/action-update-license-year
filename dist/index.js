@@ -7796,7 +7796,7 @@ const { getInput } = __webpack_require__(470);
 
 const CURRENT_YEAR = new Date().getFullYear();
 
-const DEFAULT_BRANCH_NAME = 'license/copyright-to-{ currentYear }';
+const DEFAULT_BRANCH_NAME = 'license/copyright-to-{{currentYear}}';
 const DEFAULT_COMMIT_TITLE = 'docs(license): update copyright year(s)';
 const DEFAULT_COMMIT_BODY = '';
 const DEFAULT_PR_TITLE = 'Update license copyright year(s)';
@@ -7836,7 +7836,7 @@ function parseConfig() {
  * @param {string} variableValue
  */
 function substituteVariable(text, variableName, variableValue) {
-    const variableRegExp = /{\s*(\w+)\s*}/;
+    const variableRegExp = /{{\s*(\w+)\s*}}/;
     const match = text.match(variableRegExp);
     if (!match) {
         return text;
