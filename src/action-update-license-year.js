@@ -23,18 +23,22 @@ async function run() {
 
         const repository = new Repository(owner, repo, token);
         const hasBranch = await repository.hasBranch(branchName);
+        if (hasBranch) {
+            info(`Found branch named "${branchName}"`);
+        }
         const licenseResponse = await repository.getContent(hasBranch ? branchName : MASTER, FILENAME);
         const license = Buffer.from(licenseResponse.data.content, 'base64').toString('ascii');
 
         const currentYear = new Date().getFullYear();
+        info(`Current year is "${currentYear}"`);
         const updatedLicense = transformLicense(license, currentYear);
         if (updatedLicense === license) {
-            info('License file is already up-to-date, my work here is done');
+            info('License is already up-to-date, aborting');
             return;
         }
 
         if (!hasBranch) {
-            info(`Create new branch named ${branchName}`);
+            info(`Create new branch named "${branchName}"`);
             await repository.createBranch(branchName);
         }
 
@@ -42,7 +46,7 @@ async function run() {
         await repository.updateContent(branchName, FILENAME, licenseResponse.data.sha, updatedLicense, commitMessage);
 
         if (!(await repository.hasPullRequest(branchName))) {
-            info('Create new pull request');
+            info(`Create new pull request with title "${pullRequestTitle}"`);
             const createPullRequestResponse = await repository.createPullRequest(
                 branchName,
                 pullRequestTitle,
@@ -50,12 +54,12 @@ async function run() {
             );
 
             if (assignees.length > 0) {
-                info('Add assignees');
+                info(`Add assignees to pull request: ${JSON.stringify(assignees)}`);
                 await repository.addAssignees(createPullRequestResponse.data.number, assignees);
             }
 
             if (labels.length > 0) {
-                info('Add labels');
+                info(`Add labels to pull request: ${JSON.stringify(labels)}`);
                 await repository.addLabels(createPullRequestResponse.data.number, labels);
             }
         }
