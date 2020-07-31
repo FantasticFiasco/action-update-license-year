@@ -20,9 +20,7 @@ function transform(license, currentYear) {
         throw new Error('Transforming MIT license failed');
     }
 
-    const from = match.groups['from'];
-
-    if (Number(from) === currentYear) {
+    if (Number(match.groups['from']) === currentYear) {
         return license;
     }
 

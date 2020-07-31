@@ -20,9 +20,6 @@ function transform(license, currentYear) {
         throw new Error('Transforming MIT license failed');
     }
 
-    const from = match.groups['from'];
-    const to = match.groups['to'];
-
     return license.replace(REGEXP, `$<from>-${currentYear}`);
 }
 
