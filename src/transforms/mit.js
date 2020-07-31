@@ -1,8 +1,8 @@
 // Module capable of transforming the following license files:
 // - MIT (MIT)
 
-const COPYRIGHT_YEAR = /(?<=copyright\s+\(c\)\s+)(\d{4})/im;
-const COPYRIGHT_YEARS = /(?<=copyright\s+\(c\)\s+\d{4}-)(\d{4})/im;
+const COPYRIGHT_YEAR = /(?<=copyright\s+\(c\)\s+)\d{4}(?!-\d{4})/im;
+const COPYRIGHT_YEARS = /(?<=copyright\s+\(c\)\s+\d{4}-)\d{4}/im;
 
 /**
  * @param {string} license
@@ -22,12 +22,11 @@ function transform(license, currentYear) {
             return license;
         }
 
-        return license.replace(COPYRIGHT_YEAR, `$1-${currentYear}`);
+        return license.replace(COPYRIGHT_YEAR, `$&-${currentYear}`);
     }
 
     match = COPYRIGHT_YEARS.exec(license);
     if (match !== null) {
-        console.log('range', match);
         return license.replace(COPYRIGHT_YEARS, `${currentYear}`);
     }
 
