@@ -1,13 +1,13 @@
 // Module capable of transforming the following license files:
 // - MIT (MIT)
 
-const COPYRIGHT_YEAR = /(?<=copyright\s+\(c\)\s+)\d{4}(?!-\d{4})/im;
+const REGEXP = /(?<=copyright\s+\(c\)\s+)(?<from>\d{4})(?!-\d{4})/im;
 
 /**
  * @param {string} license
  */
 function canTransform(license) {
-    return COPYRIGHT_YEAR.test(license);
+    return REGEXP.test(license);
 }
 
 /**
@@ -15,16 +15,18 @@ function canTransform(license) {
  * @param {number} currentYear
  */
 function transform(license, currentYear) {
-    const match = COPYRIGHT_YEAR.exec(license);
-    if (match !== null) {
-        if (Number(match[0]) === currentYear) {
-            return license;
-        }
-
-        return license.replace(COPYRIGHT_YEAR, `$&-${currentYear}`);
+    const match = REGEXP.exec(license);
+    if (match === null || match.groups === undefined) {
+        throw new Error('Transforming MIT license failed');
     }
 
-    throw new Error('Transforming MIT license failed');
+    const from = match.groups['from'];
+
+    if (Number(from) === currentYear) {
+        return license;
+    }
+
+    return license.replace(REGEXP, `$<from>-${currentYear}`);
 }
 
 module.exports = {
