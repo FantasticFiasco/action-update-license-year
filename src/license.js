@@ -1,9 +1,10 @@
 const apache = require('./transforms/apache');
 const bsd = require('./transforms/bsd');
 const gnuAgpl3 = require('./transforms/gnuAgpl3');
-const mit = require('./transforms/mit');
+const mitSingleYear = require('./transforms/mit-single-year');
+const mitYearRange = require('./transforms/mit-year-range');
 
-const TRANSFORMS = [gnuAgpl3, apache, bsd, mit];
+const TRANSFORMS = [gnuAgpl3, apache, bsd, mitSingleYear, mitYearRange];
 
 /**
  * @param {string} license
