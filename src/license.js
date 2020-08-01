@@ -1,10 +1,23 @@
 const apache = require('./transforms/apache');
 const bsd = require('./transforms/bsd');
 const gnuAgpl3 = require('./transforms/gnuAgpl3');
-const mit = require('./transforms/mit');
+
+// Module capable of transforming the following license files:
+// - MIT (MIT)
+const MIT_SINGLE_YEAR = /(?<=copyright\s+\(c\)\s+)(?<from>\d{4})(?!-\d{4})/im;
+const MIT_YEAR_RANGE = /(?<=copyright\s+\(c\)\s+)(?<from>\d{4})-\d{4}/im;
 
 const OLD_TRANSFORMS = [gnuAgpl3, apache, bsd];
-const TRANSFORMS = [mit.MIT_SINGLE_YEAR, mit.MIT_YEAR_RANGE];
+
+/**
+ * @typedef LicenseTransform
+ * @property {string} name
+ * @property {RegExp} transform
+ */
+const LICESE_TRANSFORMS = [
+    { name: 'MIT', transform: MIT_SINGLE_YEAR },
+    { name: 'MIT', transform: MIT_YEAR_RANGE },
+];
 
 /**
  * @param {string} license
@@ -17,9 +30,9 @@ function transformLicense(license, currentYear) {
         }
     }
 
-    for (const transform of TRANSFORMS) {
-        if (canTransform(transform, license)) {
-            return doTransform(transform, license, currentYear);
+    for (const licenseTransform of LICESE_TRANSFORMS) {
+        if (canTransform(licenseTransform, license)) {
+            return transform(licenseTransform, license, currentYear);
         }
     }
 
@@ -27,30 +40,29 @@ function transformLicense(license, currentYear) {
 }
 
 /**
- * @param {RegExp} transform
+ * @param {LicenseTransform} licenseTransform
  * @param {string} license
  */
-function canTransform(transform, license) {
-    return transform.test(license);
+function canTransform(licenseTransform, license) {
+    return licenseTransform.transform.test(license);
 }
 
 /**
- * @param {RegExp} transform
+ * @param {LicenseTransform} licenseTransform
  * @param {string} license
  * @param {number} currentYear
  */
-function doTransform(transform, license, currentYear) {
-    const match = transform.exec(license);
+function transform(licenseTransform, license, currentYear) {
+    const match = licenseTransform.transform.exec(license);
     if (match === null || match.groups === undefined) {
-        // TODO: Before, logging stated license, lets re-introduce that again
-        throw new Error('Transforming license failed');
+        throw new Error(`Transforming ${licenseTransform.name} license failed`);
     }
 
     if (Number(match.groups['from']) === currentYear) {
         return license;
     }
 
-    return license.replace(transform, `$<from>-${currentYear}`);
+    return license.replace(licenseTransform.transform, `$<from>-${currentYear}`);
 }
 
 module.exports = {
