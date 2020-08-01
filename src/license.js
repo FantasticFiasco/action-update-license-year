@@ -1,23 +1,23 @@
 // Regular expressions capable of transforming the following license files:
 // - GNU Affero General Public License v3.0 only (AGPL-3.0-only)
-const AGPL_3_ONLY_SINGLE_YEAR = /(?<=copyright\s+\(c\)\s+)(?<from>\d{4})(?!\s+free software foundation)/im;
 const AGPL_3_ONLY_YEAR_RANGE = /(?<=copyright\s+\(c\)\s+)(?<from>\d{4})-\d{4}(?!\s+free software foundation)/im;
+const AGPL_3_ONLY_SINGLE_YEAR = /(?<=copyright\s+\(c\)\s+)(?<from>\d{4})(?!\s+free software foundation)/im;
 
 // Regular expressions capable of transforming the following license files:
 // - Apache 2.0 (Apache-2.0)
-const APACHE_2_SINGLE_YEAR = /(?<=copyright\s+)(\d{4})(\s+\w+)/im;
-const APACHE_2_YEAR_RANGE = /(?<=copyright\s+)(\d{4})-(\d{4})(\s+\w+)/im;
+const APACHE_2_YEAR_RANGE = /(?<=copyright\s+)(?<from>\d{4})-\d{4}/im;
+const APACHE_2_SINGLE_YEAR = /(?<=copyright\s+)(?<from>\d{4})/im;
 
 // Regular expressions capable of transforming the following license files:
 // - BSD 2-clause "Simplified" (BSD-2-Clause)
 // - BSD 3-clause "New" or "Revised" (BSD-3-Clause)
-const BSD_SINGLE_YEAR = /(Copyright\s+\(c\)\s+)(\d{4})(,\s+\w+)/m;
-const BSD_YEAR_RANGE = /(Copyright\s+\(c\)\s+)(\d{4})-(\d{4})(,\s+\w+)/m;
+const BSD_YEAR_RANGE = /(?<=copyright\s+\(c\)\s+)(?<from>\d{4})-\d{4}(?=,)/im;
+const BSD_SINGLE_YEAR = /(?<=copyright\s+\(c\)\s+)(?<from>\d{4})(?=,)/im;
 
 // Regular expressions capable of transforming the following license files:
 // - MIT (MIT)
-const MIT_SINGLE_YEAR = /(?<=copyright\s+\(c\)\s+)(?<from>\d{4})(?!-\d{4})/im;
 const MIT_YEAR_RANGE = /(?<=copyright\s+\(c\)\s+)(?<from>\d{4})-\d{4}/im;
+const MIT_SINGLE_YEAR = /(?<=copyright\s+\(c\)\s+)(?<from>\d{4})/im;
 
 /**
  * @typedef LicenseTransform
@@ -25,14 +25,14 @@ const MIT_YEAR_RANGE = /(?<=copyright\s+\(c\)\s+)(?<from>\d{4})-\d{4}/im;
  * @property {RegExp} transform
  */
 const LICESE_TRANSFORMS = [
-    { name: 'AGPL-3.0-only', transform: AGPL_3_ONLY_SINGLE_YEAR },
     { name: 'AGPL-3.0-only', transform: AGPL_3_ONLY_YEAR_RANGE },
-    { name: 'Apache-2.0', transform: APACHE_2_SINGLE_YEAR },
+    { name: 'AGPL-3.0-only', transform: AGPL_3_ONLY_SINGLE_YEAR },
     { name: 'Apache-2.0', transform: APACHE_2_YEAR_RANGE },
-    { name: 'BSD-2-Clause/BSD-3-Clause', transform: BSD_SINGLE_YEAR },
+    { name: 'Apache-2.0', transform: APACHE_2_SINGLE_YEAR },
     { name: 'BSD-2-Clause/BSD-3-Clause', transform: BSD_YEAR_RANGE },
-    { name: 'MIT', transform: MIT_SINGLE_YEAR },
+    { name: 'BSD-2-Clause/BSD-3-Clause', transform: BSD_SINGLE_YEAR },
     { name: 'MIT', transform: MIT_YEAR_RANGE },
+    { name: 'MIT', transform: MIT_SINGLE_YEAR },
 ];
 
 /**
@@ -40,12 +40,6 @@ const LICESE_TRANSFORMS = [
  * @param {number} currentYear
  */
 function transformLicense(license, currentYear) {
-    for (const transform of OLD_TRANSFORMS) {
-        if (transform.canTransform(license)) {
-            return transform.transform(license, currentYear);
-        }
-    }
-
     for (const licenseTransform of LICESE_TRANSFORMS) {
         if (canTransform(licenseTransform, license)) {
             return transform(licenseTransform, license, currentYear);
