@@ -1,6 +1,13 @@
 // Regular expressions capable of transforming the following license files:
 // - GNU Affero General Public License v3.0 only (AGPL-3.0-only)
-const AGPL_3_ONLY_YEAR_RANGE = /(?<=copyright\s+\(c\)\s+)(?<from>\d{4})-\d{4}(?!\s+free software foundation)/im;
+// prettier-ignore
+const AGPL_3_ONLY_YEAR_RANGE = new RegExp(
+    '(?<=copyright\\s+\\(c\\)\\s+)' +           // 'Copyright (C) '             positive lookbehind
+    '(?<from>\\d{4})' +                         // 'YYYY'                       group named 'from'
+    '-\\d{4}' +                                 // '-YYYY'
+    '(?!\\s+free\\s+software\\s+foundation)',   // ' Free Software Foundation'  negative lookahead
+    'im'
+);
 const AGPL_3_ONLY_SINGLE_YEAR = /(?<=copyright\s+\(c\)\s+)(?<from>\d{4})(?!\s+free software foundation)/im;
 
 // Regular expressions capable of transforming the following license files:
