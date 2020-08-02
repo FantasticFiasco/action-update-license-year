@@ -53,41 +53,43 @@ For the majority of repositories on GitHub the following code will do the job. I
     # Default: ${{ github.token }}
     token: ''
 
-    # The branch name template with support for substituting variable {{currentYear}}.
+    # The branch name. Supports substituting variable {{currentYear}}.
     # Required: false
     # Default: license/copyright-to-{{currentYear}}
     branchName: ''
 
-    # The git commit title
+    # The git commit title. Supports substituting variable {{currentYear}}.
     # Required: false
     # Default: docs(license): update copyright year(s)
     commitTitle: ''
 
     # The git commit body that will be appended to commit title, separated by two line
-    # returns
+    # returns. Supports substituting variable {{currentYear}}.
     # Required: false
-    # Default:
+    # Default: 
     commitBody: ''
 
-    # The title of the new pull request
+    # The title of the new pull request. Supports substituting variable
+    # {{currentYear}}.
     # Required: false
     # Default: Update license copyright year(s)
     prTitle: ''
 
-    # The contents of the pull request
+    # The contents of the pull request. Supports substituting variable
+    # {{currentYear}}.
     # Required: false
-    # Default:
+    # Default: 
     prBody: ''
 
     # Comma-separated list with usernames of people to assign when pull request is
     # created
     # Required: false
-    # Default:
+    # Default: 
     assignees: ''
 
     # Comma-separated list of labels to add when pull request is created
     # Required: false
-    # Default:
+    # Default: 
     labels: ''
 ```
 <!-- end usage -->
