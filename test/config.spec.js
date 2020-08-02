@@ -48,7 +48,7 @@ describe('#parseConfig should', () => {
         });
 
         describe('with branch name', () => {
-            test('returns it given no variable', () => {
+            test('returns it', () => {
                 getInputSkip(1).mockReturnValueOnce('some-branch-name');
                 const { branchName } = parseConfig();
                 expect(mockCore.getInput).toBeCalledWith('branchName');
@@ -89,6 +89,32 @@ describe('#parseConfig should', () => {
                 expect(mockCore.getInput).toBeCalledWith('commitTitle');
                 expect(commitTitle).toBe('some commit title');
             });
+
+            test('returns it given "currentYear" variable', () => {
+                getInputSkip(2).mockReturnValueOnce('some commit title {{currentYear}}');
+                const { commitTitle } = parseConfig();
+                expect(mockCore.getInput).toBeCalledWith('commitTitle');
+                expect(commitTitle).toBe(`some commit title ${CURRENT_YEAR}`);
+            });
+
+            test('returns it given "currentYear" variable with leading and trailing spaces', () => {
+                getInputSkip(2).mockReturnValueOnce('some commit title {{ currentYear }}');
+                const { commitTitle } = parseConfig();
+                expect(mockCore.getInput).toBeCalledWith('commitTitle');
+                expect(commitTitle).toBe(`some commit title ${CURRENT_YEAR}`);
+            });
+
+            test('throws error given invalid variable', () => {
+                getInputSkip(2).mockReturnValueOnce('some commit title {{invalidVariableName}}');
+                const fn = () => parseConfig();
+                expect(fn).toThrow();
+            });
+
+            test('throws error given invalid variable with leading and trailing spaces', () => {
+                getInputSkip(2).mockReturnValueOnce('some commit title {{ invalidVariableName }}');
+                const fn = () => parseConfig();
+                expect(fn).toThrow();
+            });
         });
 
         describe('with commit body', () => {
@@ -97,6 +123,32 @@ describe('#parseConfig should', () => {
                 const { commitBody } = parseConfig();
                 expect(mockCore.getInput).toBeCalledWith('commitBody');
                 expect(commitBody).toBe('some commit body');
+            });
+
+            test('returns it given "currentYear" variable', () => {
+                getInputSkip(3).mockReturnValueOnce('some commit body {{currentYear}}');
+                const { commitBody } = parseConfig();
+                expect(mockCore.getInput).toBeCalledWith('commitBody');
+                expect(commitBody).toBe(`some commit body ${CURRENT_YEAR}`);
+            });
+
+            test('returns it given "currentYear" variable with leading and trailing spaces', () => {
+                getInputSkip(3).mockReturnValueOnce('some commit body {{ currentYear }}');
+                const { commitBody } = parseConfig();
+                expect(mockCore.getInput).toBeCalledWith('commitBody');
+                expect(commitBody).toBe(`some commit body ${CURRENT_YEAR}`);
+            });
+
+            test('throws error given invalid variable', () => {
+                getInputSkip(3).mockReturnValueOnce('some commit body {{invalidVariableName}}');
+                const fn = () => parseConfig();
+                expect(fn).toThrow();
+            });
+
+            test('throws error given invalid variable with leading and trailing spaces', () => {
+                getInputSkip(3).mockReturnValueOnce('some commit body {{ invalidVariableName }}');
+                const fn = () => parseConfig();
+                expect(fn).toThrow();
             });
         });
 
@@ -107,6 +159,32 @@ describe('#parseConfig should', () => {
                 expect(mockCore.getInput).toBeCalledWith('prTitle');
                 expect(pullRequestTitle).toBe('some pull request title');
             });
+
+            test('returns it given "currentYear" variable', () => {
+                getInputSkip(4).mockReturnValueOnce('some pull request title {{currentYear}}');
+                const { pullRequestTitle } = parseConfig();
+                expect(mockCore.getInput).toBeCalledWith('prTitle');
+                expect(pullRequestTitle).toBe(`some pull request title ${CURRENT_YEAR}`);
+            });
+
+            test('returns it given "currentYear" variable with leading and trailing spaces', () => {
+                getInputSkip(4).mockReturnValueOnce('some pull request title {{ currentYear }}');
+                const { pullRequestTitle } = parseConfig();
+                expect(mockCore.getInput).toBeCalledWith('prTitle');
+                expect(pullRequestTitle).toBe(`some pull request title ${CURRENT_YEAR}`);
+            });
+
+            test('throws error given invalid variable', () => {
+                getInputSkip(4).mockReturnValueOnce('some pull request title {{invalidVariableName}}');
+                const fn = () => parseConfig();
+                expect(fn).toThrow();
+            });
+
+            test('throws error given invalid variable with leading and trailing spaces', () => {
+                getInputSkip(4).mockReturnValueOnce('some pull request title {{ invalidVariableName }}');
+                const fn = () => parseConfig();
+                expect(fn).toThrow();
+            });
         });
 
         describe('with pull request body', () => {
@@ -115,6 +193,32 @@ describe('#parseConfig should', () => {
                 const { pullRequestBody } = parseConfig();
                 expect(mockCore.getInput).toBeCalledWith('prBody');
                 expect(pullRequestBody).toBe('some pull request body');
+            });
+
+            test('returns it given "currentYear" variable', () => {
+                getInputSkip(5).mockReturnValueOnce('some pull request body {{currentYear}}');
+                const { pullRequestBody } = parseConfig();
+                expect(mockCore.getInput).toBeCalledWith('prBody');
+                expect(pullRequestBody).toBe(`some pull request body ${CURRENT_YEAR}`);
+            });
+
+            test('returns it given "currentYear" variable with leading and trailing spaces', () => {
+                getInputSkip(5).mockReturnValueOnce('some pull request body {{ currentYear }}');
+                const { pullRequestBody } = parseConfig();
+                expect(mockCore.getInput).toBeCalledWith('prBody');
+                expect(pullRequestBody).toBe(`some pull request body ${CURRENT_YEAR}`);
+            });
+
+            test('throws error given invalid variable', () => {
+                getInputSkip(5).mockReturnValueOnce('some pull request body {{invalidVariableName}}');
+                const fn = () => parseConfig();
+                expect(fn).toThrow();
+            });
+
+            test('throws error given invalid variable with leading and trailing spaces', () => {
+                getInputSkip(5).mockReturnValueOnce('some pull request body {{ invalidVariableName }}');
+                const fn = () => parseConfig();
+                expect(fn).toThrow();
             });
         });
 
