@@ -17,10 +17,10 @@ const VARIABLES = {
 function parseConfig() {
     const token = getInput('token', { required: true });
     const branchName = substituteVariables(getInput('branchName') || DEFAULT_BRANCH_NAME);
-    const commitTitle = getInput('commitTitle') || DEFAULT_COMMIT_TITLE;
-    const commitBody = getInput('commitBody') || DEFAULT_COMMIT_BODY;
-    const pullRequestTitle = getInput('prTitle') || DEFAULT_PR_TITLE;
-    const pullRequestBody = getInput('prBody') || DEFAULT_PR_BODY;
+    const commitTitle = substituteVariables(getInput('commitTitle') || DEFAULT_COMMIT_TITLE);
+    const commitBody = substituteVariables(getInput('commitBody') || DEFAULT_COMMIT_BODY);
+    const pullRequestTitle = substituteVariables(getInput('prTitle') || DEFAULT_PR_TITLE);
+    const pullRequestBody = substituteVariables(getInput('prBody') || DEFAULT_PR_BODY);
     const assignees = splitCsv(getInput('assignees') || DEFAULT_ASSIGNEES);
     const labels = splitCsv(getInput('labels') || DEFAULT_LABELS);
 
@@ -37,26 +37,21 @@ function parseConfig() {
 }
 
 /**
- * @param {string} value
+ * @param {string} text
  */
-function substituteVariables(value) {
+function substituteVariables(text) {
     const variableRegExp = /{{\s*(\w+)\s*}}/g;
-    const matches = [...value.matchAll(variableRegExp)];
-    for (const match of matches) {
-        if (typeof VARIABLES[match[1]] === 'undefined') {
-            throw new Error(`Configuration "${value}" contains unknown variable "${match[1]}"`);
+    let match;
+    while ((match = variableRegExp.exec(text)) !== null) {
+        const variableName = match[1];
+        if (!VARIABLES.hasOwnProperty(variableName)) {
+            throw new Error(`Configuration "${text}" contains unknown variable "${variableName}"`);
         }
-        value = value.replace(variableRegExp, VARIABLES[match[1]]);
+        // @ts-ignore
+        text = text.replace(variableRegExp, VARIABLES[variableName]);
     }
-    return value;
-    // const match = text.match(variableRegExp);
-    // if (!match) {
-    //     return text;
-    // }
-    // if (match[1] !== variableName) {
-    //     throw new Error(`Configuration "${text}" contains unknown variable "${match[1]}"`);
-    // }
-    // return text.replace(variableRegExp, variableValue);
+
+    return text;
 }
 
 /**
