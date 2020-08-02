@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ## [Unreleased]
 
+### :zap: Added
+
+- Support for substituting variable `currentYear` in configuration `commitTitle`, `commitBody`, `prTitle` and `prBody`
+
 ## [1.3.2] - 2020-07-28
 
 ### :syringe: Fixed

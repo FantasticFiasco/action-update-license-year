@@ -1,7 +1,5 @@
 const { getInput } = require('@actions/core');
 
-const CURRENT_YEAR = new Date().getFullYear();
-
 const DEFAULT_BRANCH_NAME = 'license/copyright-to-{{currentYear}}';
 const DEFAULT_COMMIT_TITLE = 'docs(license): update copyright year(s)';
 const DEFAULT_COMMIT_BODY = '';
@@ -10,17 +8,19 @@ const DEFAULT_PR_BODY = '';
 const DEFAULT_ASSIGNEES = '';
 const DEFAULT_LABELS = '';
 
+const CURRENT_YEAR = new Date().getFullYear();
+
+const VARIABLES = {
+    currentYear: CURRENT_YEAR.toString(),
+};
+
 function parseConfig() {
     const token = getInput('token', { required: true });
-    const branchName = substituteVariable(
-        getInput('branchName') || DEFAULT_BRANCH_NAME,
-        'currentYear',
-        CURRENT_YEAR.toString()
-    );
-    const commitTitle = getInput('commitTitle') || DEFAULT_COMMIT_TITLE;
-    const commitBody = getInput('commitBody') || DEFAULT_COMMIT_BODY;
-    const pullRequestTitle = getInput('prTitle') || DEFAULT_PR_TITLE;
-    const pullRequestBody = getInput('prBody') || DEFAULT_PR_BODY;
+    const branchName = substituteVariables(getInput('branchName') || DEFAULT_BRANCH_NAME);
+    const commitTitle = substituteVariables(getInput('commitTitle') || DEFAULT_COMMIT_TITLE);
+    const commitBody = substituteVariables(getInput('commitBody') || DEFAULT_COMMIT_BODY);
+    const pullRequestTitle = substituteVariables(getInput('prTitle') || DEFAULT_PR_TITLE);
+    const pullRequestBody = substituteVariables(getInput('prBody') || DEFAULT_PR_BODY);
     const assignees = splitCsv(getInput('assignees') || DEFAULT_ASSIGNEES);
     const labels = splitCsv(getInput('labels') || DEFAULT_LABELS);
 
@@ -38,19 +38,29 @@ function parseConfig() {
 
 /**
  * @param {string} text
- * @param {string} variableName
- * @param {string} variableValue
  */
-function substituteVariable(text, variableName, variableValue) {
-    const variableRegExp = /{{\s*(\w+)\s*}}/;
-    const match = text.match(variableRegExp);
-    if (!match) {
-        return text;
+function substituteVariables(text) {
+    // prettier-ignore
+    const variableRegExp = new RegExp(
+        '(?<!\\$)'    +  // '$'           negative lookbehind to ignore GitHub Action variables named '${{ variable }}'
+        '{{\\s*'      +  // '{{ '
+        '(\\w+)'      +  // 'variable'    variable name
+        '\\s*}}',        // ' }}'
+        'g'              // global
+    );
+
+    let match;
+    while ((match = variableRegExp.exec(text)) !== null) {
+        const name = match[1];
+        if (!VARIABLES.hasOwnProperty(name)) {
+            throw new Error(`Configuration "${text}" contains unknown variable "${name}"`);
+        }
+        // @ts-ignore
+        const value = VARIABLES[name];
+        text = text.replace(variableRegExp, value);
     }
-    if (match[1] !== variableName) {
-        throw new Error(`Configuration "${text}" contains unknown variable "${match[1]}"`);
-    }
-    return text.replace(variableRegExp, variableValue);
+
+    return text;
 }
 
 /**
