@@ -40,7 +40,15 @@ function parseConfig() {
  * @param {string} text
  */
 function substituteVariables(text) {
-    const variableRegExp = /{{\s*(\w+)\s*}}/g;
+    // prettier-ignore
+    const variableRegExp = new RegExp(
+        '(?<!\\$)'    +  // '$'           negative lookbehind to ignore GitHub Action variables named '${{ variable }}'
+        '{{\\s*'      +  // '{{ '
+        '(\\w+)'      +  // 'variable'    variable name
+        '\\s*}}',        // ' }}'
+        'g'              // global
+    );
+
     let match;
     while ((match = variableRegExp.exec(text)) !== null) {
         const variableName = match[1];

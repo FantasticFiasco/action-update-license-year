@@ -69,6 +69,13 @@ describe('#parseConfig should', () => {
                 expect(branchName).toBe(`some-branch-name-${CURRENT_YEAR}`);
             });
 
+            test('returns it given GitHub Action variable', () => {
+                getInputSkip(1).mockReturnValueOnce('some-branch-name-${{ github }}');
+                const { branchName } = parseConfig();
+                expect(mockCore.getInput).toBeCalledWith('branchName');
+                expect(branchName).toBe('some-branch-name-${{ github }}');
+            });
+
             test('throws error given invalid variable', () => {
                 getInputSkip(1).mockReturnValueOnce('some-branch-name-{{invalidVariableName}}');
                 const fn = () => parseConfig();
@@ -102,6 +109,13 @@ describe('#parseConfig should', () => {
                 const { commitTitle } = parseConfig();
                 expect(mockCore.getInput).toBeCalledWith('commitTitle');
                 expect(commitTitle).toBe(`some commit title ${CURRENT_YEAR}`);
+            });
+
+            test('returns it given GitHub Action variable', () => {
+                getInputSkip(2).mockReturnValueOnce('some commit title ${{ github }}');
+                const { commitTitle } = parseConfig();
+                expect(mockCore.getInput).toBeCalledWith('commitTitle');
+                expect(commitTitle).toBe('some commit title ${{ github }}');
             });
 
             test('throws error given invalid variable', () => {
@@ -139,6 +153,13 @@ describe('#parseConfig should', () => {
                 expect(commitBody).toBe(`some commit body ${CURRENT_YEAR}`);
             });
 
+            test('returns it given GitHub Action variable', () => {
+                getInputSkip(3).mockReturnValueOnce('some commit body ${{ github }}');
+                const { commitBody } = parseConfig();
+                expect(mockCore.getInput).toBeCalledWith('commitBody');
+                expect(commitBody).toBe('some commit body ${{ github }}');
+            });
+
             test('throws error given invalid variable', () => {
                 getInputSkip(3).mockReturnValueOnce('some commit body {{invalidVariableName}}');
                 const fn = () => parseConfig();
@@ -174,6 +195,13 @@ describe('#parseConfig should', () => {
                 expect(pullRequestTitle).toBe(`some pull request title ${CURRENT_YEAR}`);
             });
 
+            test('returns it given GitHub Action variable', () => {
+                getInputSkip(4).mockReturnValueOnce('some pull request title ${{ github }}');
+                const { pullRequestTitle } = parseConfig();
+                expect(mockCore.getInput).toBeCalledWith('prTitle');
+                expect(pullRequestTitle).toBe('some pull request title ${{ github }}');
+            });
+
             test('throws error given invalid variable', () => {
                 getInputSkip(4).mockReturnValueOnce('some pull request title {{invalidVariableName}}');
                 const fn = () => parseConfig();
@@ -207,6 +235,13 @@ describe('#parseConfig should', () => {
                 const { pullRequestBody } = parseConfig();
                 expect(mockCore.getInput).toBeCalledWith('prBody');
                 expect(pullRequestBody).toBe(`some pull request body ${CURRENT_YEAR}`);
+            });
+
+            test('returns it given GitHub Action variable', () => {
+                getInputSkip(5).mockReturnValueOnce('some pull request body ${{ github }}');
+                const { pullRequestBody } = parseConfig();
+                expect(mockCore.getInput).toBeCalledWith('prBody');
+                expect(pullRequestBody).toBe('some pull request body ${{ github }}');
             });
 
             test('throws error given invalid variable', () => {
