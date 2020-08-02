@@ -51,12 +51,13 @@ function substituteVariables(text) {
 
     let match;
     while ((match = variableRegExp.exec(text)) !== null) {
-        const variableName = match[1];
-        if (!VARIABLES.hasOwnProperty(variableName)) {
-            throw new Error(`Configuration "${text}" contains unknown variable "${variableName}"`);
+        const name = match[1];
+        if (!VARIABLES.hasOwnProperty(name)) {
+            throw new Error(`Configuration "${text}" contains unknown variable "${name}"`);
         }
         // @ts-ignore
-        text = text.replace(variableRegExp, VARIABLES[variableName]);
+        const value = VARIABLES[name];
+        text = text.replace(variableRegExp, value);
     }
 
     return text;
