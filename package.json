@@ -37,7 +37,7 @@
     "@types/js-yaml": "3.12.5",
     "@zeit/ncc": "0.22.3",
     "coveralls": "3.1.0",
-    "jest": "26.3.0",
+    "jest": "26.4.0",
     "js-yaml": "3.14.0",
     "prettier": "2.0.5",
     "typescript": "3.9.7"
