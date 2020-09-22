@@ -4,6 +4,12 @@ When contributing to this repository, please first discuss the change you wish t
 
 Please note we have a [code of conduct](./CODE_OF_CONDUCT.md), please follow it in all your interactions with the project.
 
+## Create Release
+
+1. Describe the new release in `CHANGELOG.md`
+1. Run `yarn version`
+1. When build pipeline is complete, update the GitHub release message
+
 ## Build and test library
 
 The following commands will go from nothing to a successful run of the test suite.
