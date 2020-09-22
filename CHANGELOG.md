@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ## [Unreleased]
 
+## [1.4.1] - 2020-09-22
+
 ### :policeman: Security
 
 - Security vulnerability in transient dependency `node-fetch`
