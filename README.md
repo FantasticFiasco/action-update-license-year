@@ -1,6 +1,6 @@
 # GitHub Action - Update copyright years in license file
 
-[![Build Status](https://travis-ci.org/FantasticFiasco/action-update-license-year.svg?branch=master)](https://travis-ci.org/FantasticFiasco/action-update-license-year)
+[![Build Status](https://travis-ci.com/FantasticFiasco/action-update-license-year.svg?branch=master)](https://travis-ci.com/FantasticFiasco/action-update-license-year)
 [![Coverage Status](https://coveralls.io/repos/github/FantasticFiasco/action-update-license-year/badge.svg?branch=master)](https://coveralls.io/github/FantasticFiasco/action-update-license-year?branch=master)
 [![SemVer compatible](https://img.shields.io/badge/%E2%9C%85-SemVer%20compatible-blue)](https://semver.org/)
 [![dependencies Status](https://david-dm.org/FantasticFiasco/action-update-license-year/status.svg)](https://david-dm.org/FantasticFiasco/action-update-license-year)
