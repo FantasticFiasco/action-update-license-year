@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ## [Unreleased]
 
+## [1.4.2] - 2020-11-24
+
 ### :syringe: Fixed
 
 - [#97](https://github.com/FantasticFiasco/action-update-license-year/pull/97) License file is incorrectly updated using ASCII encoding instead of UTF8 (contributed by [@mondeja](https://github.com/mondeja))
