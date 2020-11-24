@@ -27,7 +27,7 @@ async function run() {
             info(`Found branch named "${branchName}"`);
         }
         const licenseResponse = await repository.getContent(hasBranch ? branchName : MASTER, FILENAME);
-        const license = Buffer.from(licenseResponse.data.content, 'base64').toString('ascii');
+        const license = Buffer.from(licenseResponse.data.content, 'base64').toString('utf8');
 
         const currentYear = new Date().getFullYear();
         info(`Current year is "${currentYear}"`);

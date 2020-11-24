@@ -87,7 +87,7 @@ class Repository {
      * @param {string} branchName The branch name
      * @param {string} filePath The file path
      * @param {string} sha The blob SHA of the file being replaced
-     * @param {string} content The new file content, using ASCII encoding
+     * @param {string} content The new file content, using UTF8 encoding
      * @param {string} commitMessage The commit message
      */
     async updateContent(branchName, filePath, sha, content, commitMessage) {
@@ -98,7 +98,7 @@ class Repository {
                 branch: branchName,
                 path: filePath,
                 message: commitMessage,
-                content: Buffer.from(content, 'ascii').toString('base64'),
+                content: Buffer.from(content, 'utf8').toString('base64'),
                 sha,
             });
         } catch (err) {

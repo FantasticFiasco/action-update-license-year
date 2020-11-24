@@ -123,6 +123,15 @@ describe('#updateContent should', () => {
         await expect(promise).resolves.toBeDefined();
     });
 
+    test('use utf8 encoding', async () => {
+        mockOctokit.repos.createOrUpdateFileContents.mockResolvedValue({});
+        const repository = new Repository('some owner', 'some name', 'some token');
+        const content = 'Álvaro Mondéjar';
+        const promise = repository.updateContent('master', 'LICENSE', 'some sha', content, 'some commit message');
+        await expect(promise).resolves.toBeDefined();
+        expect(fromBase64ToUtf8(mockOctokit.repos.createOrUpdateFileContents.mock.calls[0][0].content)).toBe(content);
+    });
+
     test("throw error given file doesn't exist", async () => {
         mockOctokit.repos.createOrUpdateFileContents.mockRejectedValue({});
         const repository = new Repository('some owner', 'some name', 'some token');
@@ -223,4 +232,11 @@ const GET_REF_SUCCESS_RESPONSE = {
 
 const GET_REF_FAILURE_RESPONSE = {
     status: 404,
+};
+
+/**
+ * @param {string} value
+ */
+const fromBase64ToUtf8 = (value) => {
+    return Buffer.from(value, 'base64').toString('utf8');
 };
