@@ -4,42 +4,21 @@ on: [push, pull_request]
 
 env:
   NODE_LTS: "14.x"
-  NODE_CURRENT: "15.x"
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [
-            # LTS
-            ${{ env.NODE_LTS }},
-            # Current
-            ${{ env.NODE_CURRENT }},
-          ]
     steps:
       - name: Logo
         run: echo -e "$(curl --silent https://raw.githubusercontent.com/FantasticFiasco/logo/master/logo.ansi)"
-      - uses: actions/checkout@v2
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v1
-        with:
-          node-version: ${{ matrix.node-version }}
-      - run: yarn install
-      - run: yarn test
-      - run: yarn type-check
-      - run: yarn lint
-
-  coverage:
-    runs-on: ubuntu-latest
-    steps:
       - uses: actions/checkout@v2
       - name: Use Node.js ${{ env.NODE_LTS }}
         uses: actions/setup-node@v1
         with:
           node-version: ${{ env.NODE_LTS }}
       - run: yarn install
-      - run: yarn coverage
       - uses: coverallsapp/github-action@master
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
+      - run: yarn type-check
+      - run: yarn lint
