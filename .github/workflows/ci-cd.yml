@@ -23,13 +23,10 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - run: yarn install
       - run: yarn coverage
-      # - uses: coverallsapp/github-action@master
-      #   if: matrix.
-      #   with:
-      #     github-token: ${{ secrets.GITHUB_TOKEN }}
-      - env:
-          MATRIX_CONTEXT: ${{ toJson(matrix) }}
-        run: echo $MATRIX_CONTEXT
+      - uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+        if: matrix.node-version == 15.x
       - run: yarn type-check
       - run: yarn lint
 
