@@ -5,12 +5,9 @@ on: push
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      NODE_LTS: 14.x
-      NODE_CURRENT: 15.x
     strategy:
       matrix:
-        node-version: [ ${{ NODE_LTS }}, ${{ NODE_CURRENT }}]
+        node-version: [14.x, 15.x] # The versions are referenced in the steps
     steps:
       - run: echo -e "$(curl --silent https://raw.githubusercontent.com/FantasticFiasco/logo/master/logo.ansi)"
       - uses: actions/checkout@v2
@@ -19,7 +16,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - run: yarn install
-      - run: if [ ${{ matrix.node-version }} == $NODE_CURRENT ]; then yarn coverage; fi
-      - run: if [ ${{ matrix.node-version }} != $NODE_CURRENT ]; then yarn test; fi
+      - run: if [ ${{ matrix.node-version }} == 15.x ]; then yarn coverage; fi
+      - run: if [ ${{ matrix.node-version }} != 15.x ]; then yarn test; fi
       - run: type-check
       - run: yarn lint
