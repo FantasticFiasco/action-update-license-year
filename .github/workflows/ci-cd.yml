@@ -28,7 +28,7 @@ jobs:
       #   with:
       #     github-token: ${{ secrets.GITHUB_TOKEN }}
       - env:
-          MATRIX_CONTEXT: ${{ toJson(strategy) }}
+          MATRIX_CONTEXT: ${{ toJson(matrix) }}
         run: echo $MATRIX_CONTEXT
       - run: yarn type-check
       - run: yarn lint
