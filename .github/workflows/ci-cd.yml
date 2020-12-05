@@ -7,7 +7,12 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [14.x, 15.x] # The versions are referenced in the steps
+        node-version: [
+            # LTS
+            14.x,
+            # Current (is referenced in the steps as well)
+            15.x,
+          ]
     steps:
       - run: echo -e "$(curl --silent https://raw.githubusercontent.com/FantasticFiasco/logo/master/logo.ansi)"
       - uses: actions/checkout@v2
