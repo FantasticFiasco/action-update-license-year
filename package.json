@@ -23,7 +23,7 @@
     "type-check": "tsc --noEmit",
     "test": "jest",
     "lint": "prettier --check ./src/**/*.js ./test/**/*.js",
-    "coverage": "jest --coverage && coveralls < coverage/lcov.info",
+    "coverage": "jest --coverage",
     "dist": "ncc build ./src/main.js",
     "preversion": "yarn dist && git add ./dist && git add ./CHANGELOG.md && node ./scripts/generate-docs.js && git add ./README.md",
     "postversion": "git push --follow-tags"
@@ -36,7 +36,6 @@
     "@types/jest": "26.0.16",
     "@types/js-yaml": "3.12.5",
     "@zeit/ncc": "0.22.3",
-    "coveralls": "3.1.0",
     "jest": "26.6.3",
     "js-yaml": "3.14.0",
     "prettier": "2.2.1",

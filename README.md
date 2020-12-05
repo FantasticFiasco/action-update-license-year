@@ -1,6 +1,6 @@
 # GitHub Action - Update copyright years in license file
 
-[![Build Status](https://travis-ci.com/FantasticFiasco/action-update-license-year.svg?branch=master)](https://travis-ci.com/FantasticFiasco/action-update-license-year)
+![Build Status](https://github.com/FantasticFiasco/action-update-license-year/workflows/CI/CD/badge.svg)
 [![Coverage Status](https://coveralls.io/repos/github/FantasticFiasco/action-update-license-year/badge.svg?branch=master)](https://coveralls.io/github/FantasticFiasco/action-update-license-year?branch=master)
 [![SemVer compatible](https://img.shields.io/badge/%E2%9C%85-SemVer%20compatible-blue)](https://semver.org/)
 [![dependencies Status](https://david-dm.org/FantasticFiasco/action-update-license-year/status.svg)](https://david-dm.org/FantasticFiasco/action-update-license-year)
@@ -66,7 +66,7 @@ For the majority of repositories on GitHub the following code will do the job. I
     # The git commit body that will be appended to commit title, separated by two line
     # returns. Supports substituting variable {{currentYear}}.
     # Required: false
-    # Default: 
+    # Default:
     commitBody: ''
 
     # The title of the new pull request. Supports substituting variable
@@ -78,18 +78,18 @@ For the majority of repositories on GitHub the following code will do the job. I
     # The contents of the pull request. Supports substituting variable
     # {{currentYear}}.
     # Required: false
-    # Default: 
+    # Default:
     prBody: ''
 
     # Comma-separated list with usernames of people to assign when pull request is
     # created
     # Required: false
-    # Default: 
+    # Default:
     assignees: ''
 
     # Comma-separated list of labels to add when pull request is created
     # Required: false
-    # Default: 
+    # Default:
     labels: ''
 ```
 <!-- end usage -->

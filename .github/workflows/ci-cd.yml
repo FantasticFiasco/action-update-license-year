@@ -1,0 +1,39 @@
+name: CI/CD
+
+on: [push, pull_request]
+
+env:
+  NODE_LTS: "14.x"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Logo
+        run: echo -e "$(curl --silent https://raw.githubusercontent.com/FantasticFiasco/logo/master/logo.ansi)"
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ env.NODE_LTS }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ env.NODE_LTS }}
+      - run: yarn install
+      - run: yarn coverage
+      - uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - run: yarn type-check
+      - run: yarn lint
+
+  release:
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: true
