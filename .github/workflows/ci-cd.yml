@@ -23,8 +23,8 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - run: yarn install
       - run: yarn coverage
-      run: yarn type-check
-      run: yarn lint
+      - run: yarn type-check
+      - run: yarn lint
 
       # - run: if [ ${{ matrix.node-version }} == 15.x ]; then yarn coverage; fi
       # - run: if [ ${{ matrix.node-version }} != 15.x ]; then yarn test; fi
