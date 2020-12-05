@@ -3,6 +3,7 @@ name: CI/CD
 on: [push, pull_request]
 
 env:
+  NODE_LTS: "14.x"
   NODE_CURRENT: "15.x"
 
 jobs:
@@ -33,10 +34,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Use Node.js 15.x
+      - name: Use Node.js ${{ env.NODE_LTS }}
         uses: actions/setup-node@v1
         with:
-          node-version: ${{ env.NODE_CURRENT }}
+          node-version: ${{ env.NODE_LTS }}
       - run: yarn install
       - run: yarn coverage
       - uses: coverallsapp/github-action@master
