@@ -23,7 +23,11 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - run: yarn install
       - run: yarn coverage
-      - run: ls ./coverage
+      # - uses: coverallsapp/github-action@master
+      #   if: matrix.
+      #   with:
+      #     github-token: ${{ secrets.GITHUB_TOKEN }}
+      - run: echo ${{ matrix }}
       - run: yarn type-check
       - run: yarn lint
 
