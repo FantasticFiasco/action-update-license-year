@@ -1,6 +1,6 @@
 name: CI/CD
 
-on: push
+on: [push, pull_request]
 
 jobs:
   build:
@@ -10,7 +10,7 @@ jobs:
         node-version: [
             # LTS
             14.x,
-            # Current (is referenced in the steps as well)
+            # Current
             15.x,
           ]
     steps:
@@ -22,13 +22,18 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - run: yarn install
-      - run: yarn coverage
-      - uses: coverallsapp/github-action@master
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-        if: matrix.node-version == "15.x"
+      - run: yarn test
       - run: yarn type-check
       - run: yarn lint
 
-      # - run: if [ ${{ matrix.node-version }} == 15.x ]; then yarn coverage; fi
-      # - run: if [ ${{ matrix.node-version }} != 15.x ]; then yarn test; fi
+  coverage:
+    - uses: actions/checkout@v2
+    - name: Use Node.js 15.x
+      uses: actions/setup-node@v1
+      with:
+        node-version: 15.x
+    - run: yarn install
+    - run: yarn coverage
+    - uses: coverallsapp/github-action@master
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
