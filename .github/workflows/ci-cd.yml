@@ -3,11 +3,11 @@ name: CI/CD
 on: push
 
 jobs:
-  env:
-    NODE_LTS: 14.x
-    NODE_CURRENT: 15.x
   build:
     runs-on: ubuntu-latest
+    env:
+      NODE_LTS: 14.x
+      NODE_CURRENT: 15.x
     strategy:
       matrix:
         node-version: [$NODE_LTS, $NODE_CURRENT]
