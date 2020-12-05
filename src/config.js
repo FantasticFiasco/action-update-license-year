@@ -52,7 +52,7 @@ function substituteVariables(text) {
     let match;
     while ((match = variableRegExp.exec(text)) !== null) {
         const name = match[1];
-        if (!VARIABLES.hasOwnProperty(name)) {
+        if (!Object.prototype.hasOwnProperty.call(VARIABLES, name)) {
             throw new Error(`Configuration "${text}" contains unknown variable "${name}"`);
         }
         // @ts-ignore
