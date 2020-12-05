@@ -22,7 +22,9 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - run: yarn install
-      - run: if [ ${{ matrix.node-version }} == 15.x ]; then yarn coverage; fi
-      - run: if [ ${{ matrix.node-version }} != 15.x ]; then yarn test; fi
-      - run: yarn type-check
-      - run: yarn lint
+      - run: yarn coverage
+      run: yarn type-check
+      run: yarn lint
+
+      # - run: if [ ${{ matrix.node-version }} == 15.x ]; then yarn coverage; fi
+      # - run: if [ ${{ matrix.node-version }} != 15.x ]; then yarn test; fi
