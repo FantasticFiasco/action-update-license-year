@@ -34,7 +34,7 @@
     "@actions/github": "4.0.0"
   },
   "devDependencies": {
-    "@types/jest": "26.0.18",
+    "@types/jest": "26.0.19",
     "@types/js-yaml": "3.12.5",
     "@zeit/ncc": "0.22.3",
     "eslint": "7.15.0",
