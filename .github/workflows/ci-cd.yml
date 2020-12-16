@@ -13,7 +13,7 @@ jobs:
         run: echo -e "$(curl --silent https://raw.githubusercontent.com/FantasticFiasco/logo/master/logo.ansi)"
       - uses: actions/checkout@v2
       - name: Use Node.js ${{ env.NODE_LTS }}
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v2
         with:
           node-version: ${{ env.NODE_LTS }}
       - run: yarn install --frozen-lockfile
