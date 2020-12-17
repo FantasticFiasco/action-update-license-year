@@ -19,12 +19,18 @@ inputs:
     required: false
 
   path:
-    description: TODO
+    description: >
+      A path or a wildcard pattern specifying files to transform. Multiple paths can be
+      specified using literal styled YAML.
     default: LICENSE
     required: false
 
   transform:
-    description: TODO
+    description: >
+      A regular expression (JavaScript flavor) describing the license transform. The
+      expression must contain a group named "from", encapsulating the first year of
+      license validity. The expression will be used by String.prototype.replace() to
+      apply the transformation.
     default:
     required: false
 
