@@ -1,10 +1,7 @@
-const mockCore = {
-    getInput: jest.fn(),
-};
-jest.mock('@actions/core', () => {
-    return mockCore;
-});
-
+const { mkdtempSync, closeSync, openSync } = require('fs');
+const { tmpdir } = require('os');
+const { join } = require('path');
+const { exportVariable } = require('@actions/core');
 const {
     parseConfig,
     CURRENT_YEAR,
@@ -14,10 +11,44 @@ const {
     DEFAULT_PR_BODY,
 } = require('../src/config');
 
+const INPUT_TOKEN = 'INPUT_TOKEN';
+const INPUT_BRANCHNAME = 'INPUT_BRANCHNAME';
+const INPUT_COMMITTITLE = 'INPUT_COMMITTITLE';
+const INPUT_COMMITBODY = 'INPUT_COMMITBODY';
+const INPUT_PRTITLE = 'INPUT_PRTITLE';
+const INPUT_PRBODY = 'INPUT_PRBODY';
+const INPUT_ASSIGNEES = 'INPUT_ASSIGNEES';
+const INPUT_LABELS = 'INPUT_LABELS';
+
 describe('#parseConfig should', () => {
+    beforeAll(() => {
+        // Redirect output from exportVariable to a temporary file instead of stdout
+        const tempDir = mkdtempSync(tmpdir());
+        const tempFile = join(tempDir, 'actions_output.txt');
+        closeSync(openSync(tempFile, 'w'));
+        process.env.GITHUB_ENV = tempFile;
+    });
+
+    beforeEach(() => {
+        // Let's make sure that all inputs are cleared before each test
+        delete process.env[INPUT_TOKEN];
+        delete process.env[INPUT_BRANCHNAME];
+        delete process.env[INPUT_COMMITTITLE];
+        delete process.env[INPUT_COMMITBODY];
+        delete process.env[INPUT_PRTITLE];
+        delete process.env[INPUT_PRBODY];
+        delete process.env[INPUT_ASSIGNEES];
+        delete process.env[INPUT_LABELS];
+    });
+
     describe('given no configuration', () => {
+        test('throws error given no token', () => {
+            const fn = () => parseConfig();
+            expect(fn).toThrow();
+        });
+
         test('return default values', () => {
-            mockCore.getInput.mockReturnValueOnce('some token'); // Token is required
+            exportVariable(INPUT_TOKEN, 'some token');
             const {
                 branchName,
                 commitTitle,
@@ -38,52 +69,51 @@ describe('#parseConfig should', () => {
     });
 
     describe('given configuration', () => {
+        beforeEach(() => {
+            // Token is a required input for all tests
+            exportVariable(INPUT_TOKEN, 'some token');
+        });
+
         describe('with token', () => {
             test('returns it', () => {
-                mockCore.getInput.mockReturnValueOnce('some token');
                 const { token } = parseConfig();
-                expect(mockCore.getInput).toBeCalledWith('token', { required: true });
                 expect(token).toBe('some token');
             });
         });
 
         describe('with branch name', () => {
             test('returns it', () => {
-                getInputSkip(1).mockReturnValueOnce('some-branch-name');
+                exportVariable(INPUT_BRANCHNAME, 'some-branch-name');
                 const { branchName } = parseConfig();
-                expect(mockCore.getInput).toBeCalledWith('branchName');
                 expect(branchName).toBe('some-branch-name');
             });
 
             test('returns it given "currentYear" variable', () => {
-                getInputSkip(1).mockReturnValueOnce('some-branch-name-{{currentYear}}');
+                exportVariable(INPUT_BRANCHNAME, 'some-branch-name-{{currentYear}}');
                 const { branchName } = parseConfig();
-                expect(mockCore.getInput).toBeCalledWith('branchName');
                 expect(branchName).toBe(`some-branch-name-${CURRENT_YEAR}`);
             });
 
             test('returns it given "currentYear" variable with leading and trailing spaces', () => {
-                getInputSkip(1).mockReturnValueOnce('some-branch-name-{{ currentYear }}');
+                exportVariable(INPUT_BRANCHNAME, 'some-branch-name-{{ currentYear }}');
                 const { branchName } = parseConfig();
-                expect(mockCore.getInput).toBeCalledWith('branchName');
                 expect(branchName).toBe(`some-branch-name-${CURRENT_YEAR}`);
             });
 
             test('returns it given GitHub Action variable', () => {
-                getInputSkip(1).mockReturnValueOnce('some-branch-name-${{ github }}');
+                exportVariable(INPUT_BRANCHNAME, 'some-branch-name-${{ github }}');
                 const { branchName } = parseConfig();
-                expect(mockCore.getInput).toBeCalledWith('branchName');
                 expect(branchName).toBe('some-branch-name-${{ github }}');
             });
 
             test('throws error given invalid variable', () => {
-                getInputSkip(1).mockReturnValueOnce('some-branch-name-{{invalidVariableName}}');
+                exportVariable(INPUT_BRANCHNAME, 'some-branch-name-{{invalidVariableName}}');
                 const fn = () => parseConfig();
                 expect(fn).toThrow();
             });
 
             test('throws error given invalid variable with leading and trailing spaces', () => {
-                getInputSkip(1).mockReturnValueOnce('some-branch-name-{{ invalidVariableName }}');
+                exportVariable(INPUT_BRANCHNAME, 'some-branch-name-{{ invalidVariableName }}');
                 const fn = () => parseConfig();
                 expect(fn).toThrow();
             });
@@ -91,41 +121,37 @@ describe('#parseConfig should', () => {
 
         describe('with commit title', () => {
             test('returns it', () => {
-                getInputSkip(2).mockReturnValueOnce('some commit title');
+                exportVariable(INPUT_COMMITTITLE, 'some commit title');
                 const { commitTitle } = parseConfig();
-                expect(mockCore.getInput).toBeCalledWith('commitTitle');
                 expect(commitTitle).toBe('some commit title');
             });
 
             test('returns it given "currentYear" variable', () => {
-                getInputSkip(2).mockReturnValueOnce('some commit title {{currentYear}}');
+                exportVariable(INPUT_COMMITTITLE, 'some commit title {{currentYear}}');
                 const { commitTitle } = parseConfig();
-                expect(mockCore.getInput).toBeCalledWith('commitTitle');
                 expect(commitTitle).toBe(`some commit title ${CURRENT_YEAR}`);
             });
 
             test('returns it given "currentYear" variable with leading and trailing spaces', () => {
-                getInputSkip(2).mockReturnValueOnce('some commit title {{ currentYear }}');
+                exportVariable(INPUT_COMMITTITLE, 'some commit title {{ currentYear }}');
                 const { commitTitle } = parseConfig();
-                expect(mockCore.getInput).toBeCalledWith('commitTitle');
                 expect(commitTitle).toBe(`some commit title ${CURRENT_YEAR}`);
             });
 
             test('returns it given GitHub Action variable', () => {
-                getInputSkip(2).mockReturnValueOnce('some commit title ${{ github }}');
+                exportVariable(INPUT_COMMITTITLE, 'some commit title ${{ github }}');
                 const { commitTitle } = parseConfig();
-                expect(mockCore.getInput).toBeCalledWith('commitTitle');
                 expect(commitTitle).toBe('some commit title ${{ github }}');
             });
 
             test('throws error given invalid variable', () => {
-                getInputSkip(2).mockReturnValueOnce('some commit title {{invalidVariableName}}');
+                exportVariable(INPUT_COMMITTITLE, 'some commit title {{invalidVariableName}}');
                 const fn = () => parseConfig();
                 expect(fn).toThrow();
             });
 
             test('throws error given invalid variable with leading and trailing spaces', () => {
-                getInputSkip(2).mockReturnValueOnce('some commit title {{ invalidVariableName }}');
+                exportVariable(INPUT_COMMITTITLE, 'some commit title {{ invalidVariableName }}');
                 const fn = () => parseConfig();
                 expect(fn).toThrow();
             });
@@ -133,41 +159,37 @@ describe('#parseConfig should', () => {
 
         describe('with commit body', () => {
             test('returns it', () => {
-                getInputSkip(3).mockReturnValueOnce('some commit body');
+                exportVariable(INPUT_COMMITBODY, 'some commit body');
                 const { commitBody } = parseConfig();
-                expect(mockCore.getInput).toBeCalledWith('commitBody');
                 expect(commitBody).toBe('some commit body');
             });
 
             test('returns it given "currentYear" variable', () => {
-                getInputSkip(3).mockReturnValueOnce('some commit body {{currentYear}}');
+                exportVariable(INPUT_COMMITBODY, 'some commit body {{currentYear}}');
                 const { commitBody } = parseConfig();
-                expect(mockCore.getInput).toBeCalledWith('commitBody');
                 expect(commitBody).toBe(`some commit body ${CURRENT_YEAR}`);
             });
 
             test('returns it given "currentYear" variable with leading and trailing spaces', () => {
-                getInputSkip(3).mockReturnValueOnce('some commit body {{ currentYear }}');
+                exportVariable(INPUT_COMMITBODY, 'some commit body {{ currentYear }}');
                 const { commitBody } = parseConfig();
-                expect(mockCore.getInput).toBeCalledWith('commitBody');
                 expect(commitBody).toBe(`some commit body ${CURRENT_YEAR}`);
             });
 
             test('returns it given GitHub Action variable', () => {
-                getInputSkip(3).mockReturnValueOnce('some commit body ${{ github }}');
+                exportVariable(INPUT_COMMITBODY, 'some commit body ${{ github }}');
                 const { commitBody } = parseConfig();
-                expect(mockCore.getInput).toBeCalledWith('commitBody');
                 expect(commitBody).toBe('some commit body ${{ github }}');
             });
 
             test('throws error given invalid variable', () => {
-                getInputSkip(3).mockReturnValueOnce('some commit body {{invalidVariableName}}');
+                exportVariable(INPUT_COMMITBODY, 'some commit body {{invalidVariableName}}');
                 const fn = () => parseConfig();
                 expect(fn).toThrow();
             });
 
             test('throws error given invalid variable with leading and trailing spaces', () => {
-                getInputSkip(3).mockReturnValueOnce('some commit body {{ invalidVariableName }}');
+                exportVariable(INPUT_COMMITBODY, 'some commit body {{ invalidVariableName }}');
                 const fn = () => parseConfig();
                 expect(fn).toThrow();
             });
@@ -175,41 +197,37 @@ describe('#parseConfig should', () => {
 
         describe('with pull request title', () => {
             test('returns it', () => {
-                getInputSkip(4).mockReturnValueOnce('some pull request title');
+                exportVariable(INPUT_PRTITLE, 'some pull request title');
                 const { pullRequestTitle } = parseConfig();
-                expect(mockCore.getInput).toBeCalledWith('prTitle');
                 expect(pullRequestTitle).toBe('some pull request title');
             });
 
             test('returns it given "currentYear" variable', () => {
-                getInputSkip(4).mockReturnValueOnce('some pull request title {{currentYear}}');
+                exportVariable(INPUT_PRTITLE, 'some pull request title {{currentYear}}');
                 const { pullRequestTitle } = parseConfig();
-                expect(mockCore.getInput).toBeCalledWith('prTitle');
                 expect(pullRequestTitle).toBe(`some pull request title ${CURRENT_YEAR}`);
             });
 
             test('returns it given "currentYear" variable with leading and trailing spaces', () => {
-                getInputSkip(4).mockReturnValueOnce('some pull request title {{ currentYear }}');
+                exportVariable(INPUT_PRTITLE, 'some pull request title {{ currentYear }}');
                 const { pullRequestTitle } = parseConfig();
-                expect(mockCore.getInput).toBeCalledWith('prTitle');
                 expect(pullRequestTitle).toBe(`some pull request title ${CURRENT_YEAR}`);
             });
 
             test('returns it given GitHub Action variable', () => {
-                getInputSkip(4).mockReturnValueOnce('some pull request title ${{ github }}');
+                exportVariable(INPUT_PRTITLE, 'some pull request title ${{ github }}');
                 const { pullRequestTitle } = parseConfig();
-                expect(mockCore.getInput).toBeCalledWith('prTitle');
                 expect(pullRequestTitle).toBe('some pull request title ${{ github }}');
             });
 
             test('throws error given invalid variable', () => {
-                getInputSkip(4).mockReturnValueOnce('some pull request title {{invalidVariableName}}');
+                exportVariable(INPUT_PRTITLE, 'some pull request title {{invalidVariableName}}');
                 const fn = () => parseConfig();
                 expect(fn).toThrow();
             });
 
             test('throws error given invalid variable with leading and trailing spaces', () => {
-                getInputSkip(4).mockReturnValueOnce('some pull request title {{ invalidVariableName }}');
+                exportVariable(INPUT_PRTITLE, 'some pull request title {{ invalidVariableName }}');
                 const fn = () => parseConfig();
                 expect(fn).toThrow();
             });
@@ -217,41 +235,37 @@ describe('#parseConfig should', () => {
 
         describe('with pull request body', () => {
             test('returns it', () => {
-                getInputSkip(5).mockReturnValueOnce('some pull request body');
+                exportVariable(INPUT_PRBODY, 'some pull request body');
                 const { pullRequestBody } = parseConfig();
-                expect(mockCore.getInput).toBeCalledWith('prBody');
                 expect(pullRequestBody).toBe('some pull request body');
             });
 
             test('returns it given "currentYear" variable', () => {
-                getInputSkip(5).mockReturnValueOnce('some pull request body {{currentYear}}');
+                exportVariable(INPUT_PRBODY, 'some pull request body {{currentYear}}');
                 const { pullRequestBody } = parseConfig();
-                expect(mockCore.getInput).toBeCalledWith('prBody');
                 expect(pullRequestBody).toBe(`some pull request body ${CURRENT_YEAR}`);
             });
 
             test('returns it given "currentYear" variable with leading and trailing spaces', () => {
-                getInputSkip(5).mockReturnValueOnce('some pull request body {{ currentYear }}');
+                exportVariable(INPUT_PRBODY, 'some pull request body {{ currentYear }}');
                 const { pullRequestBody } = parseConfig();
-                expect(mockCore.getInput).toBeCalledWith('prBody');
                 expect(pullRequestBody).toBe(`some pull request body ${CURRENT_YEAR}`);
             });
 
             test('returns it given GitHub Action variable', () => {
-                getInputSkip(5).mockReturnValueOnce('some pull request body ${{ github }}');
+                exportVariable(INPUT_PRBODY, 'some pull request body ${{ github }}');
                 const { pullRequestBody } = parseConfig();
-                expect(mockCore.getInput).toBeCalledWith('prBody');
                 expect(pullRequestBody).toBe('some pull request body ${{ github }}');
             });
 
             test('throws error given invalid variable', () => {
-                getInputSkip(5).mockReturnValueOnce('some pull request body {{invalidVariableName}}');
+                exportVariable(INPUT_PRBODY, 'some pull request body {{invalidVariableName}}');
                 const fn = () => parseConfig();
                 expect(fn).toThrow();
             });
 
             test('throws error given invalid variable with leading and trailing spaces', () => {
-                getInputSkip(5).mockReturnValueOnce('some pull request body {{ invalidVariableName }}');
+                exportVariable(INPUT_PRBODY, 'some pull request body {{ invalidVariableName }}');
                 const fn = () => parseConfig();
                 expect(fn).toThrow();
             });
@@ -259,44 +273,30 @@ describe('#parseConfig should', () => {
 
         describe('with assignees', () => {
             test('returns them', () => {
-                getInputSkip(6).mockReturnValueOnce('assignee1,assignee2,assignee3');
+                exportVariable(INPUT_ASSIGNEES, 'assignee1,assignee2,assignee3');
                 const { assignees } = parseConfig();
-                expect(mockCore.getInput).toBeCalledWith('assignees');
                 expect(assignees).toStrictEqual(['assignee1', 'assignee2', 'assignee3']);
             });
 
             test('return them given leading and trailing spaces', () => {
-                getInputSkip(6).mockReturnValueOnce(' assignee1 , assignee2 , assignee3 ');
+                exportVariable(INPUT_ASSIGNEES, ' assignee1 , assignee2 , assignee3 ');
                 const { assignees } = parseConfig();
-                expect(mockCore.getInput).toBeCalledWith('assignees');
                 expect(assignees).toStrictEqual(['assignee1', 'assignee2', 'assignee3']);
             });
         });
 
         describe('with labels', () => {
             test('returns them', () => {
-                getInputSkip(7).mockReturnValueOnce('some label 1,some label 2,some label 3');
+                exportVariable(INPUT_LABELS, 'some label 1,some label 2,some label 3');
                 const { labels } = parseConfig();
-                expect(mockCore.getInput).toBeCalledWith('labels');
                 expect(labels).toStrictEqual(['some label 1', 'some label 2', 'some label 3']);
             });
 
             test('returns them given leading and trailing spaces', () => {
-                getInputSkip(7).mockReturnValueOnce(' some label 1 , some label 2 , some label 3 ');
+                exportVariable(INPUT_LABELS, ' some label 1 , some label 2 , some label 3 ');
                 const { labels } = parseConfig();
-                expect(mockCore.getInput).toBeCalledWith('labels');
                 expect(labels).toStrictEqual(['some label 1', 'some label 2', 'some label 3']);
             });
         });
     });
 });
-
-/**
- * @param {number} count
- */
-function getInputSkip(count) {
-    for (let i = 0; i < count; i++) {
-        mockCore.getInput.mockReturnValueOnce('');
-    }
-    return mockCore.getInput;
-}
