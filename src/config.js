@@ -1,5 +1,6 @@
 const { getInput } = require('@actions/core');
 
+const DEFAULT_PATH = 'LICENSE';
 const DEFAULT_BRANCH_NAME = 'license/copyright-to-{{currentYear}}';
 const DEFAULT_COMMIT_TITLE = 'docs(license): update copyright year(s)';
 const DEFAULT_COMMIT_BODY = '';
@@ -16,6 +17,8 @@ const VARIABLES = {
 
 function parseConfig() {
     const token = getInput('token', { required: true });
+    const path = getInput('path') || DEFAULT_PATH;
+    const transform = getInput('transform');
     const branchName = substituteVariables(getInput('branchName') || DEFAULT_BRANCH_NAME);
     const commitTitle = substituteVariables(getInput('commitTitle') || DEFAULT_COMMIT_TITLE);
     const commitBody = substituteVariables(getInput('commitBody') || DEFAULT_COMMIT_BODY);
@@ -26,6 +29,8 @@ function parseConfig() {
 
     return {
         token,
+        path,
+        transform,
         branchName,
         commitTitle,
         commitBody,

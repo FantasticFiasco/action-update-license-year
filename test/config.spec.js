@@ -81,6 +81,8 @@ describe('#parseConfig should', () => {
             });
         });
 
+        write tests for "path" and "transform"
+
         describe('with branch name', () => {
             test('returns it', () => {
                 exportVariable(INPUT_BRANCHNAME, 'some-branch-name');
