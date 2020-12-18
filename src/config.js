@@ -1,6 +1,7 @@
 const { getInput } = require('@actions/core');
 
 const DEFAULT_PATH = 'LICENSE';
+const DEFAULT_TRANSFORM = '';
 const DEFAULT_BRANCH_NAME = 'license/copyright-to-{{currentYear}}';
 const DEFAULT_COMMIT_TITLE = 'docs(license): update copyright year(s)';
 const DEFAULT_COMMIT_BODY = '';
@@ -18,7 +19,7 @@ const VARIABLES = {
 function parseConfig() {
     const token = getInput('token', { required: true });
     const path = getInput('path') || DEFAULT_PATH;
-    const transform = getInput('transform');
+    const transform = validateTransform(getInput('transform') || DEFAULT_TRANSFORM);
     const branchName = substituteVariables(getInput('branchName') || DEFAULT_BRANCH_NAME);
     const commitTitle = substituteVariables(getInput('commitTitle') || DEFAULT_COMMIT_TITLE);
     const commitBody = substituteVariables(getInput('commitBody') || DEFAULT_COMMIT_BODY);
@@ -78,9 +79,21 @@ function splitCsv(values) {
         .filter((value) => value !== ''); // Remove empty entries
 }
 
+/**
+ * @param {string} transform
+ */
+function validateTransform(transform) {
+    if (transform !== DEFAULT_TRANSFORM && !transform.includes('?<from>')) {
+        throw new Error('Transform has no capturing group named "from"');
+    }
+
+    return transform;
+}
+
 module.exports = {
     parseConfig,
-    CURRENT_YEAR,
+    DEFAULT_PATH,
+    DEFAULT_TRANSFORM,
     DEFAULT_BRANCH_NAME,
     DEFAULT_COMMIT_TITLE,
     DEFAULT_COMMIT_BODY,
@@ -88,4 +101,5 @@ module.exports = {
     DEFAULT_PR_BODY,
     DEFAULT_ASSIGNEES,
     DEFAULT_LABELS,
+    CURRENT_YEAR,
 };
