@@ -1,7 +1,3 @@
-const { mkdtempSync, closeSync, openSync } = require('fs');
-const { tmpdir } = require('os');
-const { join } = require('path');
-const { exportVariable } = require('@actions/core');
 const {
     parseConfig,
     CURRENT_YEAR,
@@ -21,14 +17,6 @@ const INPUT_ASSIGNEES = 'INPUT_ASSIGNEES';
 const INPUT_LABELS = 'INPUT_LABELS';
 
 describe('#parseConfig should', () => {
-    beforeAll(() => {
-        // Redirect output from exportVariable to a temporary file instead of stdout
-        const tempDir = mkdtempSync(tmpdir());
-        const tempFile = join(tempDir, 'actions_output.txt');
-        closeSync(openSync(tempFile, 'w'));
-        process.env.GITHUB_ENV = tempFile;
-    });
-
     beforeEach(() => {
         // Let's make sure that all inputs are cleared before each test
         delete process.env[INPUT_TOKEN];
@@ -48,7 +36,7 @@ describe('#parseConfig should', () => {
         });
 
         test('return default values', () => {
-            exportVariable(INPUT_TOKEN, 'some token');
+            process.env[INPUT_TOKEN] = 'some token';
             const {
                 branchName,
                 commitTitle,
@@ -71,7 +59,7 @@ describe('#parseConfig should', () => {
     describe('given configuration', () => {
         beforeEach(() => {
             // Token is a required input for all tests
-            exportVariable(INPUT_TOKEN, 'some token');
+            process.env[INPUT_TOKEN] = 'some token';
         });
 
         describe('with token', () => {
@@ -81,41 +69,41 @@ describe('#parseConfig should', () => {
             });
         });
 
-        write tests for "path" and "transform"
+        // TODO: write tests for "path" and "transform"
 
         describe('with branch name', () => {
             test('returns it', () => {
-                exportVariable(INPUT_BRANCHNAME, 'some-branch-name');
+                process.env[INPUT_BRANCHNAME] = 'some-branch-name';
                 const { branchName } = parseConfig();
                 expect(branchName).toBe('some-branch-name');
             });
 
             test('returns it given "currentYear" variable', () => {
-                exportVariable(INPUT_BRANCHNAME, 'some-branch-name-{{currentYear}}');
+                process.env[INPUT_BRANCHNAME] = 'some-branch-name-{{currentYear}}';
                 const { branchName } = parseConfig();
                 expect(branchName).toBe(`some-branch-name-${CURRENT_YEAR}`);
             });
 
             test('returns it given "currentYear" variable with leading and trailing spaces', () => {
-                exportVariable(INPUT_BRANCHNAME, 'some-branch-name-{{ currentYear }}');
+                process.env[INPUT_BRANCHNAME] = 'some-branch-name-{{ currentYear }}';
                 const { branchName } = parseConfig();
                 expect(branchName).toBe(`some-branch-name-${CURRENT_YEAR}`);
             });
 
             test('returns it given GitHub Action variable', () => {
-                exportVariable(INPUT_BRANCHNAME, 'some-branch-name-${{ github }}');
+                process.env[INPUT_BRANCHNAME] = 'some-branch-name-${{ github }}';
                 const { branchName } = parseConfig();
                 expect(branchName).toBe('some-branch-name-${{ github }}');
             });
 
             test('throws error given invalid variable', () => {
-                exportVariable(INPUT_BRANCHNAME, 'some-branch-name-{{invalidVariableName}}');
+                process.env[INPUT_BRANCHNAME] = 'some-branch-name-{{invalidVariableName}}';
                 const fn = () => parseConfig();
                 expect(fn).toThrow();
             });
 
             test('throws error given invalid variable with leading and trailing spaces', () => {
-                exportVariable(INPUT_BRANCHNAME, 'some-branch-name-{{ invalidVariableName }}');
+                process.env[INPUT_BRANCHNAME] = 'some-branch-name-{{ invalidVariableName }}';
                 const fn = () => parseConfig();
                 expect(fn).toThrow();
             });
@@ -123,37 +111,37 @@ describe('#parseConfig should', () => {
 
         describe('with commit title', () => {
             test('returns it', () => {
-                exportVariable(INPUT_COMMITTITLE, 'some commit title');
+                process.env[INPUT_COMMITTITLE] = 'some commit title';
                 const { commitTitle } = parseConfig();
                 expect(commitTitle).toBe('some commit title');
             });
 
             test('returns it given "currentYear" variable', () => {
-                exportVariable(INPUT_COMMITTITLE, 'some commit title {{currentYear}}');
+                process.env[INPUT_COMMITTITLE] = 'some commit title {{currentYear}}';
                 const { commitTitle } = parseConfig();
                 expect(commitTitle).toBe(`some commit title ${CURRENT_YEAR}`);
             });
 
             test('returns it given "currentYear" variable with leading and trailing spaces', () => {
-                exportVariable(INPUT_COMMITTITLE, 'some commit title {{ currentYear }}');
+                process.env[INPUT_COMMITTITLE] = 'some commit title {{ currentYear }}';
                 const { commitTitle } = parseConfig();
                 expect(commitTitle).toBe(`some commit title ${CURRENT_YEAR}`);
             });
 
             test('returns it given GitHub Action variable', () => {
-                exportVariable(INPUT_COMMITTITLE, 'some commit title ${{ github }}');
+                process.env[INPUT_COMMITTITLE] = 'some commit title ${{ github }}';
                 const { commitTitle } = parseConfig();
                 expect(commitTitle).toBe('some commit title ${{ github }}');
             });
 
             test('throws error given invalid variable', () => {
-                exportVariable(INPUT_COMMITTITLE, 'some commit title {{invalidVariableName}}');
+                process.env[INPUT_COMMITTITLE] = 'some commit title {{invalidVariableName}}';
                 const fn = () => parseConfig();
                 expect(fn).toThrow();
             });
 
             test('throws error given invalid variable with leading and trailing spaces', () => {
-                exportVariable(INPUT_COMMITTITLE, 'some commit title {{ invalidVariableName }}');
+                process.env[INPUT_COMMITTITLE] = 'some commit title {{ invalidVariableName }}';
                 const fn = () => parseConfig();
                 expect(fn).toThrow();
             });
@@ -161,37 +149,37 @@ describe('#parseConfig should', () => {
 
         describe('with commit body', () => {
             test('returns it', () => {
-                exportVariable(INPUT_COMMITBODY, 'some commit body');
+                process.env[INPUT_COMMITBODY] = 'some commit body';
                 const { commitBody } = parseConfig();
                 expect(commitBody).toBe('some commit body');
             });
 
             test('returns it given "currentYear" variable', () => {
-                exportVariable(INPUT_COMMITBODY, 'some commit body {{currentYear}}');
+                process.env[INPUT_COMMITBODY] = 'some commit body {{currentYear}}';
                 const { commitBody } = parseConfig();
                 expect(commitBody).toBe(`some commit body ${CURRENT_YEAR}`);
             });
 
             test('returns it given "currentYear" variable with leading and trailing spaces', () => {
-                exportVariable(INPUT_COMMITBODY, 'some commit body {{ currentYear }}');
+                process.env[INPUT_COMMITBODY] = 'some commit body {{ currentYear }}';
                 const { commitBody } = parseConfig();
                 expect(commitBody).toBe(`some commit body ${CURRENT_YEAR}`);
             });
 
             test('returns it given GitHub Action variable', () => {
-                exportVariable(INPUT_COMMITBODY, 'some commit body ${{ github }}');
+                process.env[INPUT_COMMITBODY] = 'some commit body ${{ github }}';
                 const { commitBody } = parseConfig();
                 expect(commitBody).toBe('some commit body ${{ github }}');
             });
 
             test('throws error given invalid variable', () => {
-                exportVariable(INPUT_COMMITBODY, 'some commit body {{invalidVariableName}}');
+                process.env[INPUT_COMMITBODY] = 'some commit body {{invalidVariableName}}';
                 const fn = () => parseConfig();
                 expect(fn).toThrow();
             });
 
             test('throws error given invalid variable with leading and trailing spaces', () => {
-                exportVariable(INPUT_COMMITBODY, 'some commit body {{ invalidVariableName }}');
+                process.env[INPUT_COMMITBODY] = 'some commit body {{ invalidVariableName }}';
                 const fn = () => parseConfig();
                 expect(fn).toThrow();
             });
@@ -199,37 +187,37 @@ describe('#parseConfig should', () => {
 
         describe('with pull request title', () => {
             test('returns it', () => {
-                exportVariable(INPUT_PRTITLE, 'some pull request title');
+                process.env[INPUT_PRTITLE] = 'some pull request title';
                 const { pullRequestTitle } = parseConfig();
                 expect(pullRequestTitle).toBe('some pull request title');
             });
 
             test('returns it given "currentYear" variable', () => {
-                exportVariable(INPUT_PRTITLE, 'some pull request title {{currentYear}}');
+                process.env[INPUT_PRTITLE] = 'some pull request title {{currentYear}}';
                 const { pullRequestTitle } = parseConfig();
                 expect(pullRequestTitle).toBe(`some pull request title ${CURRENT_YEAR}`);
             });
 
             test('returns it given "currentYear" variable with leading and trailing spaces', () => {
-                exportVariable(INPUT_PRTITLE, 'some pull request title {{ currentYear }}');
+                process.env[INPUT_PRTITLE] = 'some pull request title {{ currentYear }}';
                 const { pullRequestTitle } = parseConfig();
                 expect(pullRequestTitle).toBe(`some pull request title ${CURRENT_YEAR}`);
             });
 
             test('returns it given GitHub Action variable', () => {
-                exportVariable(INPUT_PRTITLE, 'some pull request title ${{ github }}');
+                process.env[INPUT_PRTITLE] = 'some pull request title ${{ github }}';
                 const { pullRequestTitle } = parseConfig();
                 expect(pullRequestTitle).toBe('some pull request title ${{ github }}');
             });
 
             test('throws error given invalid variable', () => {
-                exportVariable(INPUT_PRTITLE, 'some pull request title {{invalidVariableName}}');
+                process.env[INPUT_PRTITLE] = 'some pull request title {{invalidVariableName}}';
                 const fn = () => parseConfig();
                 expect(fn).toThrow();
             });
 
             test('throws error given invalid variable with leading and trailing spaces', () => {
-                exportVariable(INPUT_PRTITLE, 'some pull request title {{ invalidVariableName }}');
+                process.env[INPUT_PRTITLE] = 'some pull request title {{ invalidVariableName }}';
                 const fn = () => parseConfig();
                 expect(fn).toThrow();
             });
@@ -237,37 +225,37 @@ describe('#parseConfig should', () => {
 
         describe('with pull request body', () => {
             test('returns it', () => {
-                exportVariable(INPUT_PRBODY, 'some pull request body');
+                process.env[INPUT_PRBODY] = 'some pull request body';
                 const { pullRequestBody } = parseConfig();
                 expect(pullRequestBody).toBe('some pull request body');
             });
 
             test('returns it given "currentYear" variable', () => {
-                exportVariable(INPUT_PRBODY, 'some pull request body {{currentYear}}');
+                process.env[INPUT_PRBODY] = 'some pull request body {{currentYear}}';
                 const { pullRequestBody } = parseConfig();
                 expect(pullRequestBody).toBe(`some pull request body ${CURRENT_YEAR}`);
             });
 
             test('returns it given "currentYear" variable with leading and trailing spaces', () => {
-                exportVariable(INPUT_PRBODY, 'some pull request body {{ currentYear }}');
+                process.env[INPUT_PRBODY] = 'some pull request body {{ currentYear }}';
                 const { pullRequestBody } = parseConfig();
                 expect(pullRequestBody).toBe(`some pull request body ${CURRENT_YEAR}`);
             });
 
             test('returns it given GitHub Action variable', () => {
-                exportVariable(INPUT_PRBODY, 'some pull request body ${{ github }}');
+                process.env[INPUT_PRBODY] = 'some pull request body ${{ github }}';
                 const { pullRequestBody } = parseConfig();
                 expect(pullRequestBody).toBe('some pull request body ${{ github }}');
             });
 
             test('throws error given invalid variable', () => {
-                exportVariable(INPUT_PRBODY, 'some pull request body {{invalidVariableName}}');
+                process.env[INPUT_PRBODY] = 'some pull request body {{invalidVariableName}}';
                 const fn = () => parseConfig();
                 expect(fn).toThrow();
             });
 
             test('throws error given invalid variable with leading and trailing spaces', () => {
-                exportVariable(INPUT_PRBODY, 'some pull request body {{ invalidVariableName }}');
+                process.env[INPUT_PRBODY] = 'some pull request body {{ invalidVariableName }}';
                 const fn = () => parseConfig();
                 expect(fn).toThrow();
             });
@@ -275,13 +263,13 @@ describe('#parseConfig should', () => {
 
         describe('with assignees', () => {
             test('returns them', () => {
-                exportVariable(INPUT_ASSIGNEES, 'assignee1,assignee2,assignee3');
+                process.env[INPUT_ASSIGNEES] = 'assignee1,assignee2,assignee3';
                 const { assignees } = parseConfig();
                 expect(assignees).toStrictEqual(['assignee1', 'assignee2', 'assignee3']);
             });
 
             test('return them given leading and trailing spaces', () => {
-                exportVariable(INPUT_ASSIGNEES, ' assignee1 , assignee2 , assignee3 ');
+                process.env[INPUT_ASSIGNEES] = ' assignee1 , assignee2 , assignee3 ';
                 const { assignees } = parseConfig();
                 expect(assignees).toStrictEqual(['assignee1', 'assignee2', 'assignee3']);
             });
@@ -289,13 +277,13 @@ describe('#parseConfig should', () => {
 
         describe('with labels', () => {
             test('returns them', () => {
-                exportVariable(INPUT_LABELS, 'some label 1,some label 2,some label 3');
+                process.env[INPUT_LABELS] = 'some label 1,some label 2,some label 3';
                 const { labels } = parseConfig();
                 expect(labels).toStrictEqual(['some label 1', 'some label 2', 'some label 3']);
             });
 
             test('returns them given leading and trailing spaces', () => {
-                exportVariable(INPUT_LABELS, ' some label 1 , some label 2 , some label 3 ');
+                process.env[INPUT_LABELS] = ' some label 1 , some label 2 , some label 3 ';
                 const { labels } = parseConfig();
                 expect(labels).toStrictEqual(['some label 1', 'some label 2', 'some label 3']);
             });
