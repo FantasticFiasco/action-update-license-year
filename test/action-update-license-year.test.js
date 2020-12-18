@@ -19,17 +19,17 @@ jest.mock('@actions/github', () => {
 });
 
 const mockConfig = {
-    parseConfig: jest.fn(),
-    CURRENT_YEAR: jest.requireActual('../src/config').CURRENT_YEAR,
-    DEFAULT_BRANCH_NAME: jest.requireActual('../src/config').DEFAULT_BRANCH_NAME,
-    DEFAULT_COMMIT_TITLE: jest.requireActual('../src/config').DEFAULT_COMMIT_TITLE,
-    DEFAULT_COMMIT_BODY: jest.requireActual('../src/config').DEFAULT_COMMIT_BODY,
-    DEFAULT_PR_TITLE: jest.requireActual('../src/config').DEFAULT_PR_TITLE,
-    DEFAULT_PR_BODY: jest.requireActual('../src/config').DEFAULT_PR_BODY,
-    DEFAULT_ASSIGNEES: jest.requireActual('../src/config').DEFAULT_ASSIGNEES,
-    DEFAULT_LABELS: jest.requireActual('../src/config').DEFAULT_LABELS,
+    parseInput: jest.fn(),
+    CURRENT_YEAR: jest.requireActual('../src/inputs').CURRENT_YEAR,
+    BRANCH_NAME: jest.requireActual('../src/inputs').BRANCH_NAME,
+    COMMIT_TITLE: jest.requireActual('../src/inputs').COMMIT_TITLE,
+    COMMIT_BODY: jest.requireActual('../src/inputs').COMMIT_BODY,
+    PR_TITLE: jest.requireActual('../src/inputs').PR_TITLE,
+    PR_BODY: jest.requireActual('../src/inputs').PR_BODY,
+    ASSIGNEES: jest.requireActual('../src/inputs').ASSIGNEES,
+    LABELS: jest.requireActual('../src/inputs').LABELS,
 };
-jest.mock('../src/config', () => {
+jest.mock('../src/inputs', () => {
     return mockConfig;
 });
 
@@ -58,14 +58,7 @@ jest.mock('../src/license', () => {
 
 const { setFailed } = require('@actions/core');
 const { run, MASTER, FILENAME } = require('../src/action-update-license-year');
-const {
-    DEFAULT_COMMIT_TITLE,
-    DEFAULT_COMMIT_BODY,
-    DEFAULT_PR_TITLE,
-    DEFAULT_PR_BODY,
-    DEFAULT_BRANCH_NAME,
-    CURRENT_YEAR,
-} = require('../src/config');
+const { COMMIT_TITLE, COMMIT_BODY, PR_TITLE, PR_BODY, BRANCH_NAME, CURRENT_YEAR } = require('../src/inputs');
 
 describe('action should', () => {
     beforeEach(() => {
@@ -79,7 +72,7 @@ describe('action should', () => {
         mockRepository.hasBranch.mockResolvedValue(true);
         await run();
         expect(setFailed).toBeCalledTimes(0);
-        expect(mockRepository.getContent).toBeCalledWith(DEFAULT_BRANCH_NAME, FILENAME);
+        expect(mockRepository.getContent).toBeCalledWith(BRANCH_NAME.defaultValue, FILENAME);
     });
 
     test("get license from master given branch doesn't exist", async () => {
@@ -106,7 +99,7 @@ describe('action should', () => {
         await run();
         expect(setFailed).toBeCalledTimes(0);
         expect(mockRepository.createBranch).toBeCalledTimes(1);
-        expect(mockRepository.createBranch).toBeCalledWith(DEFAULT_BRANCH_NAME);
+        expect(mockRepository.createBranch).toBeCalledWith(BRANCH_NAME.defaultValue);
     });
 
     test("create branch with custom name given branch doesn't exist", async () => {
@@ -142,11 +135,11 @@ describe('action should', () => {
         await run();
         expect(setFailed).toBeCalledTimes(0);
         expect(mockRepository.updateContent).toBeCalledWith(
-            DEFAULT_BRANCH_NAME,
+            BRANCH_NAME.defaultValue,
             FILENAME,
             undefined,
             undefined,
-            DEFAULT_COMMIT_TITLE
+            COMMIT_TITLE.defaultValue
         );
     });
 
@@ -155,7 +148,7 @@ describe('action should', () => {
         await run();
         expect(setFailed).toBeCalledTimes(0);
         expect(mockRepository.updateContent).toBeCalledWith(
-            DEFAULT_BRANCH_NAME,
+            BRANCH_NAME.defaultValue,
             FILENAME,
             undefined,
             undefined,
@@ -168,11 +161,11 @@ describe('action should', () => {
         await run();
         expect(setFailed).toBeCalledTimes(0);
         expect(mockRepository.updateContent).toBeCalledWith(
-            DEFAULT_BRANCH_NAME,
+            BRANCH_NAME.defaultValue,
             FILENAME,
             undefined,
             undefined,
-            `${DEFAULT_COMMIT_TITLE}\n\nsome commit body`
+            `${COMMIT_TITLE.defaultValue}\n\nsome commit body`
         );
     });
 
@@ -181,7 +174,7 @@ describe('action should', () => {
         await run();
         expect(setFailed).toBeCalledTimes(0);
         expect(mockRepository.updateContent).toBeCalledWith(
-            DEFAULT_BRANCH_NAME,
+            BRANCH_NAME.defaultValue,
             FILENAME,
             undefined,
             undefined,
@@ -198,41 +191,41 @@ describe('action should', () => {
         });
 
         test('create pull request with default title and body', async () => {
-            mockConfigReturnValue({ pullRequestTitle: DEFAULT_PR_TITLE, pullRequestBody: DEFAULT_PR_BODY });
+            mockConfigReturnValue({ pullRequestTitle: PR_TITLE.defaultValue, pullRequestBody: PR_BODY.defaultValue });
             mockRepository.hasPullRequest.mockResolvedValue(false);
             await run();
             expect(setFailed).toBeCalledTimes(0);
             expect(mockRepository.createPullRequest).toBeCalledTimes(1);
             expect(mockRepository.createPullRequest).toBeCalledWith(
-                DEFAULT_BRANCH_NAME,
-                DEFAULT_PR_TITLE,
-                DEFAULT_PR_BODY
+                BRANCH_NAME.defaultValue,
+                PR_TITLE.defaultValue,
+                PR_BODY.defaultValue
             );
         });
 
         test('create pull request with default title and custom body', async () => {
-            mockConfigReturnValue({ pullRequestTitle: DEFAULT_PR_TITLE, pullRequestBody: 'some pr body' });
+            mockConfigReturnValue({ pullRequestTitle: PR_TITLE.defaultValue, pullRequestBody: 'some pr body' });
             mockRepository.hasPullRequest.mockResolvedValue(false);
             await run();
             expect(setFailed).toBeCalledTimes(0);
             expect(mockRepository.createPullRequest).toBeCalledTimes(1);
             expect(mockRepository.createPullRequest).toBeCalledWith(
-                DEFAULT_BRANCH_NAME,
-                DEFAULT_PR_TITLE,
+                BRANCH_NAME.defaultValue,
+                PR_TITLE.defaultValue,
                 'some pr body'
             );
         });
 
         test('create pull request with custom title and default body', async () => {
-            mockConfigReturnValue({ pullRequestTitle: 'some pr title', pullRequestBody: DEFAULT_PR_BODY });
+            mockConfigReturnValue({ pullRequestTitle: 'some pr title', pullRequestBody: PR_BODY.defaultValue });
             mockRepository.hasPullRequest.mockResolvedValue(false);
             await run();
             expect(setFailed).toBeCalledTimes(0);
             expect(mockRepository.createPullRequest).toBeCalledTimes(1);
             expect(mockRepository.createPullRequest).toBeCalledWith(
-                DEFAULT_BRANCH_NAME,
+                BRANCH_NAME.defaultValue,
                 'some pr title',
-                DEFAULT_PR_BODY
+                PR_BODY.defaultValue
             );
         });
 
@@ -243,7 +236,7 @@ describe('action should', () => {
             expect(setFailed).toBeCalledTimes(0);
             expect(mockRepository.createPullRequest).toBeCalledTimes(1);
             expect(mockRepository.createPullRequest).toBeCalledWith(
-                DEFAULT_BRANCH_NAME,
+                BRANCH_NAME.defaultValue,
                 'some pr title',
                 'some pr body'
             );
@@ -317,13 +310,13 @@ const GET_CONTENT_SUCCESS_RESPONSE = {
  * @property {string[]} [labels]
  */
 function mockConfigReturnValue(config) {
-    mockConfig.parseConfig.mockReturnValue({
+    mockConfig.parseInput.mockReturnValue({
         token: config.token || 'some token',
-        branchName: config.branchName || DEFAULT_BRANCH_NAME,
-        commitTitle: config.commitTitle || DEFAULT_COMMIT_TITLE,
-        commitBody: config.commitBody || DEFAULT_COMMIT_BODY,
-        pullRequestTitle: config.pullRequestTitle || DEFAULT_PR_TITLE,
-        pullRequestBody: config.pullRequestBody || DEFAULT_PR_BODY,
+        branchName: config.branchName || BRANCH_NAME.defaultValue,
+        commitTitle: config.commitTitle || COMMIT_TITLE.defaultValue,
+        commitBody: config.commitBody || COMMIT_BODY.defaultValue,
+        pullRequestTitle: config.pullRequestTitle || PR_TITLE.defaultValue,
+        pullRequestBody: config.pullRequestBody || PR_BODY.defaultValue,
         assignees: config.assignees || [],
         labels: config.labels || [],
     });

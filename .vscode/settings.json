@@ -1,10 +1,11 @@
 {
   "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true,
     "source.organizeImports": true
   },
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.formatOnSave": true,
-  "javascript.implicitProjectConfig.checkJs": true,
+  "js/ts.implicitProjectConfig.checkJs": true,
   "spellright.language": ["en", "English (American)"],
   "spellright.documentTypes": ["markdown", "latex", "plaintext"]
 }

@@ -1,6 +1,6 @@
 const { setFailed, info } = require('@actions/core');
 const { context } = require('@actions/github');
-const { parseConfig } = require('./config');
+const { parseInput } = require('./inputs');
 const { transformLicense } = require('./license');
 const Repository = require('./Repository');
 
@@ -19,7 +19,7 @@ async function run() {
             pullRequestBody,
             assignees,
             labels,
-        } = parseConfig();
+        } = parseInput();
 
         const repository = new Repository(owner, repo, token);
         const hasBranch = await repository.hasBranch(branchName);
