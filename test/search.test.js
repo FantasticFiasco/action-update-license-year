@@ -18,14 +18,14 @@ describe('#search', () => {
         //   |___LICENSE.md
         //   |___packages
         //     |___a
-        //     | |___LICENSE
         //     | |___index.js
+        //     | |___LICENSE
         //     |___b
-        //     | |___LICENSE
         //     | |___index.js
+        //     | |___LICENSE
         //     |___c
-        //       |___LICENSE
         //       |___index.js
+        //       |___LICENSE
 
         // ./
         writeFileSync(join(tempDir, 'LICENSE'), 'TODO');
@@ -93,6 +93,13 @@ describe('#search', () => {
             join(tempDir, 'packages', 'b', 'index.js'),
             join(tempDir, 'packages', 'c', 'index.js'),
         ];
+        expect(actual).toStrictEqual(expected);
+    });
+
+    test('should exclude directory given path', async () => {
+        const pattern = join(tempDir, 'packages', 'a');
+        const actual = await search(pattern);
+        const expected = [join(tempDir, 'packages', 'a', 'LICENSE'), join(tempDir, 'packages', 'a', 'index.js')];
         expect(actual).toStrictEqual(expected);
     });
 
