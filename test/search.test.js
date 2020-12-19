@@ -103,6 +103,5 @@ describe('#search', () => {
         expect(actual).toStrictEqual(expected);
     });
 
-    // TODO: Exclude directories
     // TODO: Error when search finds no file
 });
