@@ -2,7 +2,7 @@
 # yarn lockfile v1
 
 
-"@actions/core@1.2.6":
+"@actions/core@1.2.6", "@actions/core@^1.2.6":
   version "1.2.6"
   resolved "https://registry.yarnpkg.com/@actions/core/-/core-1.2.6.tgz#a78d49f41a4def18e88ce47c2cac615d5694bf09"
   integrity sha512-ZQYitnqiyBc3D+k7LsgSBmMDVkOVidaagDG7j3fOym77jNunWRuYx7VSHa9GNfFZh+zh61xsCjRj4JxMZlDqTA==
@@ -16,6 +16,14 @@
     "@octokit/core" "^3.0.0"
     "@octokit/plugin-paginate-rest" "^2.2.3"
     "@octokit/plugin-rest-endpoint-methods" "^4.0.0"
+
+"@actions/glob@0.1.1":
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/@actions/glob/-/glob-0.1.1.tgz#0af851312dfed21fdf9eac3473cfde93ffa56e40"
+  integrity sha512-ikM4GVZOgSGDNTjv0ECJ8AOqmDqQwtO4K1M4P465C9iikRq34+FwCjUVSwzgOYDP85qtddyWpzBw5lTub/9Xmg==
+  dependencies:
+    "@actions/core" "^1.2.6"
+    minimatch "^3.0.4"
 
 "@actions/http-client@>=1.0.8", "@actions/http-client@^1.0.8":
   version "1.0.8"
