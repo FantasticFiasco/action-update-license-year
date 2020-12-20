@@ -30,10 +30,20 @@ class Repository {
      */
     async hasBranch(name) {
         try {
-            await exec(`git show-ref --verify --quiet "refs/heads/${name}"`);
-            return true;
-        } catch {
-            return false;
+            const hasLocalBranch = async () => {
+                const { stdout } = await exec(`git branch --list "${name}"`);
+                return stdout.includes(name);
+            };
+
+            const hasRemoteBranch = async () => {
+                const { stdout } = await exec(`git ls-remote --heads origin "${name}"`);
+                return stdout.includes(name);
+            };
+
+            return (await hasLocalBranch()) || (await hasRemoteBranch());
+        } catch (err) {
+            err.message = `Error searching for branch "${name}": ${err.message}`;
+            throw err;
         }
     }
 
