@@ -3,15 +3,15 @@ const { context } = require('@actions/github');
 const { parseInput } = require('./inputs');
 const { transformLicense } = require('./license');
 const Repository = require('./Repository');
-
-const FILENAME = 'LICENSE';
-const MASTER = 'master';
+const { search } = require('./search');
 
 async function run() {
     try {
-        const { owner, repo } = context.repo;
+        const { owner, repo: repoName } = context.repo;
         const {
             token,
+            path,
+            transform,
             branchName,
             commitTitle,
             commitBody,
@@ -21,33 +21,48 @@ async function run() {
             labels,
         } = parseInput();
 
-        const repository = new Repository(owner, repo, token);
-        const hasBranch = await repository.hasBranch(branchName);
-        if (hasBranch) {
-            info(`Found branch named "${branchName}"`);
+        const repo = new Repository(owner, repoName, token);
+
+        const hasBranch = await repo.hasBranch(branchName);
+        info(`Checkout ${hasBranch ? 'existing' : 'new'} branch named "${branchName}"`);
+        await repo.checkoutBranch(branchName, !hasBranch);
+
+        const files = await search(path);
+        if (files.length === 0) {
+            throw new Error(`Found no files matching the path "${path}"`);
         }
-        const licenseResponse = await repository.getContent(hasBranch ? branchName : MASTER, FILENAME);
-        const license = Buffer.from(licenseResponse.data.content, 'base64').toString('utf8');
+
+        info(`Found ${files.length} files matching the path "${path}"`);
 
         const currentYear = new Date().getFullYear();
         info(`Current year is "${currentYear}"`);
-        const updatedLicense = transformLicense(license, currentYear);
-        if (updatedLicense === license) {
-            info('License is already up-to-date, aborting');
+
+        for (const file in files) {
+            const content = repo.readFile(file);
+            const updatedContent = transformLicense(content, currentYear); // TODO: Pass transform
+            if (updatedContent !== content) {
+                info(`Update license in "${file}"`);
+                repo.writeFile(file, updatedContent);
+            } else {
+                info(`File "${file}" is already up-to-date`);
+            }
+        }
+
+        if (!repo.hasChanges()) {
+            info(`No license where updated, let's abort`);
             return;
         }
 
-        if (!hasBranch) {
-            info(`Create new branch named "${branchName}"`);
-            await repository.createBranch(branchName);
-        }
+        await repo.stageWrittenFiles();
 
         const commitMessage = commitBody ? `${commitTitle}\n\n${commitBody}` : commitTitle;
-        await repository.updateContent(branchName, FILENAME, licenseResponse.data.sha, updatedLicense, commitMessage);
+        await repo.commit(commitMessage);
+        await repo.push();
 
-        if (!(await repository.hasPullRequest(branchName))) {
+        const hasPullRequest = await repo.hasPullRequest(branchName);
+        if (!hasPullRequest) {
             info(`Create new pull request with title "${pullRequestTitle}"`);
-            const createPullRequestResponse = await repository.createPullRequest(
+            const createPullRequestResponse = await repo.createPullRequest(
                 branchName,
                 pullRequestTitle,
                 pullRequestBody
@@ -55,12 +70,12 @@ async function run() {
 
             if (assignees.length > 0) {
                 info(`Add assignees to pull request: ${JSON.stringify(assignees)}`);
-                await repository.addAssignees(createPullRequestResponse.data.number, assignees);
+                await repo.addAssignees(createPullRequestResponse.data.number, assignees);
             }
 
             if (labels.length > 0) {
                 info(`Add labels to pull request: ${JSON.stringify(labels)}`);
-                await repository.addLabels(createPullRequestResponse.data.number, labels);
+                await repo.addLabels(createPullRequestResponse.data.number, labels);
             }
         }
     } catch (err) {
@@ -70,6 +85,4 @@ async function run() {
 
 module.exports = {
     run,
-    MASTER,
-    FILENAME,
 };

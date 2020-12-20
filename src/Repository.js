@@ -1,4 +1,6 @@
+const { readFileSync, writeFileSync } = require('fs');
 const { getOctokit } = require('@actions/github');
+const { exec } = require('./process');
 
 const MASTER = 'master';
 
@@ -14,95 +16,109 @@ class Repository {
         this.octokit = getOctokit(token);
     }
 
-    /**
-     * @param {string} name The name of the branch
-     */
-    async getBranch(name) {
-        try {
-            return await this.octokit.git.getRef({
-                owner: this.owner,
-                repo: this.name,
-                ref: `heads/${name}`,
-            });
-        } catch (err) {
-            err.message = `Error when getting branch ${name}: ${err.message}`;
-            throw err;
-        }
-    }
+    /** @type {string} */
+    _currentBranch = '';
+
+    /** @type {boolean} */
+    _isCurrentBranchNew = false;
+
+    /** @type {string[]} */
+    _writtenFiles = [];
 
     /**
      * @param {string} name The name of the branch
      */
     async hasBranch(name) {
         try {
-            const res = await this.getBranch(name);
-            return res.status === 200;
-        } catch (err) {
-            if (err.status && err.status === 404) {
-                return false;
-            }
-            err.message = `Error when checking whether branch ${name} exists: ${err.message}`;
-            throw err;
+            await exec(`git show-ref --verify --quiet "refs/heads/${name}"`);
+            return true;
+        } catch {
+            return false;
         }
     }
 
     /**
      * @param {string} name The name of the branch
+     * @param {boolean} isNew Whether the branch is new and we also should create it
      */
-    async createBranch(name) {
+    async checkoutBranch(name, isNew) {
         try {
-            const master = await this.getBranch(MASTER);
+            await exec(`git checkout ${isNew ? '-b' : ''} "${name}"`);
 
-            return await this.octokit.git.createRef({
-                owner: this.owner,
-                repo: this.name,
-                ref: `refs/heads/${name}`,
-                sha: master.data.object.sha,
-            });
+            this._currentBranch = name;
+            this._isCurrentBranchNew = isNew;
         } catch (err) {
-            err.message = `Error creating branch ${name}: ${err.message}`;
+            err.message = `Error checking out branch "${name}": ${err.message}`;
             throw err;
         }
     }
 
     /**
-     * @param {string} branchName The branch name
-     * @param {string} filePath The file path
+     * @param {string} path The path of the file
      */
-    async getContent(branchName, filePath) {
+    readFile(path) {
         try {
-            return await this.octokit.repos.getContent({
-                owner: this.owner,
-                repo: this.name,
-                ref: `refs/heads/${branchName}`,
-                path: filePath,
-            });
+            const content = readFileSync(path, { encoding: 'utf8' });
+            return content;
         } catch (err) {
-            err.message = `Error when getting content from file ${filePath} on branch ${branchName}: ${err.message}`;
+            err.message = `Error reading file "${path}": ${err.message}`;
             throw err;
         }
     }
 
     /**
-     * @param {string} branchName The branch name
-     * @param {string} filePath The file path
-     * @param {string} sha The blob SHA of the file being replaced
-     * @param {string} content The new file content, using UTF8 encoding
-     * @param {string} commitMessage The commit message
+     * @param {string} path The path of the file
+     * @param {string} content The content to write
      */
-    async updateContent(branchName, filePath, sha, content, commitMessage) {
+    writeFile(path, content) {
         try {
-            return await this.octokit.repos.createOrUpdateFileContents({
-                owner: this.owner,
-                repo: this.name,
-                branch: branchName,
-                path: filePath,
-                message: commitMessage,
-                content: Buffer.from(content, 'utf8').toString('base64'),
-                sha,
-            });
+            writeFileSync(path, content, { encoding: 'utf8' });
+            this._writtenFiles.push(path);
         } catch (err) {
-            err.message = `Error when updating content of file ${filePath} on branch ${branchName}: ${err.message}`;
+            err.message = `Error writing file "${path}": ${err.message}`;
+            throw err;
+        }
+    }
+
+    hasChanges() {
+        return this._writtenFiles.length > 0;
+    }
+
+    async stageWrittenFiles() {
+        for (const writtenFile in this._writtenFiles) {
+            try {
+                await exec(`git add "${writtenFile}"`);
+            } catch (err) {
+                err.message = `Error staging file "${writtenFile}": ${err.message}`;
+                throw err;
+            }
+        }
+    }
+
+    /**
+     * @param {string} message The commit message
+     */
+    async commit(message) {
+        try {
+            await exec(`git commit -m "${message}"`);
+        } catch (err) {
+            err.message = `Error committing staged files: ${err.message}`;
+            throw err;
+        }
+    }
+
+    async push() {
+        try {
+            let cmd = 'git push';
+            if (this._isCurrentBranchNew) {
+                cmd += ` --set-upstream origin ${this._currentBranch}`;
+            }
+            await exec(cmd);
+
+            this._isCurrentBranchNew = false;
+            this._writtenFiles = [];
+        } catch (err) {
+            err.message = `Error pushing changes to existing branch: ${err.message}`;
             throw err;
         }
     }
