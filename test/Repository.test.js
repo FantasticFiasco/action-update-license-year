@@ -39,7 +39,7 @@ let repoDir = '';
 
 beforeEach(async () => {
     repoDir = mkdtempSync(tmpdir());
-    // exec('git init', { cwd: repoDir });
+    await exec('git init', { cwd: repoDir });
 
     jest.resetAllMocks();
 });
