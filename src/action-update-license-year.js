@@ -2,7 +2,7 @@ const { setFailed, info } = require('@actions/core');
 const { context } = require('@actions/github');
 const { parseInput } = require('./inputs');
 const { transformLicense } = require('./license');
-const Repository = require('./Repository');
+const { Repository } = require('./Repository');
 const { search } = require('./search');
 
 async function run() {
@@ -23,9 +23,9 @@ async function run() {
 
         const repo = new Repository(owner, repoName, token);
 
-        const hasBranch = await repo.hasBranch(branchName);
-        info(`Checkout ${hasBranch ? 'existing' : 'new'} branch named "${branchName}"`);
-        await repo.checkoutBranch(branchName, !hasBranch);
+        const branchExists = await repo.branchExists(branchName);
+        info(`Checkout ${branchExists ? 'existing' : 'new'} branch named "${branchName}"`);
+        await repo.checkoutBranch(branchName, !branchExists);
 
         const files = await search(path);
         if (files.length === 0) {

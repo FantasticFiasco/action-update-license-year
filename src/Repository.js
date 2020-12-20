@@ -28,7 +28,7 @@ class Repository {
     /**
      * @param {string} name The name of the branch
      */
-    async hasBranch(name) {
+    async branchExists(name) {
         try {
             const hasLocalBranch = async () => {
                 const { stdout } = await exec(`git branch --list "${name}"`);
@@ -213,4 +213,6 @@ class Repository {
     }
 }
 
-module.exports = Repository;
+module.exports = {
+    Repository,
+};
