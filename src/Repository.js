@@ -1,6 +1,8 @@
-const { readFileSync, writeFileSync } = require('fs');
 const { getOctokit } = require('@actions/github');
 const { exec } = require('./process');
+const { promisify } = require('util');
+const readFileAsync = promisify(require('fs').readFile);
+const writeFileAsync = promisify(require('fs').writeFile);
 
 const MASTER = 'master';
 
@@ -66,9 +68,9 @@ class Repository {
     /**
      * @param {string} path The path of the file
      */
-    readFile(path) {
+    async readFile(path) {
         try {
-            const content = readFileSync(path, { encoding: 'utf8' });
+            const content = await readFileAsync(path, { encoding: 'utf8' });
             return content;
         } catch (err) {
             err.message = `Error reading file "${path}": ${err.message}`;
@@ -80,9 +82,9 @@ class Repository {
      * @param {string} path The path of the file
      * @param {string} content The content to write
      */
-    writeFile(path, content) {
+    async writeFile(path, content) {
         try {
-            writeFileSync(path, content, { encoding: 'utf8' });
+            await writeFileAsync(path, content, { encoding: 'utf8' });
             this._writtenFiles.push(path);
         } catch (err) {
             err.message = `Error writing file "${path}": ${err.message}`;
