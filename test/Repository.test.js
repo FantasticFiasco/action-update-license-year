@@ -128,6 +128,62 @@ describe('#writeFile should', () => {
     });
 });
 
+describe('#hasChanges should', () => {
+    test('return false given no changes', () => {
+        process.chdir(repoDir);
+        const repo = new Repository('some owner', 'some name', 'some token');
+        const actual = repo.hasChanges();
+        expect(actual).toBe(false);
+    });
+
+    test('return true given changes', async () => {
+        process.chdir(repoDir);
+        const repo = new Repository('some owner', 'some name', 'some token');
+        await repo.writeFile('README.md', '# New title\n');
+        const actual = repo.hasChanges();
+        expect(actual).toBe(true);
+    });
+});
+
+describe('#stageWrittenFiles should', () => {
+    test('complete given no written files', async () => {
+        process.chdir(repoDir);
+        const repo = new Repository('some owner', 'some name', 'some token');
+        await repo.stageWrittenFiles();
+        const { stdout } = await exec('git diff --name-only --cached', { cwd: repoDir });
+        expect(stdout).toBe('');
+    });
+
+    test('complete given written file', async () => {
+        process.chdir(repoDir);
+        const repo = new Repository('some owner', 'some name', 'some token');
+        await repo.writeFile('README.md', '# New title\n');
+        await repo.stageWrittenFiles();
+        const { stdout } = await exec('git diff --name-only --cached', { cwd: repoDir });
+        expect(stdout).toBe('README.md\n');
+    });
+});
+
+describe('#commit should', () => {
+    test('complete given staged files', async () => {
+        process.chdir(repoDir);
+        const repo = new Repository('some owner', 'some name', 'some token');
+        await repo.writeFile('README.md', '# New title\n');
+        await repo.stageWrittenFiles();
+        const message = 'some commit message';
+        await repo.commit(message);
+        const { stdout } = await exec('git log -n 1', { cwd: repoDir });
+        expect(stdout).toContain(message);
+    });
+
+    test('throw error given no staged files', async () => {
+        process.chdir(repoDir);
+        const repo = new Repository('some owner', 'some name', 'some token');
+        const promise = repo.commit('some commit message');
+        expect(promise).rejects.toBeDefined();
+    });
+});
+
 // describe('#getBranch should', () => {
 //     test('return branch given branch exists', async () => {
 //         mockOctokit.git.getRef.mockResolvedValue(GET_REF_SUCCESS_RESPONSE);
@@ -162,80 +218,80 @@ describe('#writeFile should', () => {
 //     });
 // });
 
-// describe('#hasPullRequest should', () => {
-//     test('return true given pull request exists', async () => {
-//         mockOctokit.pulls.list.mockResolvedValue({
-//             data: ['some pull request'],
-//         });
-//         const repo = new Repository('some owner', 'some name', 'some token');
-//         const promise = repository.hasPullRequest('some-branch');
-//         await expect(promise).resolves.toBe(true);
-//     });
+describe('#hasPullRequest should', () => {
+    test('return true given pull request exists', async () => {
+        mockOctokit.pulls.list.mockResolvedValue({
+            data: ['some pull request'],
+        });
+        const repo = new Repository('some owner', 'some name', 'some token');
+        const promise = repo.hasPullRequest('some-branch');
+        await expect(promise).resolves.toBe(true);
+    });
 
-//     test("return false given pull request doesn't exist", async () => {
-//         mockOctokit.pulls.list.mockResolvedValue({
-//             data: [],
-//         });
-//         const repo = new Repository('some owner', 'some name', 'some token');
-//         const promise = repository.hasPullRequest('some-branch');
-//         await expect(promise).resolves.toBe(false);
-//     });
+    test("return false given pull request doesn't exist", async () => {
+        mockOctokit.pulls.list.mockResolvedValue({
+            data: [],
+        });
+        const repo = new Repository('some owner', 'some name', 'some token');
+        const promise = repo.hasPullRequest('some-branch');
+        await expect(promise).resolves.toBe(false);
+    });
 
-//     test('throw error given unexpected Octokit error', async () => {
-//         mockOctokit.pulls.list.mockRejectedValue({});
-//         const repo = new Repository('some owner', 'some name', 'some token');
-//         const promise = repository.hasPullRequest('some-branch');
-//         await expect(promise).rejects.toBeDefined();
-//     });
-// });
+    test('throw error given unexpected Octokit error', async () => {
+        mockOctokit.pulls.list.mockRejectedValue({});
+        const repo = new Repository('some owner', 'some name', 'some token');
+        const promise = repo.hasPullRequest('some-branch');
+        await expect(promise).rejects.toBeDefined();
+    });
+});
 
-// describe('#createPullRequest should', () => {
-//     test('successfully complete', async () => {
-//         mockOctokit.pulls.create.mockResolvedValue({});
-//         const repo = new Repository('some owner', 'some name', 'some token');
-//         const promise = repository.createPullRequest('some-branch', 'some title', 'some body');
-//         await expect(promise).resolves.toBeDefined();
-//     });
+describe('#createPullRequest should', () => {
+    test('successfully complete', async () => {
+        mockOctokit.pulls.create.mockResolvedValue({});
+        const repo = new Repository('some owner', 'some name', 'some token');
+        const promise = repo.createPullRequest('some-branch', 'some title', 'some body');
+        await expect(promise).resolves.toBeDefined();
+    });
 
-//     test('throw error given unexpected Octokit error', async () => {
-//         mockOctokit.pulls.create.mockRejectedValue({});
-//         const repo = new Repository('some owner', 'some name', 'some token');
-//         const promise = repository.createPullRequest('some-branch', 'some title', 'some body');
-//         await expect(promise).rejects.toBeDefined();
-//     });
-// });
+    test('throw error given unexpected Octokit error', async () => {
+        mockOctokit.pulls.create.mockRejectedValue({});
+        const repo = new Repository('some owner', 'some name', 'some token');
+        const promise = repo.createPullRequest('some-branch', 'some title', 'some body');
+        await expect(promise).rejects.toBeDefined();
+    });
+});
 
-// describe('#addAssignees should', () => {
-//     test('successfully complete', async () => {
-//         mockOctokit.issues.addAssignees.mockResolvedValue({});
-//         const repo = new Repository('some owner', 'some name', 'some token');
-//         const promise = repository.addAssignees(42, ['assignee1', 'assignee2', 'assignee3']);
-//         await expect(promise).resolves.toBeDefined();
-//     });
+describe('#addAssignees should', () => {
+    test('successfully complete', async () => {
+        mockOctokit.issues.addAssignees.mockResolvedValue({});
+        const repo = new Repository('some owner', 'some name', 'some token');
+        const promise = repo.addAssignees(42, ['assignee1', 'assignee2', 'assignee3']);
+        await expect(promise).resolves.toBeDefined();
+    });
 
-//     test('throw error given unexpected Octokit error', async () => {
-//         mockOctokit.issues.addAssignees.mockRejectedValue({});
-//         const repo = new Repository('some owner', 'some name', 'some token');
-//         const promise = repository.addAssignees(42, ['assignee1', 'assignee2', 'assignee3']);
-//         await expect(promise).rejects.toBeDefined();
-//     });
-// });
+    test('throw error given unexpected Octokit error', async () => {
+        mockOctokit.issues.addAssignees.mockRejectedValue({});
+        const repo = new Repository('some owner', 'some name', 'some token');
+        const promise = repo.addAssignees(42, ['assignee1', 'assignee2', 'assignee3']);
+        await expect(promise).rejects.toBeDefined();
+    });
+});
 
-// describe('#addLabels should', () => {
-//     test('successfully complete', async () => {
-//         mockOctokit.issues.addLabels.mockResolvedValue({});
-//         const repo = new Repository('some owner', 'some name', 'some token');
-//         const promise = repository.addLabels(42, ['some label 1', 'some label 2', 'some label 3']);
-//         await expect(promise).resolves.toBeDefined();
-//     });
+describe('#addLabels should', () => {
+    test('successfully complete', async () => {
+        mockOctokit.issues.addLabels.mockResolvedValue({});
+        const repo = new Repository('some owner', 'some name', 'some token');
+        const promise = repo.addLabels(42, ['some label 1', 'some label 2', 'some label 3']);
+        await expect(promise).resolves.toBeDefined();
+    });
 
-//     test('throw error given unexpected Octokit error', async () => {
-//         mockOctokit.issues.addLabels.mockRejectedValue({});
-//         const repo = new Repository('some owner', 'some name', 'some token');
-//         const promise = repository.addLabels(42, ['some label 1', 'some label 2', 'some label 3']);
-//         await expect(promise).rejects.toBeDefined();
-//     });
-// });
+    test('throw error given unexpected Octokit error', async () => {
+        mockOctokit.issues.addLabels.mockRejectedValue({});
+        const repo = new Repository('some owner', 'some name', 'some token');
+        const promise = repo.addLabels(42, ['some label 1', 'some label 2', 'some label 3']);
+        await expect(promise).rejects.toBeDefined();
+    });
+});
 
 const GET_REF_SUCCESS_RESPONSE = {
     status: 200,

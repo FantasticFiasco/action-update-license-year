@@ -97,7 +97,7 @@ class Repository {
     }
 
     async stageWrittenFiles() {
-        for (const writtenFile in this._writtenFiles) {
+        for (const writtenFile of this._writtenFiles) {
             try {
                 await exec(`git add "${writtenFile}"`);
             } catch (err) {
