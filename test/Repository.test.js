@@ -184,40 +184,6 @@ describe('#commit should', () => {
     });
 });
 
-// describe('#getBranch should', () => {
-//     test('return branch given branch exists', async () => {
-//         mockOctokit.git.getRef.mockResolvedValue(GET_REF_SUCCESS_RESPONSE);
-//         const repo = new Repository('some owner', 'some name', 'some token');
-//         const promise = repository.getBranch('master');
-//         await expect(promise).resolves.toBe(GET_REF_SUCCESS_RESPONSE);
-//     });
-
-//     test("throw error given branch doesn't exist", async () => {
-//         mockOctokit.git.getRef.mockRejectedValue(GET_REF_FAILURE_RESPONSE);
-//         const repo = new Repository('some owner', 'some name', 'some token');
-//         const promise = repository.getBranch('unknown-branch');
-//         await expect(promise).rejects.toBeDefined();
-//     });
-// });
-
-// describe('#createBranch should', () => {
-//     test('successfully complete', async () => {
-//         mockOctokit.git.getRef.mockResolvedValue(GET_REF_SUCCESS_RESPONSE);
-//         mockOctokit.git.createRef.mockResolvedValue({});
-//         const repo = new Repository('some owner', 'some name', 'some token');
-//         const promise = repository.createBranch('some-branch');
-//         await expect(promise).resolves.toBeDefined();
-//     });
-
-//     test('throw error given unexpected Octokit error', async () => {
-//         mockOctokit.git.getRef.mockResolvedValue(GET_REF_SUCCESS_RESPONSE);
-//         mockOctokit.git.createRef.mockRejectedValue({});
-//         const repo = new Repository('some owner', 'some name', 'some token');
-//         const promise = repository.createBranch('some-branch');
-//         await expect(promise).rejects.toBeDefined();
-//     });
-// });
-
 describe('#hasPullRequest should', () => {
     test('return true given pull request exists', async () => {
         mockOctokit.pulls.list.mockResolvedValue({
@@ -292,23 +258,3 @@ describe('#addLabels should', () => {
         await expect(promise).rejects.toBeDefined();
     });
 });
-
-const GET_REF_SUCCESS_RESPONSE = {
-    status: 200,
-    data: {
-        object: {
-            sha: 'some sha',
-        },
-    },
-};
-
-const GET_REF_FAILURE_RESPONSE = {
-    status: 404,
-};
-
-/**
- * @param {string} value
- */
-const fromBase64ToUtf8 = (value) => {
-    return Buffer.from(value, 'base64').toString('utf8');
-};
