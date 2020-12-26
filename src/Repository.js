@@ -84,7 +84,7 @@ class Repository {
      */
     async writeFile(path, content) {
         try {
-            await writeFileAsync(path, content, { encoding: 'utf8' });
+            await writeFileAsync(path, content, { encoding: 'utf8', flag: 'r+' });
             this._writtenFiles.push(path);
         } catch (err) {
             err.message = `Error writing file "${path}": ${err.message}`;

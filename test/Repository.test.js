@@ -107,31 +107,25 @@ describe('#writeFile should', () => {
     test('write content to file', async () => {
         process.chdir(repoDir);
         const repo = new Repository('some owner', 'some name', 'some token');
-        await repo.writeFile('README.md', '# New title');
-        expect(readFileSync('README.md').toString()).toBe('# New title');
+        const content = '# New title\n';
+        await repo.writeFile('README.md', content);
+        await expect(repo.readFile('README.md')).resolves.toBe(content);
     });
 
-    // test('use utf8 encoding', async () => {
-    //     mockOctokit.repos.createOrUpdateFileContents.mockResolvedValue({});
-    //     const repo = new Repository('some owner', 'some name', 'some token');
-    //     const content = 'Álvaro Mondéjar';
-    //     const promise = repository.updateContent('master', 'LICENSE', 'some sha', content, 'some commit message');
-    //     await expect(promise).resolves.toBeDefined();
-    //     expect(fromBase64ToUtf8(mockOctokit.repos.createOrUpdateFileContents.mock.calls[0][0].content)).toBe(content);
-    // });
+    test('use utf8 encoding', async () => {
+        process.chdir(repoDir);
+        const repo = new Repository('some owner', 'some name', 'some token');
+        const content = 'Álvaro Mondéjar';
+        await repo.writeFile('README.md', content);
+        await expect(repo.readFile('README.md')).resolves.toBe(content);
+    });
 
-    // test("throw error given file doesn't exist", async () => {
-    //     mockOctokit.repos.createOrUpdateFileContents.mockRejectedValue({});
-    //     const repo = new Repository('some owner', 'some name', 'some token');
-    //     const promise = repository.updateContent(
-    //         'master',
-    //         'unknown-file',
-    //         'some sha',
-    //         'some content',
-    //         'some commit message'
-    //     );
-    //     await expect(promise).rejects.toBeDefined();
-    // });
+    test("throw error given file doesn't exist", async () => {
+        process.chdir(repoDir);
+        const repo = new Repository('some owner', 'some name', 'some token');
+        const promise = repo.writeFile('unknown-file', 'some content');
+        await expect(promise).rejects.toBeDefined();
+    });
 });
 
 // describe('#getBranch should', () => {
