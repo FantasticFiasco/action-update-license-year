@@ -1,4 +1,4 @@
-const { mkdtempSync, rmdirSync, readFileSync } = require('fs');
+const { mkdtempSync, rmdirSync } = require('fs');
 const { tmpdir } = require('os');
 const { exec } = require('../src/process');
 

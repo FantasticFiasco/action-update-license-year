@@ -13,19 +13,14 @@ class Repository {
      * @param {string} token The GitHub access token
      */
     constructor(owner, name, token) {
-        this.owner = owner;
-        this.name = name;
-        this.octokit = getOctokit(token);
+        this._owner = owner;
+        this._name = name;
+        this._octokit = getOctokit(token);
+        this._currentBranch = '';
+        this._isCurrentBranchNew = false;
+        /** @type {string[]} */
+        this._writtenFiles = [];
     }
-
-    /** @type {string} */
-    _currentBranch = '';
-
-    /** @type {boolean} */
-    _isCurrentBranchNew = false;
-
-    /** @type {string[]} */
-    _writtenFiles = [];
 
     /**
      * @param {string} name The name of the branch
@@ -140,10 +135,10 @@ class Repository {
      */
     async hasPullRequest(sourceBranchName) {
         try {
-            const res = await this.octokit.pulls.list({
-                owner: this.owner,
-                repo: this.name,
-                head: `${this.owner}:${sourceBranchName}`,
+            const res = await this._octokit.pulls.list({
+                owner: this._owner,
+                repo: this._name,
+                head: `${this._owner}:${sourceBranchName}`,
             });
 
             return res.data.length === 1;
@@ -160,9 +155,9 @@ class Repository {
      */
     async createPullRequest(sourceBranchName, title, body) {
         try {
-            return await this.octokit.pulls.create({
-                owner: this.owner,
-                repo: this.name,
+            return await this._octokit.pulls.create({
+                owner: this._owner,
+                repo: this._name,
                 title,
                 body,
                 head: sourceBranchName,
@@ -182,9 +177,9 @@ class Repository {
      */
     async addAssignees(issueNumber, assignees) {
         try {
-            return await this.octokit.issues.addAssignees({
-                owner: this.owner,
-                repo: this.name,
+            return await this._octokit.issues.addAssignees({
+                owner: this._owner,
+                repo: this._name,
                 issue_number: issueNumber,
                 assignees,
             });
@@ -202,9 +197,9 @@ class Repository {
      */
     async addLabels(issueNumber, labels) {
         try {
-            return await this.octokit.issues.addLabels({
-                owner: this.owner,
-                repo: this.name,
+            return await this._octokit.issues.addLabels({
+                owner: this._owner,
+                repo: this._name,
                 issue_number: issueNumber,
                 labels,
             });

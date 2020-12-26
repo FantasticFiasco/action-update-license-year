@@ -1,4 +1,4 @@
-const { mkdtempSync, rmdirSync, writeFileSync, mkdirSync, openSync, closeSync } = require('fs');
+const { mkdtempSync, rmdirSync, writeFileSync, mkdirSync } = require('fs');
 const { join } = require('path');
 const { tmpdir } = require('os');
 const { search } = require('../src/search');
