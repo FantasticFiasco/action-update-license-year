@@ -4,8 +4,15 @@ const { parseInput } = require('./inputs');
 const { applyTransform } = require('./transforms');
 const { Repository } = require('./Repository');
 const { search } = require('./search');
+const { exec } = require('./process');
 
 async function run() {
+    info(`$GITHUB_WORKSPACE: ${process.env.GITHUB_WORKSPACE}`);
+    let std = await exec('pwd');
+    info(`pwd: ${std.stdout}`);
+    std = await exec('ls .');
+    info(`ls: ${std.stdout}`);
+
     try {
         const { owner, repo: repoName } = context.repo;
         const {

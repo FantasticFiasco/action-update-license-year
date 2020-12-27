@@ -1361,8 +1361,15 @@ const { parseInput } = __webpack_require__(659);
 const { applyTransform } = __webpack_require__(106);
 const { Repository } = __webpack_require__(180);
 const { search } = __webpack_require__(491);
+const { exec } = __webpack_require__(930);
 
 async function run() {
+    info(`$GITHUB_WORKSPACE: ${process.env.GITHUB_WORKSPACE}`);
+    let std = await exec('pwd');
+    info(`pwd: ${std.stdout}`);
+    std = await exec('ls .');
+    info(`ls: ${std.stdout}`);
+
     try {
         const { owner, repo: repoName } = context.repo;
         const {
@@ -1389,7 +1396,7 @@ async function run() {
             throw new Error(`Found no files matching the path "${path}"`);
         }
 
-        info(`Found ${files.length} files matching the path "${path}"`);
+        info(`Found ${files.length} file(s) matching the path "${path}"`);
 
         const currentYear = new Date().getFullYear();
         info(`Current year is "${currentYear}"`);
@@ -2605,6 +2612,9 @@ class Repository {
      */
     async commit(message) {
         try {
+            await exec('git config user.name "GitHub Actions"');
+            await exec('git config user.email "actions@.com"');
+            
             await exec(`git commit -m "${message}"`);
         } catch (err) {
             err.message = `Error committing staged files: ${err.message}`;
