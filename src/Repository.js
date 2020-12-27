@@ -167,10 +167,10 @@ class Repository {
      */
     async createPullRequest(sourceBranchName, title, body) {
         try {
-            const { stdout: defaultBranch } = await exec(
-                `git remote show origin | grep 'HEAD branch' | cut -d ' ' -f5`
-            );
+            const { stdout } = await exec(`git remote show origin | grep 'HEAD branch' | cut -d ' ' -f5`);
+            const defaultBranch = stdout.toString().trim();
 
+            // TODO: Remove logging
             info(`default branch: "${defaultBranch}"`);
 
             return await this._octokit.pulls.create({
@@ -179,7 +179,7 @@ class Repository {
                 title,
                 body,
                 head: sourceBranchName,
-                base: defaultBranch.toString(),
+                base: defaultBranch,
             });
         } catch (err) {
             err.message = `Error when creating pull request from ${sourceBranchName}: ${err.message}`;
