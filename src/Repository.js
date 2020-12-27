@@ -1,6 +1,7 @@
 const { getOctokit } = require('@actions/github');
 const { exec } = require('./process');
 const { promisify } = require('util');
+const { info } = require('@actions/core');
 const readFileAsync = promisify(require('fs').readFile);
 const writeFileAsync = promisify(require('fs').writeFile);
 
@@ -169,6 +170,8 @@ class Repository {
             const { stdout: defaultBranch } = await exec(
                 `git remote show origin | grep 'HEAD branch' | cut -d ' ' -f5`
             );
+
+            info(`default branch: "${defaultBranch}"`);
 
             return await this._octokit.pulls.create({
                 owner: this._owner,
