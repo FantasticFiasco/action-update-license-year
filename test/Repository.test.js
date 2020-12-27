@@ -2,12 +2,7 @@ const { mkdtempSync, rmdirSync } = require('fs');
 const { tmpdir } = require('os');
 const { exec } = require('../src/process');
 
-// TODO: Are all these mocked properties required?
 const mockOctokit = {
-    git: {
-        getRef: jest.fn(),
-        createRef: jest.fn(),
-    },
     pulls: {
         list: jest.fn(),
         create: jest.fn(),
@@ -15,10 +10,6 @@ const mockOctokit = {
     issues: {
         addAssignees: jest.fn(),
         addLabels: jest.fn(),
-    },
-    repos: {
-        getContent: jest.fn(),
-        createOrUpdateFileContents: jest.fn(),
     },
 };
 
