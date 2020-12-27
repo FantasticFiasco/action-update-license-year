@@ -32,7 +32,7 @@ async function run() {
             throw new Error(`Found no files matching the path "${path}"`);
         }
 
-        info(`Found ${files.length} files matching the path "${path}"`);
+        info(`Found ${files.length} file(s) matching the path "${path}"`);
 
         const currentYear = new Date().getFullYear();
         info(`Current year is "${currentYear}"`);
