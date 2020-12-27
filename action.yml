@@ -5,9 +5,7 @@ author: Mattias Kindborg <mattias.kindborg@gmail.com> (https://twitter.com/Fanta
 inputs:
   token:
     description: >
-      Personal access token (PAT) used to fetch the repository. The PAT is configured
-      with the local git config, which enables your scripts to run authenticated git
-      commands. The post-job step removes the PAT.
+      Personal access token (PAT) used when interacting with Git and GitHub.
 
 
       We recommend using a service account with the least permissions necessary.
