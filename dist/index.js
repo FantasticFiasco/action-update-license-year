@@ -1393,10 +1393,10 @@ async function run() {
 
         const files = await search(path);
         if (files.length === 0) {
-            throw new Error(`Found no files matching the path "${path}"`);
+            throw new Error(`Found no files matching the path "${path.replace('\n', '\\n')}"`);
         }
 
-        info(`Found ${files.length} file(s) matching the path "${path}"`);
+        info(`Found ${files.length} file(s) matching the path "${path.replace('\n', '\\n')}"`);
 
         const currentYear = new Date().getFullYear();
         info(`Current year is "${currentYear}"`);
