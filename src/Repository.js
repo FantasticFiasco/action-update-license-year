@@ -4,8 +4,6 @@ const { promisify } = require('util');
 const readFileAsync = promisify(require('fs').readFile);
 const writeFileAsync = promisify(require('fs').writeFile);
 
-const MASTER = 'master';
-
 class Repository {
     /**
      * @param {string} owner The owner of the repository
@@ -156,7 +154,7 @@ class Repository {
 
             return res.data.length === 1;
         } catch (err) {
-            err.message = `Error when checking whether pull request from ${sourceBranchName} to ${MASTER} exists: ${err.message}`;
+            err.message = `Error when checking whether pull request from ${sourceBranchName} exists: ${err.message}`;
             throw err;
         }
     }
@@ -168,16 +166,20 @@ class Repository {
      */
     async createPullRequest(sourceBranchName, title, body) {
         try {
+            const { stdout: defaultBranch } = await exec(
+                `git remote show origin | grep 'HEAD branch' | cut -d ' ' -f5`
+            );
+
             return await this._octokit.pulls.create({
                 owner: this._owner,
                 repo: this._name,
                 title,
                 body,
                 head: sourceBranchName,
-                base: MASTER,
+                base: defaultBranch.toString(),
             });
         } catch (err) {
-            err.message = `Error when creating pull request from ${sourceBranchName} to ${MASTER}: ${err.message}`;
+            err.message = `Error when creating pull request from ${sourceBranchName}: ${err.message}`;
             throw err;
         }
     }
