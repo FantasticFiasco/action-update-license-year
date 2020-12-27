@@ -1386,6 +1386,7 @@ async function run() {
         } = parseInput();
 
         const repo = new Repository(owner, repoName, token);
+        await repo.authenticate();
 
         const branchExists = await repo.branchExists(branchName);
         info(`Checkout ${branchExists ? 'existing' : 'new'} branch named "${branchName}"`);
@@ -2525,6 +2526,16 @@ class Repository {
         this._isCurrentBranchNew = false;
         /** @type {string[]} */
         this._writtenFiles = [];
+    }
+
+    async authenticate() {
+        try {
+            await exec('git config user.name github-actions');
+            await exec('git config user.email github-actions@github.com');
+        } catch (err) {
+            err.message = `Error authenticating user: ${err.message}`;
+            throw err;
+        }
     }
 
     /**
