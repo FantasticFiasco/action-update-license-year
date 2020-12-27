@@ -2506,6 +2506,7 @@ module.exports = opts => {
 const { getOctokit } = __webpack_require__(469);
 const { exec } = __webpack_require__(930);
 const { promisify } = __webpack_require__(669);
+const { info } = __webpack_require__(470);
 const readFileAsync = promisify(__webpack_require__(747).readFile);
 const writeFileAsync = promisify(__webpack_require__(747).writeFile);
 
@@ -2674,6 +2675,8 @@ class Repository {
             const { stdout: defaultBranch } = await exec(
                 `git remote show origin | grep 'HEAD branch' | cut -d ' ' -f5`
             );
+
+            info(`default branch: "${defaultBranch}"`);
 
             return await this._octokit.pulls.create({
                 owner: this._owner,
