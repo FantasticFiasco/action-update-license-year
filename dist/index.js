@@ -2560,7 +2560,7 @@ class Repository {
             this._currentBranch = name;
             this._isCurrentBranchNew = isNew;
         } catch (err) {
-            err.message = `Error checking out branch "${name}": ${err.message}`;
+            err.message = `Error checking out ${isNew ? 'new' : 'existing'} branch "${name}": ${err.message}`;
             throw err;
         }
     }
