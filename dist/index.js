@@ -1368,7 +1368,7 @@ async function run() {
         if (wd === undefined) {
             throw new Error('GitHub Actions has not set the working directory');
         }
-        info(`working directory: ${wd}`);
+        info(`Working directory: ${wd}`);
 
         const { owner, repo: repoName } = context.repo;
         const {
@@ -1408,12 +1408,12 @@ async function run() {
                 info(`Update license in "${file.replace(wd, '.')}"`);
                 await repo.writeFile(file, updatedContent);
             } else {
-                info(`File "${file}" is already up-to-date`);
+                info(`File "${file.replace(wd, '.')}" is already up-to-date`);
             }
         }
 
         if (!repo.hasChanges()) {
-            info(`No license where updated, let's abort`);
+            info(`No licenses where updated, let's abort`);
             return;
         }
 
