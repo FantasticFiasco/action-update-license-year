@@ -1361,16 +1361,15 @@ const { parseInput } = __webpack_require__(659);
 const { applyTransform } = __webpack_require__(106);
 const { Repository } = __webpack_require__(180);
 const { search } = __webpack_require__(491);
-const { exec } = __webpack_require__(930);
 
 async function run() {
-    info(`$GITHUB_WORKSPACE: ${process.env.GITHUB_WORKSPACE}`);
-    let std = await exec('pwd');
-    info(`pwd: ${std.stdout}`);
-    std = await exec('ls .');
-    info(`ls: ${std.stdout}`);
-
     try {
+        const wd = process.env.GITHUB_WORKSPACE;
+        if (wd === undefined) {
+            throw new Error('GitHub Actions has not set the working directory');
+        }
+        info(`working directory: ${wd}`);
+
         const { owner, repo: repoName } = context.repo;
         const {
             token,
@@ -1406,7 +1405,7 @@ async function run() {
             const content = await repo.readFile(file);
             const updatedContent = applyTransform(transform, content, currentYear);
             if (updatedContent !== content) {
-                info(`Update license in "${file}"`);
+                info(`Update license in "${file.replace(wd, '.')}"`);
                 await repo.writeFile(file, updatedContent);
             } else {
                 info(`File "${file}" is already up-to-date`);
