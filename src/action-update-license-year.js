@@ -11,7 +11,7 @@ async function run() {
         if (wd === undefined) {
             throw new Error('GitHub Actions has not set the working directory');
         }
-        info(`working directory: ${wd}`);
+        info(`Working directory: ${wd}`);
 
         const { owner, repo: repoName } = context.repo;
         const {
