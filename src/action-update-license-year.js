@@ -45,13 +45,14 @@ async function run() {
         info(`Current year is "${currentYear}"`);
 
         for (const file of files) {
+            const relativeFile = file.replace(wd, '.');
             const content = await repo.readFile(file);
-            const updatedContent = applyTransform(transform, content, currentYear);
+            const updatedContent = applyTransform(transform, content, currentYear, relativeFile);
             if (updatedContent !== content) {
-                info(`Update license in "${file.replace(wd, '.')}"`);
+                info(`Update license in "${relativeFile}"`);
                 await repo.writeFile(file, updatedContent);
             } else {
-                info(`File "${file.replace(wd, '.')}" is already up-to-date`);
+                info(`File "${relativeFile}" is already up-to-date`);
             }
         }
 

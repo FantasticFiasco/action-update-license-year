@@ -70,26 +70,28 @@ const DEFAULT_TRANSFORMS = [
  * @param {string} transform
  * @param {string} license
  * @param {number} currentYear
+ * @param {string} fileName
  */
-function applyTransform(transform, license, currentYear) {
+function applyTransform(transform, license, currentYear, fileName) {
     return transform === ''
-        ? applyDefaultTransform(license, currentYear)
-        : applyCustomTransform(transform, license, currentYear);
+        ? applyDefaultTransform(license, currentYear, fileName)
+        : applyCustomTransform(transform, license, currentYear, fileName);
 }
 
 /**
  * @param {string} transform
  * @param {string} license
  * @param {number} currentYear
+ * @param {string} fileName
  */
-function applyCustomTransform(transform, license, currentYear) {
+function applyCustomTransform(transform, license, currentYear, fileName) {
     const licenseTransform = {
         name: 'Custom',
         transform: new RegExp(transform, 'im'),
     };
 
     if (!canApplyLicenseTransform(licenseTransform, license)) {
-        throw new Error('Specified license is not supported');
+        throw new Error(`Specified transform is not valid on "${fileName}"`);
     }
 
     return applyLicenseTransform(licenseTransform, license, currentYear);
@@ -98,15 +100,16 @@ function applyCustomTransform(transform, license, currentYear) {
 /**
  * @param {string} license
  * @param {number} currentYear
+ * @param {string} fileName
  */
-function applyDefaultTransform(license, currentYear) {
+function applyDefaultTransform(license, currentYear, fileName) {
     for (const licenseTransform of DEFAULT_TRANSFORMS) {
         if (canApplyLicenseTransform(licenseTransform, license)) {
             return applyLicenseTransform(licenseTransform, license, currentYear);
         }
     }
 
-    throw new Error('Specified license is not supported');
+    throw new Error(`Default transform is not valid on "${fileName}"`);
 }
 
 /**
