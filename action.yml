@@ -18,8 +18,8 @@ inputs:
 
   path:
     description: >
-      A path or a wildcard pattern specifying files to transform. Multiple paths can be
-      specified using literal styled YAML.
+      A path or wildcard pattern specifying files to transform. Multiple paths can be specified
+      using literal styled YAML.
     default: LICENSE
     required: false
 
