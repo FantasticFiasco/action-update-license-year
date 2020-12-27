@@ -37,7 +37,7 @@ async function run() {
         const currentYear = new Date().getFullYear();
         info(`Current year is "${currentYear}"`);
 
-        for (const file in files) {
+        for (const file of files) {
             const content = await repo.readFile(file);
             const updatedContent = applyTransform(transform, content, currentYear);
             if (updatedContent !== content) {
