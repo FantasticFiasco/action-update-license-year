@@ -107,9 +107,9 @@ class Repository {
      */
     async commit(message) {
         try {
-            await exec('git config user.name "GitHub Actions"');
-            await exec('git config user.email "actions@.com"');
-            
+            // await exec('git config user.name "GitHub Actions"');
+            // await exec('git config user.email "actions@.com"');
+
             await exec(`git commit -m "${message}"`);
         } catch (err) {
             err.message = `Error committing staged files: ${err.message}`;
