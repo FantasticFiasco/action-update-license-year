@@ -7,5 +7,6 @@
   "editor.formatOnSave": true,
   "js/ts.implicitProjectConfig.checkJs": true,
   "spellright.language": ["en", "English (American)"],
-  "spellright.documentTypes": ["markdown", "latex", "plaintext"]
+  "spellright.documentTypes": ["markdown", "latex", "plaintext"],
+  "cSpell.words": ["multiline"]
 }

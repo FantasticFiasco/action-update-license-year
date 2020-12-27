@@ -1,5 +1,5 @@
 const fs = require('fs');
-const { transformLicense } = require('../src/license');
+const { applyTransform: transformLicense } = require('../src/transforms');
 
 describe('#transformLicense should', () => {
     describe('given AGPL-3.0-only', () => {

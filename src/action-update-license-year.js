@@ -1,7 +1,7 @@
 const { setFailed, info } = require('@actions/core');
 const { context } = require('@actions/github');
 const { parseInput } = require('./inputs');
-const { transformLicense } = require('./license');
+const { applyTransform } = require('./transforms');
 const { Repository } = require('./Repository');
 const { search } = require('./search');
 
@@ -38,11 +38,11 @@ async function run() {
         info(`Current year is "${currentYear}"`);
 
         for (const file in files) {
-            const content = repo.readFile(file);
-            const updatedContent = transformLicense(content, currentYear); // TODO: Pass transform
+            const content = await repo.readFile(file);
+            const updatedContent = applyTransform(transform, content, currentYear);
             if (updatedContent !== content) {
                 info(`Update license in "${file}"`);
-                repo.writeFile(file, updatedContent);
+                await repo.writeFile(file, updatedContent);
             } else {
                 info(`File "${file}" is already up-to-date`);
             }

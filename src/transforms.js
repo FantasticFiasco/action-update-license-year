@@ -57,7 +57,7 @@ const BSD_SINGLE_YEAR = new RegExp(
  * @property {string} name
  * @property {RegExp} transform
  */
-const LICESE_TRANSFORMS = [
+const DEFAULT_TRANSFORMS = [
     { name: 'AGPL-3.0-only', transform: AGPL_3_ONLY_YEAR_RANGE },
     { name: 'AGPL-3.0-only', transform: AGPL_3_ONLY_SINGLE_YEAR },
     { name: 'Apache-2.0', transform: APACHE_2_MIT_YEAR_RANGE },
@@ -67,13 +67,42 @@ const LICESE_TRANSFORMS = [
 ];
 
 /**
+ * @param {string} transform
  * @param {string} license
  * @param {number} currentYear
  */
-function transformLicense(license, currentYear) {
-    for (const licenseTransform of LICESE_TRANSFORMS) {
-        if (canTransform(licenseTransform, license)) {
-            return transform(licenseTransform, license, currentYear);
+function applyTransform(transform, license, currentYear) {
+    return transform === ''
+        ? applyDefaultTransform(license, currentYear)
+        : applyCustomTransform(transform, license, currentYear);
+}
+
+/**
+ * @param {string} transform
+ * @param {string} license
+ * @param {number} currentYear
+ */
+function applyCustomTransform(transform, license, currentYear) {
+    const licenseTransform = {
+        name: 'Custom',
+        transform: new RegExp(transform, 'im'),
+    };
+
+    if (!canApplyLicenseTransform(licenseTransform, license)) {
+        throw new Error('Specified license is not supported');
+    }
+
+    return applyLicenseTransform(licenseTransform, license, currentYear);
+}
+
+/**
+ * @param {string} license
+ * @param {number} currentYear
+ */
+function applyDefaultTransform(license, currentYear) {
+    for (const licenseTransform of DEFAULT_TRANSFORMS) {
+        if (canApplyLicenseTransform(licenseTransform, license)) {
+            return applyLicenseTransform(licenseTransform, license, currentYear);
         }
     }
 
@@ -84,7 +113,7 @@ function transformLicense(license, currentYear) {
  * @param {LicenseTransform} licenseTransform
  * @param {string} license
  */
-function canTransform(licenseTransform, license) {
+function canApplyLicenseTransform(licenseTransform, license) {
     return licenseTransform.transform.test(license);
 }
 
@@ -93,7 +122,7 @@ function canTransform(licenseTransform, license) {
  * @param {string} license
  * @param {number} currentYear
  */
-function transform(licenseTransform, license, currentYear) {
+function applyLicenseTransform(licenseTransform, license, currentYear) {
     const match = licenseTransform.transform.exec(license);
     if (match === null || match.groups === undefined) {
         throw new Error(`Transforming ${licenseTransform.name} license failed`);
@@ -107,5 +136,5 @@ function transform(licenseTransform, license, currentYear) {
 }
 
 module.exports = {
-    transformLicense,
+    applyTransform,
 };

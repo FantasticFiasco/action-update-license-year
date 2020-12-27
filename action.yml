@@ -28,9 +28,15 @@ inputs:
   transform:
     description: >
       A regular expression (JavaScript flavor) describing the license transform. The
-      expression must contain a capturing group named "from", encapsulating the first
-      year of license validity. The expression will be used by String.prototype.replace()
-      to apply the transformation.
+      expression must have the following properties:
+
+
+      - A capturing group named "from", encapsulating the first year of license validity
+      - Written to support the RegExp flags "im" (ignore case and multiline)
+
+
+      The expression will be used by String.prototype.replace() to apply the
+      transformation.
     default:
     required: false
 
