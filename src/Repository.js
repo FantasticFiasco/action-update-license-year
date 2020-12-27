@@ -22,6 +22,16 @@ class Repository {
         this._writtenFiles = [];
     }
 
+    async authenticate() {
+        try {
+            await exec('git config user.name github-actions');
+            await exec('git config user.email github-actions@github.com');
+        } catch (err) {
+            err.message = `Error authenticating user: ${err.message}`;
+            throw err;
+        }
+    }
+
     /**
      * @param {string} name The name of the branch
      */

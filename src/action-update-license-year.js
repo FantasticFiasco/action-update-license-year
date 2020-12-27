@@ -29,6 +29,7 @@ async function run() {
         } = parseInput();
 
         const repo = new Repository(owner, repoName, token);
+        await repo.authenticate();
 
         const branchExists = await repo.branchExists(branchName);
         info(`Checkout ${branchExists ? 'existing' : 'new'} branch named "${branchName}"`);
