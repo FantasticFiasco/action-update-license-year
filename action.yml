@@ -30,7 +30,7 @@ inputs:
 
 
       - A capturing group named "from", encapsulating the first year of license validity
-      - Written to support the RegExp flags "im" (ignore case and multiline)
+      - Written to support the RegExp flags "im" ("ignore case" and "multiline")
 
 
       The expression will be used by String.prototype.replace() to apply the
