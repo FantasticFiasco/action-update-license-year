@@ -4,7 +4,7 @@ const { create } = require('@actions/glob');
 /**
  * @param {string} pattern
  */
-async function search(pattern) {
+const search = async (pattern) => {
     const globber = await create(pattern);
     const paths = await globber.glob();
     const files = paths.filter((path) => {
@@ -12,7 +12,7 @@ async function search(pattern) {
     });
 
     return files;
-}
+};
 
 module.exports = {
     search,

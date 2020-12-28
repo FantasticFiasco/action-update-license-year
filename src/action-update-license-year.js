@@ -5,7 +5,7 @@ const { applyTransform } = require('./transforms');
 const { Repository } = require('./repository');
 const { search } = require('./search');
 
-async function run() {
+const run = async () => {
     try {
         const wd = process.env.GITHUB_WORKSPACE;
         if (wd === undefined) {
@@ -89,7 +89,7 @@ async function run() {
     } catch (err) {
         setFailed(err.message);
     }
-}
+};
 
 module.exports = {
     run,

@@ -65,7 +65,7 @@ const VARIABLES = {
     currentYear: CURRENT_YEAR.toString(),
 };
 
-function parseInput() {
+const parseInput = () => {
     const token = getInput(TOKEN.name, { required: true });
     const path = getInput(PATH.name) || PATH.defaultValue;
     const transform = validateTransform(getInput(TRANSFORM.name) || TRANSFORM.defaultValue);
@@ -89,12 +89,12 @@ function parseInput() {
         assignees,
         labels,
     };
-}
+};
 
 /**
  * @param {string} text
  */
-function substituteVariables(text) {
+const substituteVariables = (text) => {
     // prettier-ignore
     const variableRegExp = new RegExp(
         '(?<!\\$)'    +  // '$'           negative lookbehind to ignore GitHub Action variables named '${{ variable }}'
@@ -116,28 +116,28 @@ function substituteVariables(text) {
     }
 
     return text;
-}
+};
 
 /**
  * @param {string} values A comma-separated list of values
  */
-function splitCsv(values) {
+const splitCsv = (values) => {
     return values
         .split(',')
         .map((value) => value.trim()) // Allow whitespaces in comma-separated list of values
         .filter((value) => value !== ''); // Remove empty entries
-}
+};
 
 /**
  * @param {string} transform
  */
-function validateTransform(transform) {
+const validateTransform = (transform) => {
     if (transform !== TRANSFORM.defaultValue && !transform.includes('?<from>')) {
         throw new Error('Transform has no capturing group named "from"');
     }
 
     return transform;
-}
+};
 
 module.exports = {
     parseInput,

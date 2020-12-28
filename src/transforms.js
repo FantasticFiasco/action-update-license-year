@@ -72,18 +72,18 @@ const DEFAULT_LICENSE_TRANSFORMS = [
  * @param {number} currentYear
  * @param {string} fileName
  */
-function applyTransform(transform, license, currentYear, fileName) {
+const applyTransform = (transform, license, currentYear, fileName) => {
     return transform === ''
         ? applyDefaultTransform(license, currentYear, fileName)
         : applyCustomTransform(transform, license, currentYear, fileName);
-}
+};
 
 /**
  * @param {string} license
  * @param {number} currentYear
  * @param {string} fileName
  */
-function applyDefaultTransform(license, currentYear, fileName) {
+const applyDefaultTransform = (license, currentYear, fileName) => {
     for (const licenseTransform of DEFAULT_LICENSE_TRANSFORMS) {
         if (canApplyLicenseTransform(licenseTransform, license)) {
             return applyLicenseTransform(licenseTransform, license, currentYear);
@@ -91,7 +91,7 @@ function applyDefaultTransform(license, currentYear, fileName) {
     }
 
     throw new Error(`Default transform is not valid on "${fileName}"`);
-}
+};
 
 /**
  * @param {string} transform
@@ -99,7 +99,7 @@ function applyDefaultTransform(license, currentYear, fileName) {
  * @param {number} currentYear
  * @param {string} fileName
  */
-function applyCustomTransform(transform, license, currentYear, fileName) {
+const applyCustomTransform = (transform, license, currentYear, fileName) => {
     const licenseTransform = {
         name: 'Custom',
         transform: new RegExp(transform, 'im'),
@@ -110,22 +110,22 @@ function applyCustomTransform(transform, license, currentYear, fileName) {
     }
 
     return applyLicenseTransform(licenseTransform, license, currentYear);
-}
+};
 
 /**
  * @param {LicenseTransform} licenseTransform
  * @param {string} license
  */
-function canApplyLicenseTransform(licenseTransform, license) {
+const canApplyLicenseTransform = (licenseTransform, license) => {
     return licenseTransform.transform.test(license);
-}
+};
 
 /**
  * @param {LicenseTransform} licenseTransform
  * @param {string} license
  * @param {number} currentYear
  */
-function applyLicenseTransform(licenseTransform, license, currentYear) {
+const applyLicenseTransform = (licenseTransform, license, currentYear) => {
     const match = licenseTransform.transform.exec(license);
     if (match === null || match.groups === undefined) {
         throw new Error(`Transforming ${licenseTransform.name} license failed`);
@@ -136,7 +136,7 @@ function applyLicenseTransform(licenseTransform, license, currentYear) {
     }
 
     return license.replace(licenseTransform.transform, `$<from>-${currentYear}`);
-}
+};
 
 module.exports = {
     applyTransform,
