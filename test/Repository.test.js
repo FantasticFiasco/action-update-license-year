@@ -1,5 +1,6 @@
 const { mkdtempSync, rmdirSync } = require('fs');
 const { tmpdir } = require('os');
+const { join } = require('path');
 const { exec } = require('../src/process');
 
 const mockOctokit = {
@@ -44,20 +45,35 @@ afterEach(() => {
     });
 });
 
+describe('#authenticate should', () => {
+    test('configure git name and e-mail', async () => {
+        process.chdir(repoDir);
+        const repo = new Repository('some owner', 'some name', 'some token');
+        await repo.authenticate();
+        const { stdout: username } = await exec('git config user.name', { cwd: repoDir });
+        expect(username).toBe('github-actions');
+        const { stdout: email } = await exec('git config user.email', { cwd: repoDir });
+        expect(email).toBe('github-actions@github.com');
+    });
+});
+
 describe('#branchExists should', () => {
     test('return true given local branch exists', async () => {
+        process.chdir(join(__dirname, '..'));
         const repo = new Repository('some owner', 'some name', 'some token');
         const actual = await repo.branchExists('master');
         expect(actual).toBe(true);
     });
 
     test('return true given remote branch exists', async () => {
+        process.chdir(join(__dirname, '..'));
         const repo = new Repository('some owner', 'some name', 'some token');
         const actual = await repo.branchExists('test/branch-used-in-tests');
         expect(actual).toBe(true);
     });
 
     test("return false given local and remote branch doesn't exist", async () => {
+        process.chdir(join(__dirname, '..'));
         const repo = new Repository('some owner', 'some name', 'some token');
         const actual = await repo.branchExists('some-non-existing-branch');
         expect(actual).toBe(false);
@@ -151,7 +167,7 @@ describe('#stageWrittenFiles should', () => {
         await repo.writeFile('README.md', '# New title\n');
         await repo.stageWrittenFiles();
         const { stdout } = await exec('git diff --name-only --cached', { cwd: repoDir });
-        expect(stdout).toBe('README.md\n');
+        expect(stdout).toBe('README.md');
     });
 });
 

@@ -116,9 +116,6 @@ class Repository {
      */
     async commit(message) {
         try {
-            // await exec('git config user.name "GitHub Actions"');
-            // await exec('git config user.email "actions@.com"');
-
             await exec(`git commit -m "${message}"`);
         } catch (err) {
             err.message = `Error committing staged files: ${err.message}`;
@@ -167,8 +164,9 @@ class Repository {
      */
     async createPullRequest(sourceBranchName, title, body) {
         try {
-            const { stdout } = await exec(`git remote show origin | grep 'HEAD branch' | cut -d ' ' -f5`);
-            const defaultBranch = stdout.toString().trim();
+            const { stdout: defaultBranch } = await exec(
+                `git remote show origin | grep 'HEAD branch' | cut -d ' ' -f5`
+            );
 
             return await this._octokit.pulls.create({
                 owner: this._owner,

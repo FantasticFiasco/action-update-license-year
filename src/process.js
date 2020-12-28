@@ -6,7 +6,11 @@ const execAsync = promisify(require('child_process').exec);
  * @param {import("child_process").ExecOptions | undefined} options
  */
 const exec = async (cmd, options = undefined) => {
-    return await execAsync(cmd, options);
+    const { stdout, stderr } = await execAsync(cmd, options);
+    return {
+        stdout: stdout.toString().trim(),
+        stderr: stderr.toString().trim(),
+    };
 };
 
 module.exports = {
