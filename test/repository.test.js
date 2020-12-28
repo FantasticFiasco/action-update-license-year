@@ -34,6 +34,7 @@ let tempRepoDir = '';
 
 beforeEach(async () => {
     tempRepoDir = mkdtempSync(tmpdir());
+
     await exec('git init', { cwd: tempRepoDir });
     await exec('echo "# Test repo" >> README.md', { cwd: tempRepoDir });
     await exec('git add README.md', { cwd: tempRepoDir });
