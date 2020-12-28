@@ -133,7 +133,9 @@ class Repository {
             this._isCurrentBranchNew = false;
             this._writtenFiles = [];
         } catch (err) {
-            err.message = `Error pushing changes to existing branch: ${err.message}`;
+            err.message = `Error pushing changes to ${this._isCurrentBranchNew ? 'new' : 'existing'} branch: ${
+                err.message
+            }`;
             throw err;
         }
     };
