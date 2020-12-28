@@ -65,20 +65,20 @@ describe('#authenticate should', () => {
 describe('#branchExists should', () => {
     test('return true given local branch exists', async () => {
         const repo = new Repository('some owner', 'some name', 'some token');
-        const actual = await repo.branchExists('master');
-        expect(actual).toBe(true);
+        const got = await repo.branchExists('master');
+        expect(got).toBe(true);
     });
 
     test('return true given remote branch exists', async () => {
         const repo = new Repository('some owner', 'some name', 'some token');
-        const actual = await repo.branchExists('test/branch-used-in-tests');
-        expect(actual).toBe(true);
+        const got = await repo.branchExists('test/branch-used-in-tests');
+        expect(got).toBe(true);
     });
 
     test("return false given local and remote branch doesn't exist", async () => {
         const repo = new Repository('some owner', 'some name', 'some token');
-        const actual = await repo.branchExists('some-non-existing-branch');
-        expect(actual).toBe(false);
+        const got = await repo.branchExists('some-non-existing-branch');
+        expect(got).toBe(false);
     });
 });
 
@@ -100,8 +100,8 @@ describe('#readFile should', () => {
     test('return content given file exists', async () => {
         process.chdir(tempRepoDir);
         const repo = new Repository('some owner', 'some name', 'some token');
-        const actual = await repo.readFile('README.md');
-        expect(actual).toBe('# Test repo\n');
+        const got = await repo.readFile('README.md');
+        expect(got).toBe('# Test repo\n');
     });
 
     test("throw error given file doesn't exist", async () => {
@@ -141,16 +141,16 @@ describe('#hasChanges should', () => {
     test('return false given no changes', () => {
         process.chdir(tempRepoDir);
         const repo = new Repository('some owner', 'some name', 'some token');
-        const actual = repo.hasChanges();
-        expect(actual).toBe(false);
+        const got = repo.hasChanges();
+        expect(got).toBe(false);
     });
 
     test('return true given changes', async () => {
         process.chdir(tempRepoDir);
         const repo = new Repository('some owner', 'some name', 'some token');
         await repo.writeFile('README.md', '# New title\n');
-        const actual = repo.hasChanges();
-        expect(actual).toBe(true);
+        const got = repo.hasChanges();
+        expect(got).toBe(true);
     });
 });
 
