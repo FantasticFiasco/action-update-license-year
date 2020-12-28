@@ -46,6 +46,8 @@ afterEach(() => {
     rmdirSync(tempRepoDir, {
         recursive: true,
     });
+
+    process.chdir(thisRepoDir);
 });
 
 describe('#authenticate should', () => {
