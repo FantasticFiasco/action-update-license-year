@@ -1,7 +1,6 @@
 const { getOctokit } = require('@actions/github');
 const { exec } = require('./process');
 const { promisify } = require('util');
-const { info } = require('@actions/core');
 const readFileAsync = promisify(require('fs').readFile);
 const writeFileAsync = promisify(require('fs').writeFile);
 
