@@ -117,7 +117,7 @@ class Repository {
         try {
             await exec(`git commit -m "${message}"`);
         } catch (err) {
-            err.message = `Error committing staged files: ${err.message}`;
+            err.message = `Error committing files: ${err.message}`;
             throw err;
         }
     };
