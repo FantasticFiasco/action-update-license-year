@@ -35,10 +35,11 @@ let tempRepoDir = '';
 beforeEach(async () => {
     tempRepoDir = mkdtempSync(tmpdir());
 
-    await exec('git init', { cwd: tempRepoDir });
-    await exec('echo "# Test repo" >> README.md', { cwd: tempRepoDir });
-    await exec('git add README.md', { cwd: tempRepoDir });
-    await exec('git commit -m "docs(readme): add"', { cwd: tempRepoDir });
+    process.chdir(tempRepoDir);
+    await exec('git init');
+    await exec('echo "# Test repo" >> README.md');
+    await exec('git add README.md');
+    await exec('git commit -m "docs(readme): add"');
 
     jest.resetAllMocks();
 });
@@ -53,7 +54,6 @@ afterEach(() => {
 
 describe('#authenticate should', () => {
     test('configure git name and e-mail', async () => {
-        process.chdir(tempRepoDir);
         const repo = new Repository('some owner', 'some name', 'some token');
         await repo.authenticate();
         const { stdout: username } = await exec('git config user.name', { cwd: tempRepoDir });
@@ -64,6 +64,11 @@ describe('#authenticate should', () => {
 });
 
 describe('#branchExists should', () => {
+    beforeEach(() => {
+        // These tests depend on the current repo
+        process.chdir(thisRepoDir);
+    });
+
     test('return true given local branch exists', async () => {
         const repo = new Repository('some owner', 'some name', 'some token');
         const got = await repo.branchExists('master');
@@ -85,13 +90,11 @@ describe('#branchExists should', () => {
 
 describe('#checkoutBranch should', () => {
     test('successfully checkout existing branch', async () => {
-        process.chdir(tempRepoDir);
         const repo = new Repository('some owner', 'some name', 'some token');
         await repo.checkoutBranch('master', false);
     });
 
     test('successfully checkout new branch', async () => {
-        process.chdir(tempRepoDir);
         const repo = new Repository('some owner', 'some name', 'some token');
         await repo.checkoutBranch('new-branch', true);
     });
@@ -99,14 +102,12 @@ describe('#checkoutBranch should', () => {
 
 describe('#readFile should', () => {
     test('return content given file exists', async () => {
-        process.chdir(tempRepoDir);
         const repo = new Repository('some owner', 'some name', 'some token');
         const got = await repo.readFile('README.md');
         expect(got).toBe('# Test repo\n');
     });
 
     test("throw error given file doesn't exist", async () => {
-        process.chdir(tempRepoDir);
         const repo = new Repository('some owner', 'some name', 'some token');
         const promise = repo.readFile('unknown-file');
         await expect(promise).rejects.toBeDefined();
@@ -115,7 +116,6 @@ describe('#readFile should', () => {
 
 describe('#writeFile should', () => {
     test('write content to file', async () => {
-        process.chdir(tempRepoDir);
         const repo = new Repository('some owner', 'some name', 'some token');
         const content = '# New title\n';
         await repo.writeFile('README.md', content);
@@ -123,7 +123,6 @@ describe('#writeFile should', () => {
     });
 
     test('use utf8 encoding', async () => {
-        process.chdir(tempRepoDir);
         const repo = new Repository('some owner', 'some name', 'some token');
         const content = 'Álvaro Mondéjar';
         await repo.writeFile('README.md', content);
@@ -131,7 +130,6 @@ describe('#writeFile should', () => {
     });
 
     test("throw error given file doesn't exist", async () => {
-        process.chdir(tempRepoDir);
         const repo = new Repository('some owner', 'some name', 'some token');
         const promise = repo.writeFile('unknown-file', 'some content');
         await expect(promise).rejects.toBeDefined();
@@ -140,14 +138,12 @@ describe('#writeFile should', () => {
 
 describe('#hasChanges should', () => {
     test('return false given no changes', () => {
-        process.chdir(tempRepoDir);
         const repo = new Repository('some owner', 'some name', 'some token');
         const got = repo.hasChanges();
         expect(got).toBe(false);
     });
 
     test('return true given changes', async () => {
-        process.chdir(tempRepoDir);
         const repo = new Repository('some owner', 'some name', 'some token');
         await repo.writeFile('README.md', '# New title\n');
         const got = repo.hasChanges();
@@ -157,7 +153,6 @@ describe('#hasChanges should', () => {
 
 describe('#stageWrittenFiles should', () => {
     test('complete given no written files', async () => {
-        process.chdir(tempRepoDir);
         const repo = new Repository('some owner', 'some name', 'some token');
         await repo.stageWrittenFiles();
         const { stdout } = await exec('git diff --name-only --cached', { cwd: tempRepoDir });
@@ -165,7 +160,6 @@ describe('#stageWrittenFiles should', () => {
     });
 
     test('complete given written file', async () => {
-        process.chdir(tempRepoDir);
         const repo = new Repository('some owner', 'some name', 'some token');
         await repo.writeFile('README.md', '# New title\n');
         await repo.stageWrittenFiles();
@@ -176,7 +170,6 @@ describe('#stageWrittenFiles should', () => {
 
 describe('#commit should', () => {
     test('complete given staged files', async () => {
-        process.chdir(tempRepoDir);
         const repo = new Repository('some owner', 'some name', 'some token');
         await repo.writeFile('README.md', '# New title\n');
         await repo.stageWrittenFiles();
@@ -187,7 +180,6 @@ describe('#commit should', () => {
     });
 
     test('throw error given no staged files', async () => {
-        process.chdir(tempRepoDir);
         const repo = new Repository('some owner', 'some name', 'some token');
         const promise = repo.commit('some commit message');
         expect(promise).rejects.toBeDefined();
