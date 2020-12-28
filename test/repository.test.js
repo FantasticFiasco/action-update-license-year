@@ -37,7 +37,7 @@ beforeEach(async () => {
 
     process.chdir(tempRepoDir);
     await exec('git init');
-    await exec('echo "# Test repo" >> README.md');
+    await exec('echo "# Test repo" > README.md');
     await exec('git add README.md');
     await exec('git commit -m "docs(readme): add"');
 
