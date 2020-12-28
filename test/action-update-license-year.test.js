@@ -1,3 +1,5 @@
+// TODO: Error when search finds no file
+
 const mockCore = {
     info: jest.fn(),
     setFailed: jest.fn(),

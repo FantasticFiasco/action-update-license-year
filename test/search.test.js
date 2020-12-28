@@ -102,6 +102,4 @@ describe('#search', () => {
         const want = [join(tempDir, 'packages', 'a', 'LICENSE'), join(tempDir, 'packages', 'a', 'index.js')];
         expect(got).toStrictEqual(want);
     });
-
-    // TODO: Error when search finds no file
 });
