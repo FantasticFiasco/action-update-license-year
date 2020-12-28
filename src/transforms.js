@@ -57,7 +57,7 @@ const BSD_SINGLE_YEAR = new RegExp(
  * @property {string} name
  * @property {RegExp} transform
  */
-const DEFAULT_TRANSFORMS = [
+const DEFAULT_LICENSE_TRANSFORMS = [
     { name: 'AGPL-3.0-only', transform: AGPL_3_ONLY_YEAR_RANGE },
     { name: 'AGPL-3.0-only', transform: AGPL_3_ONLY_SINGLE_YEAR },
     { name: 'Apache-2.0', transform: APACHE_2_MIT_YEAR_RANGE },
@@ -79,6 +79,21 @@ function applyTransform(transform, license, currentYear, fileName) {
 }
 
 /**
+ * @param {string} license
+ * @param {number} currentYear
+ * @param {string} fileName
+ */
+function applyDefaultTransform(license, currentYear, fileName) {
+    for (const licenseTransform of DEFAULT_LICENSE_TRANSFORMS) {
+        if (canApplyLicenseTransform(licenseTransform, license)) {
+            return applyLicenseTransform(licenseTransform, license, currentYear);
+        }
+    }
+
+    throw new Error(`Default transform is not valid on "${fileName}"`);
+}
+
+/**
  * @param {string} transform
  * @param {string} license
  * @param {number} currentYear
@@ -91,25 +106,10 @@ function applyCustomTransform(transform, license, currentYear, fileName) {
     };
 
     if (!canApplyLicenseTransform(licenseTransform, license)) {
-        throw new Error(`Specified transform is not valid on "${fileName}"`);
+        throw new Error(`Custom transform "${transform}" is not valid on "${fileName}"`);
     }
 
     return applyLicenseTransform(licenseTransform, license, currentYear);
-}
-
-/**
- * @param {string} license
- * @param {number} currentYear
- * @param {string} fileName
- */
-function applyDefaultTransform(license, currentYear, fileName) {
-    for (const licenseTransform of DEFAULT_TRANSFORMS) {
-        if (canApplyLicenseTransform(licenseTransform, license)) {
-            return applyLicenseTransform(licenseTransform, license, currentYear);
-        }
-    }
-
-    throw new Error(`Default transform is not valid on "${fileName}"`);
 }
 
 /**
