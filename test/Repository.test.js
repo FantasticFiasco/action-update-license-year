@@ -27,7 +27,7 @@ jest.mock('@actions/github', () => {
 const { Repository } = require('../src/Repository');
 
 // The path to the root of this git repo
-let thisRepoDir = join(__dirname, '..');
+const thisRepoDir = join(__dirname, '..');
 
 // The path to the root of a temporary local git repository that we can run our tests on
 let tempRepoDir = '';
@@ -64,21 +64,18 @@ describe('#authenticate should', () => {
 
 describe('#branchExists should', () => {
     test('return true given local branch exists', async () => {
-        process.chdir(thisRepoDir);
         const repo = new Repository('some owner', 'some name', 'some token');
         const actual = await repo.branchExists('master');
         expect(actual).toBe(true);
     });
 
     test('return true given remote branch exists', async () => {
-        process.chdir(thisRepoDir);
         const repo = new Repository('some owner', 'some name', 'some token');
         const actual = await repo.branchExists('test/branch-used-in-tests');
         expect(actual).toBe(true);
     });
 
     test("return false given local and remote branch doesn't exist", async () => {
-        process.chdir(thisRepoDir);
         const repo = new Repository('some owner', 'some name', 'some token');
         const actual = await repo.branchExists('some-non-existing-branch');
         expect(actual).toBe(false);
