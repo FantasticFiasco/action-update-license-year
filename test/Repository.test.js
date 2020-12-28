@@ -24,7 +24,7 @@ jest.mock('@actions/github', () => {
     return mockGithub;
 });
 
-const { Repository } = require('../src/Repository');
+const { Repository } = require('../src/xxxrepository');
 
 // The path to the root of this git repo
 const thisRepoDir = join(__dirname, '..');

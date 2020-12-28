@@ -2,7 +2,7 @@ const { setFailed, info } = require('@actions/core');
 const { context } = require('@actions/github');
 const { parseInput } = require('./inputs');
 const { applyTransform } = require('./transforms');
-const { Repository } = require('./Repository');
+const { Repository } = require('./xxxrepository');
 const { search } = require('./search');
 
 async function run() {
