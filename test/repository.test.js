@@ -35,6 +35,7 @@ let tempRepoDir = '';
 beforeEach(async () => {
     tempRepoDir = mkdtempSync(tmpdir());
 
+    // Let's make the temp repo the working directory
     process.chdir(tempRepoDir);
     await exec('git init');
     await exec('echo "# Test repo" > README.md');
@@ -56,9 +57,9 @@ describe('#authenticate should', () => {
     test('configure git name and e-mail', async () => {
         const repo = new Repository('some owner', 'some name', 'some token');
         await repo.authenticate();
-        const { stdout: username } = await exec('git config user.name', { cwd: tempRepoDir });
+        const { stdout: username } = await exec('git config user.name');
         expect(username).toBe('github-actions');
-        const { stdout: email } = await exec('git config user.email', { cwd: tempRepoDir });
+        const { stdout: email } = await exec('git config user.email');
         expect(email).toBe('github-actions@github.com');
     });
 });
@@ -155,7 +156,7 @@ describe('#stageWrittenFiles should', () => {
     test('complete given no written files', async () => {
         const repo = new Repository('some owner', 'some name', 'some token');
         await repo.stageWrittenFiles();
-        const { stdout } = await exec('git diff --name-only --cached', { cwd: tempRepoDir });
+        const { stdout } = await exec('git diff --name-only --cached');
         expect(stdout).toBe('');
     });
 
@@ -163,7 +164,7 @@ describe('#stageWrittenFiles should', () => {
         const repo = new Repository('some owner', 'some name', 'some token');
         await repo.writeFile('README.md', '# New title\n');
         await repo.stageWrittenFiles();
-        const { stdout } = await exec('git diff --name-only --cached', { cwd: tempRepoDir });
+        const { stdout } = await exec('git diff --name-only --cached');
         expect(stdout).toBe('README.md');
     });
 });
@@ -175,7 +176,7 @@ describe('#commit should', () => {
         await repo.stageWrittenFiles();
         const message = 'some commit message';
         await repo.commit(message);
-        const { stdout } = await exec('git log -n 1', { cwd: tempRepoDir });
+        const { stdout } = await exec('git log -n 1');
         expect(stdout).toContain(message);
     });
 
