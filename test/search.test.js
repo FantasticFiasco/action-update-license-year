@@ -28,28 +28,28 @@ describe('#search', () => {
         //       |___LICENSE
 
         // ./
-        writeFileSync(join(tempDir, 'LICENSE'), 'TODO');
-        writeFileSync(join(tempDir, 'LICENSE-APACHE'), 'TODO');
-        writeFileSync(join(tempDir, 'LICENSE-MIT'), 'TODO');
-        writeFileSync(join(tempDir, 'LICENSE.md'), 'TODO');
+        writeFileSync(join(tempDir, 'LICENSE'), 'some content');
+        writeFileSync(join(tempDir, 'LICENSE-APACHE'), 'some content');
+        writeFileSync(join(tempDir, 'LICENSE-MIT'), 'some content');
+        writeFileSync(join(tempDir, 'LICENSE.md'), 'some content');
 
         // ./packages
         mkdirSync(join(tempDir, 'packages'));
 
         // ./packages/a
         mkdirSync(join(tempDir, 'packages', 'a'));
-        writeFileSync(join(tempDir, 'packages', 'a', 'LICENSE'), 'TODO');
-        writeFileSync(join(tempDir, 'packages', 'a', 'index.js'), 'TODO');
+        writeFileSync(join(tempDir, 'packages', 'a', 'LICENSE'), 'some content');
+        writeFileSync(join(tempDir, 'packages', 'a', 'index.js'), 'some content');
 
         // ./packages/b
         mkdirSync(join(tempDir, 'packages', 'b'));
-        writeFileSync(join(tempDir, 'packages', 'b', 'LICENSE'), 'TODO');
-        writeFileSync(join(tempDir, 'packages', 'b', 'index.js'), 'TODO');
+        writeFileSync(join(tempDir, 'packages', 'b', 'LICENSE'), 'some content');
+        writeFileSync(join(tempDir, 'packages', 'b', 'index.js'), 'some content');
 
         // ./packages/c
         mkdirSync(join(tempDir, 'packages', 'c'));
-        writeFileSync(join(tempDir, 'packages', 'c', 'LICENSE'), 'TODO');
-        writeFileSync(join(tempDir, 'packages', 'c', 'index.js'), 'TODO');
+        writeFileSync(join(tempDir, 'packages', 'c', 'LICENSE'), 'some content');
+        writeFileSync(join(tempDir, 'packages', 'c', 'index.js'), 'some content');
     });
 
     afterAll(() => {
@@ -58,14 +58,14 @@ describe('#search', () => {
         });
     });
 
-    test('should return license file given path', async () => {
+    test('should return file given path', async () => {
         const pattern = join(tempDir, 'LICENSE');
         const got = await search(pattern);
         const want = [join(tempDir, 'LICENSE')];
         expect(got).toStrictEqual(want);
     });
 
-    test('should return license files given paths', async () => {
+    test('should return files given paths', async () => {
         const path1 = join(tempDir, 'LICENSE-APACHE');
         const path2 = join(tempDir, 'LICENSE-MIT');
         const pattern = path1 + '\n' + path2;
@@ -74,7 +74,7 @@ describe('#search', () => {
         expect(got).toStrictEqual(want);
     });
 
-    test('should return license files given glob', async () => {
+    test('should return files given glob', async () => {
         const pattern = join(tempDir, 'packages/*/LICENSE');
         const got = await search(pattern);
         const want = [
@@ -85,7 +85,7 @@ describe('#search', () => {
         expect(got).toStrictEqual(want);
     });
 
-    test('should return source files given glob', async () => {
+    test('should return files given glob', async () => {
         const pattern = join(tempDir, 'packages/**/*.js');
         const got = await search(pattern);
         const want = [
