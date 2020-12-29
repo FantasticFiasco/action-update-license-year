@@ -7,11 +7,11 @@ const { search } = require('./search');
 
 const run = async () => {
     try {
-        const wd = process.env.GITHUB_WORKSPACE;
-        if (wd === undefined) {
+        const cwd = process.env.GITHUB_WORKSPACE;
+        if (cwd === undefined) {
             throw new Error('GitHub Actions has not set the working directory');
         }
-        info(`Working directory: ${wd}`);
+        info(`Working directory: ${cwd}`);
 
         const { owner, repo: repoName } = context.repo;
         const {
@@ -45,7 +45,7 @@ const run = async () => {
         info(`Current year is "${currentYear}"`);
 
         for (const file of files) {
-            const relativeFile = file.replace(wd, '.');
+            const relativeFile = file.replace(cwd, '.');
             const content = await repo.readFile(file);
             const updatedContent = applyTransform(transform, content, currentYear, relativeFile);
             if (updatedContent !== content) {

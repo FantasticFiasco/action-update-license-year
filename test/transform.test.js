@@ -1,4 +1,4 @@
-const fs = require('fs');
+const { readFileSync } = require('fs');
 const { applyTransform } = require('../src/transforms');
 
 describe('#applyTransform should', () => {
@@ -178,5 +178,5 @@ describe('#applyTransform should', () => {
  * @param {string} fileName
  */
 function readTestFile(fileName) {
-    return fs.readFileSync(`./test/${fileName}`).toString();
+    return readFileSync(`./test/${fileName}`).toString();
 }

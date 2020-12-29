@@ -1,5 +1,3 @@
-// TODO: Error when search finds no file
-
 const mockCore = {
     info: jest.fn(),
     setFailed: jest.fn(),
@@ -323,3 +321,5 @@ function mockConfigReturnValue(config) {
         labels: config.labels || [],
     });
 }
+
+// TODO: Error when search finds no file
