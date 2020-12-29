@@ -36,7 +36,7 @@ describe('#parseInput should', () => {
     });
 
     describe('given no configuration', () => {
-        test('throws error given no token', () => {
+        test('throw error given no token', () => {
             const fn = () => parseInput();
             expect(fn).toThrow();
         });
