@@ -38,8 +38,8 @@ beforeEach(async () => {
     // Let's make the temp repo the working directory
     process.chdir(tempRepoDir);
     await exec('git init');
-    await exec('git config user.name "John Doe');
-    await exec('git config user.email "john.doe@mail.com');
+    await exec('git config user.name "John Doe"');
+    await exec('git config user.email "john.doe@mail.com"');
     await exec('echo "# Test repo" > README.md');
     await exec('git add README.md');
     await exec('git commit -m "docs(readme): add"');
