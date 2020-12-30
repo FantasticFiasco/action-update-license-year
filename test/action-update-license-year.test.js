@@ -47,6 +47,9 @@ const mockRepository = {
     readFile: jest.fn(),
     writeFile: jest.fn(),
     hasChanges: jest.fn(),
+    stageWrittenFiles: jest.fn(),
+    commit: jest.fn(),
+    push: jest.fn(),
     hasPullRequest: jest.fn(),
     createPullRequest: jest.fn(),
     addAssignees: jest.fn(),
@@ -101,233 +104,267 @@ describe('action should', () => {
         setupInput({});
     });
 
-    test('checkout branch given branch exists', async () => {
-        mockRepository.branchExists.mockResolvedValue(true);
-        mockSearch.search.mockResolvedValue(['some-license']);
+    test('authenticate git user', async () => {
+        mockSearch.search.mockResolvedValue(['some-file']);
         await run();
+        expect(mockRepository.authenticate).toBeCalled();
         expect(setFailed).toBeCalledTimes(0);
-        expect(mockRepository.checkoutBranch).toBeCalledWith(BRANCH_NAME.defaultValue, false);
     });
 
-    // test('get license from branch given branch exists', async () => {
-    //     mockRepository.hasBranch.mockResolvedValue(true);
-    //     await run();
-    //     expect(setFailed).toBeCalledTimes(0);
-    //     expect(mockRepository.getContent).toBeCalledWith(BRANCH_NAME.defaultValue, FILENAME);
-    // });
+    test('checkout existing branch with default name given it exists', async () => {
+        mockRepository.branchExists.mockResolvedValue(true);
+        mockSearch.search.mockResolvedValue(['some-file']);
+        await run();
+        expect(mockRepository.checkoutBranch).toBeCalledWith(BRANCH_NAME.defaultValue, false);
+        expect(setFailed).toBeCalledTimes(0);
+    });
 
-    // test("get license from master given branch doesn't exist", async () => {
-    //     mockRepository.hasBranch.mockResolvedValue(false);
-    //     await run();
-    //     expect(setFailed).toBeCalledTimes(0);
-    //     expect(mockRepository.getContent).toBeCalledWith(MASTER, FILENAME);
-    // });
+    test('checkout existing branch with custom name given it exists', async () => {
+        setupInput({ branchName: 'some-branch-name' });
+        mockRepository.branchExists.mockResolvedValue(true);
+        mockSearch.search.mockResolvedValue(['some-file']);
+        await run();
+        expect(mockRepository.checkoutBranch).toBeCalledWith('some-branch-name', false);
+        expect(setFailed).toBeCalledTimes(0);
+    });
 
-    // test('set failed given get license fails', async () => {
-    //     mockRepository.getContent.mockRejectedValue({});
-    //     await run();
-    //     expect(setFailed).toBeCalledTimes(1);
-    // });
+    test("create new branch with default name given it doesn't exist", async () => {
+        mockRepository.branchExists.mockResolvedValue(false);
+        mockSearch.search.mockResolvedValue(['some-file']);
+        await run();
+        expect(mockRepository.checkoutBranch).toBeCalledWith(BRANCH_NAME.defaultValue, true);
+        expect(setFailed).toBeCalledTimes(0);
+    });
 
-    // test('transform license using current year', async () => {
-    //     await run();
-    //     expect(setFailed).toBeCalledTimes(0);
-    //     expect(mockLicense.transformLicense).toBeCalledWith(LICESE_CONTENT, CURRENT_YEAR);
-    // });
+    test("create new branch with custom name given it doesn't exist", async () => {
+        setupInput({ branchName: 'some-branch-name' });
+        mockRepository.branchExists.mockResolvedValue(false);
+        mockSearch.search.mockResolvedValue(['some-file']);
+        await run();
+        expect(mockRepository.checkoutBranch).toBeCalledWith('some-branch-name', true);
+        expect(setFailed).toBeCalledTimes(0);
+    });
 
-    // test("create branch with default name given branch doesn't exist", async () => {
-    //     mockRepository.hasBranch.mockResolvedValue(false);
-    //     await run();
-    //     expect(setFailed).toBeCalledTimes(0);
-    //     expect(mockRepository.createBranch).toBeCalledTimes(1);
-    //     expect(mockRepository.createBranch).toBeCalledWith(BRANCH_NAME.defaultValue);
-    // });
+    test('set failed given no files matching the path', async () => {
+        mockSearch.search.mockResolvedValue([]);
+        await run();
+        expect(setFailed).toBeCalledTimes(1);
+    });
 
-    // test("create branch with custom name given branch doesn't exist", async () => {
-    //     mockConfigReturnValue({ branchName: 'some-branch-name' });
-    //     mockRepository.hasBranch.mockResolvedValue(false);
-    //     await run();
-    //     expect(setFailed).toBeCalledTimes(0);
-    //     expect(mockRepository.createBranch).toBeCalledTimes(1);
-    //     expect(mockRepository.createBranch).toBeCalledWith('some-branch-name');
-    // });
+    test('applies default transform on all files matching the path', async () => {
+        mockSearch.search.mockResolvedValue(['some-file-1', 'some-file-2']);
+        await run();
+        expect(mockTransforms.applyTransform).nthCalledWith(
+            1,
+            TRANSFORM.defaultValue,
+            undefined,
+            CURRENT_YEAR,
+            'some-file-1'
+        );
+        expect(mockTransforms.applyTransform).nthCalledWith(
+            2,
+            TRANSFORM.defaultValue,
+            undefined,
+            CURRENT_YEAR,
+            'some-file-2'
+        );
+        expect(setFailed).toBeCalledTimes(0);
+    });
 
-    // test('skip creating branch given branch exists', async () => {
-    //     mockRepository.hasBranch.mockResolvedValue(true);
-    //     await run();
-    //     expect(setFailed).toBeCalledTimes(0);
-    //     expect(mockRepository.createBranch).toBeCalledTimes(0);
-    // });
+    test('applies custom transform on all files matching the path', async () => {
+        setupInput({ transform: 'custom transform' });
+        mockSearch.search.mockResolvedValue(['some-file-1', 'some-file-2']);
+        await run();
+        expect(mockTransforms.applyTransform).nthCalledWith(
+            1,
+            'custom transform',
+            undefined,
+            CURRENT_YEAR,
+            'some-file-1'
+        );
+        expect(mockTransforms.applyTransform).nthCalledWith(
+            2,
+            'custom transform',
+            undefined,
+            CURRENT_YEAR,
+            'some-file-2'
+        );
+        expect(setFailed).toBeCalledTimes(0);
+    });
 
-    // test('skip creating branch given license is unchanged', async () => {
-    //     mockLicense.transformLicense.mockReturnValue(LICESE_CONTENT);
-    //     await run();
-    //     expect(setFailed).toBeCalledTimes(0);
-    //     expect(mockRepository.createBranch).toBeCalledTimes(0);
-    // });
+    test('aborts if no files where changed', async () => {
+        mockSearch.search.mockResolvedValue(['some-file']);
+        mockRepository.hasChanges.mockReturnValue(false);
+        await run();
+        expect(mockRepository.stageWrittenFiles).toBeCalledTimes(0);
+        expect(mockRepository.commit).toBeCalledTimes(0);
+        expect(mockRepository.push).toBeCalledTimes(0);
+        expect(setFailed).toBeCalledTimes(0);
+    });
 
-    // test('set failed given creating branch fails', async () => {
-    //     mockRepository.createBranch.mockRejectedValue({});
-    //     await run();
-    //     expect(setFailed).toBeCalledTimes(1);
-    // });
+    test('stages, commits and pushes if files where changed', async () => {
+        mockSearch.search.mockResolvedValue(['some-file']);
+        mockRepository.hasChanges.mockReturnValue(true);
+        await run();
+        expect(mockRepository.stageWrittenFiles).toBeCalledTimes(1);
+        expect(mockRepository.commit).toBeCalledTimes(1);
+        expect(mockRepository.push).toBeCalledTimes(1);
+        expect(setFailed).toBeCalledTimes(0);
+    });
 
-    // test('update content with default commit title and body', async () => {
-    //     await run();
-    //     expect(setFailed).toBeCalledTimes(0);
-    //     expect(mockRepository.updateContent).toBeCalledWith(
-    //         BRANCH_NAME.defaultValue,
-    //         FILENAME,
-    //         undefined,
-    //         undefined,
-    //         COMMIT_TITLE.defaultValue
-    //     );
-    // });
+    test('commits with default commit title and body', async () => {
+        mockSearch.search.mockResolvedValue(['some-file']);
+        mockRepository.hasChanges.mockReturnValue(true);
+        await run();
+        expect(mockRepository.commit).toBeCalledWith(COMMIT_TITLE.defaultValue);
+        expect(setFailed).toBeCalledTimes(0);
+    });
 
-    // test('update content with custom commit title and default body', async () => {
-    //     mockConfigReturnValue({ commitTitle: 'some commit title' });
-    //     await run();
-    //     expect(setFailed).toBeCalledTimes(0);
-    //     expect(mockRepository.updateContent).toBeCalledWith(
-    //         BRANCH_NAME.defaultValue,
-    //         FILENAME,
-    //         undefined,
-    //         undefined,
-    //         'some commit title'
-    //     );
-    // });
+    test('commits with custom commit title and default body', async () => {
+        setupInput({ commitTitle: 'some commit title' });
+        mockSearch.search.mockResolvedValue(['some-file']);
+        mockRepository.hasChanges.mockReturnValue(true);
+        await run();
+        expect(mockRepository.commit).toBeCalledWith('some commit title');
+        expect(setFailed).toBeCalledTimes(0);
+    });
 
-    // test('update content with default commit title and custom body', async () => {
-    //     mockConfigReturnValue({ commitBody: 'some commit body' });
-    //     await run();
-    //     expect(setFailed).toBeCalledTimes(0);
-    //     expect(mockRepository.updateContent).toBeCalledWith(
-    //         BRANCH_NAME.defaultValue,
-    //         FILENAME,
-    //         undefined,
-    //         undefined,
-    //         `${COMMIT_TITLE.defaultValue}\n\nsome commit body`
-    //     );
-    // });
+    test('commits with default commit title and custom body', async () => {
+        setupInput({ commitBody: 'some commit body' });
+        mockSearch.search.mockResolvedValue(['some-file']);
+        mockRepository.hasChanges.mockReturnValue(true);
+        await run();
+        expect(mockRepository.commit).toBeCalledWith(`${COMMIT_TITLE.defaultValue}\n\nsome commit body`);
+        expect(setFailed).toBeCalledTimes(0);
+    });
 
-    // test('update content with custom commit title and body', async () => {
-    //     mockConfigReturnValue({ commitTitle: 'some commit title', commitBody: 'some commit body' });
-    //     await run();
-    //     expect(setFailed).toBeCalledTimes(0);
-    //     expect(mockRepository.updateContent).toBeCalledWith(
-    //         BRANCH_NAME.defaultValue,
-    //         FILENAME,
-    //         undefined,
-    //         undefined,
-    //         'some commit title\n\nsome commit body'
-    //     );
-    // });
+    test('commits with custom commit title and custom body', async () => {
+        setupInput({ commitTitle: 'some commit title', commitBody: 'some commit body' });
+        mockSearch.search.mockResolvedValue(['some-file']);
+        mockRepository.hasChanges.mockReturnValue(true);
+        await run();
+        expect(mockRepository.commit).toBeCalledWith('some commit title\n\nsome commit body');
+        expect(setFailed).toBeCalledTimes(0);
+    });
 
-    // describe("given pull request doesn't exist", () => {
-    //     test('skip creating pull request given license is unchanged', async () => {
-    //         mockLicense.transformLicense.mockReturnValue(LICESE_CONTENT);
-    //         await run();
-    //         expect(setFailed).toBeCalledTimes(0);
-    //         expect(mockRepository.createPullRequest).toBeCalledTimes(0);
-    //     });
+    describe("given pull request doesn't exist", () => {
+        test('skip creating pull request given files are unchanged', async () => {
+            mockSearch.search.mockResolvedValue(['some-file']);
+            mockRepository.hasChanges.mockReturnValue(false);
+            await run();
+            expect(mockRepository.createPullRequest).toBeCalledTimes(0);
+            expect(setFailed).toBeCalledTimes(0);
+        });
 
-    //     test('create pull request with default title and body', async () => {
-    //         mockConfigReturnValue({ pullRequestTitle: PR_TITLE.defaultValue, pullRequestBody: PR_BODY.defaultValue });
-    //         mockRepository.hasPullRequest.mockResolvedValue(false);
-    //         await run();
-    //         expect(setFailed).toBeCalledTimes(0);
-    //         expect(mockRepository.createPullRequest).toBeCalledTimes(1);
-    //         expect(mockRepository.createPullRequest).toBeCalledWith(
-    //             BRANCH_NAME.defaultValue,
-    //             PR_TITLE.defaultValue,
-    //             PR_BODY.defaultValue
-    //         );
-    //     });
+        test('create pull request with default title and body', async () => {
+            setupInput({ pullRequestTitle: PR_TITLE.defaultValue, pullRequestBody: PR_BODY.defaultValue });
+            mockSearch.search.mockResolvedValue(['some-file']);
+            mockRepository.hasChanges.mockReturnValue(true);
+            await run();
+            expect(mockRepository.createPullRequest).toBeCalledWith(
+                BRANCH_NAME.defaultValue,
+                PR_TITLE.defaultValue,
+                PR_BODY.defaultValue
+            );
+            expect(setFailed).toBeCalledTimes(0);
+        });
 
-    //     test('create pull request with default title and custom body', async () => {
-    //         mockConfigReturnValue({ pullRequestTitle: PR_TITLE.defaultValue, pullRequestBody: 'some pr body' });
-    //         mockRepository.hasPullRequest.mockResolvedValue(false);
-    //         await run();
-    //         expect(setFailed).toBeCalledTimes(0);
-    //         expect(mockRepository.createPullRequest).toBeCalledTimes(1);
-    //         expect(mockRepository.createPullRequest).toBeCalledWith(
-    //             BRANCH_NAME.defaultValue,
-    //             PR_TITLE.defaultValue,
-    //             'some pr body'
-    //         );
-    //     });
+        test('create pull request with default title and custom body', async () => {
+            setupInput({ pullRequestTitle: PR_TITLE.defaultValue, pullRequestBody: 'some pr body' });
+            mockSearch.search.mockResolvedValue(['some-file']);
+            mockRepository.hasChanges.mockReturnValue(true);
+            await run();
+            expect(mockRepository.createPullRequest).toBeCalledWith(
+                BRANCH_NAME.defaultValue,
+                PR_TITLE.defaultValue,
+                'some pr body'
+            );
+            expect(setFailed).toBeCalledTimes(0);
+        });
 
-    //     test('create pull request with custom title and default body', async () => {
-    //         mockConfigReturnValue({ pullRequestTitle: 'some pr title', pullRequestBody: PR_BODY.defaultValue });
-    //         mockRepository.hasPullRequest.mockResolvedValue(false);
-    //         await run();
-    //         expect(setFailed).toBeCalledTimes(0);
-    //         expect(mockRepository.createPullRequest).toBeCalledTimes(1);
-    //         expect(mockRepository.createPullRequest).toBeCalledWith(
-    //             BRANCH_NAME.defaultValue,
-    //             'some pr title',
-    //             PR_BODY.defaultValue
-    //         );
-    //     });
+        test('create pull request with custom title and default body', async () => {
+            setupInput({ pullRequestTitle: 'some pr title', pullRequestBody: PR_BODY.defaultValue });
+            mockSearch.search.mockResolvedValue(['some-file']);
+            mockRepository.hasChanges.mockReturnValue(true);
+            await run();
+            expect(mockRepository.createPullRequest).toBeCalledWith(
+                BRANCH_NAME.defaultValue,
+                'some pr title',
+                PR_BODY.defaultValue
+            );
+            expect(setFailed).toBeCalledTimes(0);
+        });
 
-    //     test('create pull request with custom title and body', async () => {
-    //         mockConfigReturnValue({ pullRequestTitle: 'some pr title', pullRequestBody: 'some pr body' });
-    //         mockRepository.hasPullRequest.mockResolvedValue(false);
-    //         await run();
-    //         expect(setFailed).toBeCalledTimes(0);
-    //         expect(mockRepository.createPullRequest).toBeCalledTimes(1);
-    //         expect(mockRepository.createPullRequest).toBeCalledWith(
-    //             BRANCH_NAME.defaultValue,
-    //             'some pr title',
-    //             'some pr body'
-    //         );
-    //     });
+        test('create pull request with custom title and body', async () => {
+            setupInput({ pullRequestTitle: 'some pr title', pullRequestBody: 'some pr body' });
+            mockSearch.search.mockResolvedValue(['some-file']);
+            mockRepository.hasChanges.mockReturnValue(true);
+            await run();
+            expect(setFailed).toBeCalledTimes(0);
+            expect(mockRepository.createPullRequest).toBeCalledTimes(1);
+            expect(mockRepository.createPullRequest).toBeCalledWith(
+                BRANCH_NAME.defaultValue,
+                'some pr title',
+                'some pr body'
+            );
+        });
 
-    //     test('create pull request and add assignees given configuration', async () => {
-    //         mockConfigReturnValue({ assignees: ['assignee1', 'assignee2', 'assignee3'] });
-    //         mockRepository.createPullRequest.mockResolvedValue({ data: { number: 42 } });
-    //         await run();
-    //         expect(setFailed).toBeCalledTimes(0);
-    //         expect(mockRepository.addAssignees).toBeCalledTimes(1);
-    //         expect(mockRepository.addAssignees).toBeCalledWith(42, ['assignee1', 'assignee2', 'assignee3']);
-    //     });
+        test('create pull request and add assignees given configuration', async () => {
+            setupInput({ assignees: ['assignee1', 'assignee2', 'assignee3'] });
+            mockSearch.search.mockResolvedValue(['some-file']);
+            mockRepository.hasChanges.mockReturnValue(true);
+            mockRepository.createPullRequest.mockResolvedValue({ data: { number: 42 } });
+            await run();
+            expect(mockRepository.addAssignees).toBeCalledWith(42, ['assignee1', 'assignee2', 'assignee3']);
+            expect(setFailed).toBeCalledTimes(0);
+        });
 
-    //     test('create pull request and skip adding assignees given no configuration', async () => {
-    //         await run();
-    //         expect(setFailed).toBeCalledTimes(0);
-    //         expect(mockRepository.addAssignees).toBeCalledTimes(0);
-    //     });
+        test('create pull request and skip adding assignees given no configuration', async () => {
+            mockSearch.search.mockResolvedValue(['some-file']);
+            mockRepository.hasChanges.mockReturnValue(true);
+            await run();
+            expect(mockRepository.addAssignees).toBeCalledTimes(0);
+            expect(setFailed).toBeCalledTimes(0);
+        });
 
-    //     test('create pull request and add labels given configuration', async () => {
-    //         mockConfigReturnValue({ labels: ['some label 1', 'some label 2', 'some label 3'] });
-    //         mockRepository.createPullRequest.mockResolvedValue({ data: { number: 42 } });
-    //         await run();
-    //         expect(setFailed).toBeCalledTimes(0);
-    //         expect(mockRepository.addLabels).toBeCalledTimes(1);
-    //         expect(mockRepository.addLabels).toBeCalledWith(42, ['some label 1', 'some label 2', 'some label 3']);
-    //     });
+        test('create pull request and add labels given configuration', async () => {
+            setupInput({ labels: ['some label 1', 'some label 2', 'some label 3'] });
+            mockSearch.search.mockResolvedValue(['some-file']);
+            mockRepository.hasChanges.mockReturnValue(true);
+            mockRepository.createPullRequest.mockResolvedValue({ data: { number: 42 } });
+            await run();
+            expect(mockRepository.addLabels).toBeCalledWith(42, ['some label 1', 'some label 2', 'some label 3']);
+            expect(setFailed).toBeCalledTimes(0);
+        });
 
-    //     test('create pull request and skip adding labels given no configuration', async () => {
-    //         await run();
-    //         expect(setFailed).toBeCalledTimes(0);
-    //         expect(mockRepository.addLabels).toBeCalledTimes(0);
-    //     });
+        test('create pull request and skip adding labels given no configuration', async () => {
+            mockSearch.search.mockResolvedValue(['some-file']);
+            mockRepository.hasChanges.mockReturnValue(true);
+            await run();
+            expect(mockRepository.addLabels).toBeCalledTimes(0);
+            expect(setFailed).toBeCalledTimes(0);
+        });
 
-    //     test('set failed given creating pull request fails', async () => {
-    //         mockRepository.createPullRequest.mockRejectedValue({});
-    //         await run();
-    //         expect(setFailed).toBeCalledTimes(1);
-    //     });
-    // });
+        test('set failed given creating pull request fails', async () => {
+            mockSearch.search.mockResolvedValue(['some-file']);
+            mockRepository.hasChanges.mockReturnValue(true);
+            mockRepository.createPullRequest.mockRejectedValue({});
+            await run();
+            expect(mockRepository.createPullRequest).toBeCalledTimes(1);
+            expect(setFailed).toBeCalledTimes(1);
+        });
+    });
 
-    // describe('given pull request exists', () => {
-    //     test('skip creating pull request', async () => {
-    //         mockRepository.hasPullRequest.mockResolvedValue(true);
-    //         await run();
-    //         expect(setFailed).toBeCalledTimes(0);
-    //         expect(mockRepository.createPullRequest).toBeCalledTimes(0);
-    //     });
-    // });
+    describe('given pull request exists', () => {
+        test('skip creating pull request', async () => {
+            mockSearch.search.mockResolvedValue(['some-file']);
+            mockRepository.hasChanges.mockReturnValue(true);
+            mockRepository.hasPullRequest.mockResolvedValue(true);
+            await run();
+            expect(mockRepository.createPullRequest).toBeCalledTimes(0);
+            expect(setFailed).toBeCalledTimes(0);
+        });
+    });
 });
 
 /**
@@ -358,5 +395,3 @@ function setupInput(config) {
         labels: config.labels || [],
     });
 }
-
-// TODO: Error when search finds no file
