@@ -7,7 +7,7 @@ describe('#search', () => {
     let tempDir = '';
 
     beforeAll(() => {
-        tempDir = mkdtempSync(tmpdir());
+        tempDir = mkdtempSync(join(tmpdir(), 'search-'));
 
         // Create the following file structure:
         //

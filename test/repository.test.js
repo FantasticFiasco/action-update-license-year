@@ -33,12 +33,7 @@ const thisRepoDir = join(__dirname, '..');
 let tempRepoDir = '';
 
 beforeEach(async () => {
-    const a = tmpdir();
-    console.log('tmpdir', a);
-
-    //tempRepoDir = mkdtempSync(tmpdir());
-    tempRepoDir = mkdtempSync(a);
-    console.log('mkdtempSync', tempRepoDir);
+    tempRepoDir = mkdtempSync(join(tmpdir(), 'repository-'));
 
     // Let's make the temp repo the working directory
     process.chdir(tempRepoDir);
