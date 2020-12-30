@@ -91,17 +91,21 @@ const {
 } = require('../src/inputs');
 
 describe('action should', () => {
-    beforeAll(() => {
+    beforeEach(() => {
+        jest.resetAllMocks();
+
         process.env.GITHUB_WORKSPACE = '/some/workspace';
+        setupInput({});
     });
 
-    afterAll(() => {
+    afterEach(() => {
         delete process.env.GITHUB_WORKSPACE;
     });
 
-    beforeEach(() => {
-        jest.resetAllMocks();
-        setupInput({});
+    test('set failed given no working directory', async () => {
+        delete process.env.GITHUB_WORKSPACE;
+        await run();
+        expect(setFailed).toBeCalledTimes(1);
     });
 
     test('authenticate git user', async () => {
@@ -189,6 +193,14 @@ describe('action should', () => {
             CURRENT_YEAR,
             'some-file-2'
         );
+        expect(setFailed).toBeCalledTimes(0);
+    });
+
+    test('writes file given transform updates it', async () => {
+        mockSearch.search.mockResolvedValue(['some-file']);
+        mockTransforms.applyTransform.mockReturnValue('updated content');
+        await run();
+        expect(mockRepository.writeFile).toBeCalledWith('some-file', 'updated content');
         expect(setFailed).toBeCalledTimes(0);
     });
 
