@@ -20,7 +20,7 @@ class Repository {
         this._writtenFiles = [];
     }
 
-    authenticate = async () => {
+    async authenticate() {
         try {
             await exec('git config user.name github-actions');
             await exec('git config user.email github-actions@github.com');
@@ -28,12 +28,12 @@ class Repository {
             err.message = `Error authenticating user: ${err.message}`;
             throw err;
         }
-    };
+    }
 
     /**
      * @param {string} name The name of the branch
      */
-    branchExists = async (name) => {
+    async branchExists(name) {
         try {
             const hasLocalBranch = async () => {
                 const { stdout } = await exec(`git branch --list "${name}"`);
@@ -50,13 +50,13 @@ class Repository {
             err.message = `Error searching for branch "${name}": ${err.message}`;
             throw err;
         }
-    };
+    }
 
     /**
      * @param {string} name The name of the branch
      * @param {boolean} isNew Whether the branch is new and we also should create it
      */
-    checkoutBranch = async (name, isNew) => {
+    async checkoutBranch(name, isNew) {
         try {
             await exec(`git checkout ${isNew ? '-b' : ''} "${name}"`);
 
@@ -66,12 +66,12 @@ class Repository {
             err.message = `Error checking out ${isNew ? 'new' : 'existing'} branch "${name}": ${err.message}`;
             throw err;
         }
-    };
+    }
 
     /**
      * @param {string} path The path of the file
      */
-    readFile = async (path) => {
+    async readFile(path) {
         try {
             const content = await readFileAsync(path, { encoding: 'utf8' });
             return content;
@@ -79,13 +79,13 @@ class Repository {
             err.message = `Error reading file "${path}": ${err.message}`;
             throw err;
         }
-    };
+    }
 
     /**
      * @param {string} path The path of the file
      * @param {string} content The content to write
      */
-    writeFile = async (path, content) => {
+    async writeFile(path, content) {
         try {
             await writeFileAsync(path, content, { encoding: 'utf8', flag: 'r+' });
             this._writtenFiles.push(path);
@@ -93,13 +93,13 @@ class Repository {
             err.message = `Error writing file "${path}": ${err.message}`;
             throw err;
         }
-    };
+    }
 
-    hasChanges = () => {
+    hasChanges() {
         return this._writtenFiles.length > 0;
-    };
+    }
 
-    stageWrittenFiles = async () => {
+    async stageWrittenFiles() {
         for (const writtenFile of this._writtenFiles) {
             try {
                 await exec(`git add "${writtenFile}"`);
@@ -108,21 +108,21 @@ class Repository {
                 throw err;
             }
         }
-    };
+    }
 
     /**
      * @param {string} message The commit message
      */
-    commit = async (message) => {
+    async commit(message) {
         try {
             await exec(`git commit -m "${message}"`);
         } catch (err) {
             err.message = `Error committing files: ${err.message}`;
             throw err;
         }
-    };
+    }
 
-    push = async () => {
+    async push() {
         try {
             let cmd = 'git push';
             if (this._isCurrentBranchNew) {
@@ -138,12 +138,12 @@ class Repository {
             }`;
             throw err;
         }
-    };
+    }
 
     /**
      * @param {string} sourceBranchName The name of the branch where your changes are implemented
      */
-    hasPullRequest = async (sourceBranchName) => {
+    async hasPullRequest(sourceBranchName) {
         try {
             const res = await this._octokit.pulls.list({
                 owner: this._owner,
@@ -156,14 +156,14 @@ class Repository {
             err.message = `Error when checking whether pull request from ${sourceBranchName} exists: ${err.message}`;
             throw err;
         }
-    };
+    }
 
     /**
      * @param {string} sourceBranchName The name of the branch where your changes are implemented
      * @param {string} title The title of the new pull request
      * @param {string} body The contents of the pull request
      */
-    createPullRequest = async (sourceBranchName, title, body) => {
+    async createPullRequest(sourceBranchName, title, body) {
         try {
             const { stdout: defaultBranch } = await exec(
                 `git remote show origin | grep 'HEAD branch' | cut -d ' ' -f5`
@@ -181,7 +181,7 @@ class Repository {
             err.message = `Error when creating pull request from ${sourceBranchName}: ${err.message}`;
             throw err;
         }
-    };
+    }
 
     /**
      * @param {number} issueNumber The issue number
@@ -189,7 +189,7 @@ class Repository {
      *     with push access can add assignees to an issue. Assignees are silently ignored
      *     otherwise.
      */
-    addAssignees = async (issueNumber, assignees) => {
+    async addAssignees(issueNumber, assignees) {
         try {
             return await this._octokit.issues.addAssignees({
                 owner: this._owner,
@@ -201,7 +201,7 @@ class Repository {
             err.message = `Error when adding assignees to issue ${issueNumber}: ${err.message}`;
             throw err;
         }
-    };
+    }
 
     /**
      * @param {number} issueNumber The issue number
@@ -209,7 +209,7 @@ class Repository {
      *     one label. Note: Alternatively, you can pass a single label as a string or an array of
      *     labels directly, but GitHub recommends passing an object with the labels key.
      */
-    addLabels = async (issueNumber, labels) => {
+    async addLabels(issueNumber, labels) {
         try {
             return await this._octokit.issues.addLabels({
                 owner: this._owner,
@@ -221,7 +221,7 @@ class Repository {
             err.message = `Error when adding labels to issue ${issueNumber}: ${err.message}`;
             throw err;
         }
-    };
+    }
 }
 
 module.exports = Repository;
