@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ## [Unreleased]
 
+## [2.0.0] - 2020-12-31
+
 ### :zap: Added
 
 - [#43](https://github.com/FantasticFiasco/action-update-license-year/issues/43) [BREAKING CHANGE] Support for updating one or more arbitrary files. This is a breaking change since [actions/checkout](https://github.com/actions/checkout) now has to precede this action. Please see `README.md` for more information. (proposed by [@spl](https://github.com/spl))
