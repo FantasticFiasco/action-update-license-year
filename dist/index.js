@@ -1452,7 +1452,7 @@ const run = async () => {
  * @param {string} text
  */
 const singleLine = (text) => {
-    return text.replace(/\\n/g, '\\n');
+    return text.replace(/\n/g, '\\n');
 };
 
 module.exports = {
