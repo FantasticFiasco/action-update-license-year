@@ -1,17 +1,23 @@
 const { setFailed, info } = require('@actions/core');
 const { context } = require('@actions/github');
-const { parseConfig } = require('./config');
-const { transformLicense } = require('./license');
-const Repository = require('./Repository');
+const { parseInput } = require('./inputs');
+const { applyTransform } = require('./transforms');
+const Repository = require('./repository');
+const { search } = require('./search');
 
-const FILENAME = 'LICENSE';
-const MASTER = 'master';
-
-async function run() {
+const run = async () => {
     try {
-        const { owner, repo } = context.repo;
+        const cwd = process.env.GITHUB_WORKSPACE;
+        if (cwd === undefined) {
+            throw new Error('GitHub Actions has not set the working directory');
+        }
+        info(`Working directory: ${cwd}`);
+
+        const { owner, repo: repoName } = context.repo;
         const {
             token,
+            path,
+            transform,
             branchName,
             commitTitle,
             commitBody,
@@ -19,35 +25,52 @@ async function run() {
             pullRequestBody,
             assignees,
             labels,
-        } = parseConfig();
+        } = parseInput();
 
-        const repository = new Repository(owner, repo, token);
-        const hasBranch = await repository.hasBranch(branchName);
-        if (hasBranch) {
-            info(`Found branch named "${branchName}"`);
+        const repo = new Repository(owner, repoName, token);
+        await repo.authenticate();
+
+        const branchExists = await repo.branchExists(branchName);
+        info(`Checkout ${branchExists ? 'existing' : 'new'} branch named "${branchName}"`);
+        await repo.checkoutBranch(branchName, !branchExists);
+
+        const files = await search(path);
+        if (files.length === 0) {
+            throw new Error(`Found no files matching the path "${singleLine(path)}"`);
         }
-        const licenseResponse = await repository.getContent(hasBranch ? branchName : MASTER, FILENAME);
-        const license = Buffer.from(licenseResponse.data.content, 'base64').toString('utf8');
+
+        info(`Found ${files.length} file(s) matching the path "${singleLine(path)}"`);
 
         const currentYear = new Date().getFullYear();
         info(`Current year is "${currentYear}"`);
-        const updatedLicense = transformLicense(license, currentYear);
-        if (updatedLicense === license) {
-            info('License is already up-to-date, aborting');
+
+        for (const file of files) {
+            const relativeFile = file.replace(cwd, '.');
+            const content = await repo.readFile(file);
+            const updatedContent = applyTransform(transform, content, currentYear, relativeFile);
+            if (updatedContent !== content) {
+                info(`Update license in "${relativeFile}"`);
+                await repo.writeFile(file, updatedContent);
+            } else {
+                info(`File "${relativeFile}" is already up-to-date`);
+            }
+        }
+
+        if (!repo.hasChanges()) {
+            info(`No licenses where updated, let's abort`);
             return;
         }
 
-        if (!hasBranch) {
-            info(`Create new branch named "${branchName}"`);
-            await repository.createBranch(branchName);
-        }
+        await repo.stageWrittenFiles();
 
         const commitMessage = commitBody ? `${commitTitle}\n\n${commitBody}` : commitTitle;
-        await repository.updateContent(branchName, FILENAME, licenseResponse.data.sha, updatedLicense, commitMessage);
+        await repo.commit(commitMessage);
+        await repo.push();
 
-        if (!(await repository.hasPullRequest(branchName))) {
+        const hasPullRequest = await repo.hasPullRequest(branchName);
+        if (!hasPullRequest) {
             info(`Create new pull request with title "${pullRequestTitle}"`);
-            const createPullRequestResponse = await repository.createPullRequest(
+            const createPullRequestResponse = await repo.createPullRequest(
                 branchName,
                 pullRequestTitle,
                 pullRequestBody
@@ -55,21 +78,26 @@ async function run() {
 
             if (assignees.length > 0) {
                 info(`Add assignees to pull request: ${JSON.stringify(assignees)}`);
-                await repository.addAssignees(createPullRequestResponse.data.number, assignees);
+                await repo.addAssignees(createPullRequestResponse.data.number, assignees);
             }
 
             if (labels.length > 0) {
                 info(`Add labels to pull request: ${JSON.stringify(labels)}`);
-                await repository.addLabels(createPullRequestResponse.data.number, labels);
+                await repo.addLabels(createPullRequestResponse.data.number, labels);
             }
         }
     } catch (err) {
         setFailed(err.message);
     }
-}
+};
+
+/**
+ * @param {string} text
+ */
+const singleLine = (text) => {
+    return text.replace(/\n/g, '\\n');
+};
 
 module.exports = {
     run,
-    MASTER,
-    FILENAME,
 };

@@ -57,7 +57,7 @@ const BSD_SINGLE_YEAR = new RegExp(
  * @property {string} name
  * @property {RegExp} transform
  */
-const LICESE_TRANSFORMS = [
+const DEFAULT_LICENSE_TRANSFORMS = [
     { name: 'AGPL-3.0-only', transform: AGPL_3_ONLY_YEAR_RANGE },
     { name: 'AGPL-3.0-only', transform: AGPL_3_ONLY_SINGLE_YEAR },
     { name: 'Apache-2.0', transform: APACHE_2_MIT_YEAR_RANGE },
@@ -67,33 +67,65 @@ const LICESE_TRANSFORMS = [
 ];
 
 /**
+ * @param {string} transform
  * @param {string} license
  * @param {number} currentYear
+ * @param {string} fileName
  */
-function transformLicense(license, currentYear) {
-    for (const licenseTransform of LICESE_TRANSFORMS) {
-        if (canTransform(licenseTransform, license)) {
-            return transform(licenseTransform, license, currentYear);
+const applyTransform = (transform, license, currentYear, fileName) => {
+    return transform === ''
+        ? applyDefaultTransform(license, currentYear, fileName)
+        : applyCustomTransform(transform, license, currentYear, fileName);
+};
+
+/**
+ * @param {string} license
+ * @param {number} currentYear
+ * @param {string} fileName
+ */
+const applyDefaultTransform = (license, currentYear, fileName) => {
+    for (const licenseTransform of DEFAULT_LICENSE_TRANSFORMS) {
+        if (canApplyLicenseTransform(licenseTransform, license)) {
+            return applyLicenseTransform(licenseTransform, license, currentYear);
         }
     }
 
-    throw new Error('Specified license is not supported');
-}
+    throw new Error(`Default transform is not valid on "${fileName}"`);
+};
+
+/**
+ * @param {string} transform
+ * @param {string} license
+ * @param {number} currentYear
+ * @param {string} fileName
+ */
+const applyCustomTransform = (transform, license, currentYear, fileName) => {
+    const licenseTransform = {
+        name: 'Custom',
+        transform: new RegExp(transform, 'im'),
+    };
+
+    if (!canApplyLicenseTransform(licenseTransform, license)) {
+        throw new Error(`Custom transform "${transform}" is not valid on "${fileName}"`);
+    }
+
+    return applyLicenseTransform(licenseTransform, license, currentYear);
+};
 
 /**
  * @param {LicenseTransform} licenseTransform
  * @param {string} license
  */
-function canTransform(licenseTransform, license) {
+const canApplyLicenseTransform = (licenseTransform, license) => {
     return licenseTransform.transform.test(license);
-}
+};
 
 /**
  * @param {LicenseTransform} licenseTransform
  * @param {string} license
  * @param {number} currentYear
  */
-function transform(licenseTransform, license, currentYear) {
+const applyLicenseTransform = (licenseTransform, license, currentYear) => {
     const match = licenseTransform.transform.exec(license);
     if (match === null || match.groups === undefined) {
         throw new Error(`Transforming ${licenseTransform.name} license failed`);
@@ -104,8 +136,8 @@ function transform(licenseTransform, license, currentYear) {
     }
 
     return license.replace(licenseTransform.transform, `$<from>-${currentYear}`);
-}
+};
 
 module.exports = {
-    transformLicense,
+    applyTransform,
 };
