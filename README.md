@@ -41,7 +41,7 @@ For the majority of repositories on GitHub the following code will do the job. I
 
 <!-- start usage -->
 ```yaml
-- uses: FantasticFiasco/action-update-license-year@v1
+- uses: FantasticFiasco/action-update-license-year@v2
   with:
     # Personal access token (PAT) used when interacting with Git and GitHub.
     #
