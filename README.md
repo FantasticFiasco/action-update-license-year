@@ -16,7 +16,7 @@ So this seems to have happened. Instead of manually updating the license copyrig
 
 **Was it interesting to create?** - Well certainly, it activated the few brains cells I have.
 
-**Can I use it?** - Yes you can. It automatically supports the licenses listed below, but also support custom RegExp transformations where you specify your license format.
+**Can I use it?** - Yes you can. It automatically supports the licenses listed below, but also support custom RegExp transformations where you specify your own license format.
 
 - Apache 2.0 (Apache-2.0)
 - BSD 2-clause "Simplified" (BSD-2-Clause)
