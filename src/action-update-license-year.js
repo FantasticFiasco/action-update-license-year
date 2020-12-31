@@ -36,10 +36,10 @@ const run = async () => {
 
         const files = await search(path);
         if (files.length === 0) {
-            throw new Error(`Found no files matching the path "${path.replace('\n', '\\n')}"`);
+            throw new Error(`Found no files matching the path "${singleLine(path)}"`);
         }
 
-        info(`Found ${files.length} file(s) matching the path "${path.replace('\n', '\\n')}"`);
+        info(`Found ${files.length} file(s) matching the path "${singleLine(path)}"`);
 
         const currentYear = new Date().getFullYear();
         info(`Current year is "${currentYear}"`);
@@ -89,6 +89,13 @@ const run = async () => {
     } catch (err) {
         setFailed(err.message);
     }
+};
+
+/**
+ * @param {string} text
+ */
+const singleLine = (text) => {
+    return text.replace(/\\n/g, '\\n');
 };
 
 module.exports = {
