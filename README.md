@@ -55,6 +55,7 @@ For the majority of repositories on GitHub the following code will do the job. I
 
     # A path or wildcard pattern specifying files to transform. Multiple paths can be
     # specified using literal styled YAML.
+    #
     # Required: false
     # Default: LICENSE
     path: ''
@@ -63,9 +64,8 @@ For the majority of repositories on GitHub the following code will do the job. I
     # expression must have the following properties:
     #
     # - A capturing group named "from", encapsulating the first year of license
-    #   validity
-    # - Written to support the RegExp flags "im" ("ignore case" and
-    #   "multiline")
+    # validity
+    # - Written to support the RegExp flags "im" ("ignore case" and "multiline")
     #
     # The expression will be used by String.prototype.replace() to apply the
     # transformation.
@@ -75,42 +75,49 @@ For the majority of repositories on GitHub the following code will do the job. I
     transform: ''
 
     # The branch name. Supports substituting variable {{currentYear}}.
+    #
     # Required: false
     # Default: license/copyright-to-{{currentYear}}
     branchName: ''
 
     # The git commit title. Supports substituting variable {{currentYear}}.
+    #
     # Required: false
     # Default: docs(license): update copyright year(s)
     commitTitle: ''
 
     # The git commit body that will be appended to commit title, separated by two line
     # returns. Supports substituting variable {{currentYear}}.
+    #
     # Required: false
-    # Default:
+    # Default: 
     commitBody: ''
 
     # The title of the new pull request. Supports substituting variable
     # {{currentYear}}.
+    #
     # Required: false
     # Default: Update license copyright year(s)
     prTitle: ''
 
     # The contents of the pull request. Supports substituting variable
     # {{currentYear}}.
+    #
     # Required: false
-    # Default:
+    # Default: 
     prBody: ''
 
     # Comma-separated list with usernames of people to assign when pull request is
     # created
+    #
     # Required: false
-    # Default:
+    # Default: 
     assignees: ''
 
     # Comma-separated list of labels to add when pull request is created
+    #
     # Required: false
-    # Default:
+    # Default: 
     labels: ''
 ```
 <!-- end usage -->

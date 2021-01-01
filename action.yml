@@ -29,6 +29,7 @@ inputs:
 
 
       - A capturing group named "from", encapsulating the first year of license validity
+
       - Written to support the RegExp flags "im" ("ignore case" and "multiline")
 
 

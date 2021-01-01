@@ -1,19 +1,19 @@
 // @ts-nocheck
 const { readFileSync, writeFileSync } = require('fs');
-const { safeLoad } = require('js-yaml');
 const { EOL } = require('os');
 const { join } = require('path');
+const { safeLoad } = require('js-yaml');
 
-function getPackageMajorVersion() {
+const getPackageMajorVersion = () => {
     const version = require(join(__dirname, '..', 'package.json')).version;
     const match = /(\d+)\.\d+\.\d+/.exec(version);
     if (!match) {
         throw new Error(`Package version '${version}' did not meet expected format`);
     }
     return match[1];
-}
+};
 
-function updateUsage() {
+const updateUsage = () => {
     // Load the action.yml
     const actionYaml = safeLoad(readFileSync(METADATA_PATH).toString());
 
@@ -41,7 +41,10 @@ function updateUsage() {
     newReadme.push(originalReadme.substr(0, startTokenIndex + USAGE_START_TOKEN.length));
 
     // Build the new usage section
-    newReadme.push('```yaml', `- uses: ${ACTION_NAME}`, '  with:');
+    newReadme.push('```yaml');
+    newReadme.push(`- uses: ${ACTION_NAME}`);
+    newReadme.push('  with:');
+
     const inputs = actionYaml.inputs;
     let firstInput = true;
     for (const key of Object.keys(inputs)) {
@@ -53,23 +56,21 @@ function updateUsage() {
         }
 
         // Constrain the width of the description
-        const width = 80;
-        let description = input.description
-            .trimRight()
-            .replace(/\r\n/g, '\n') // Convert CR to LF
-            .replace(/ +/g, ' ') //    Squash consecutive spaces
-            .replace(/ \n/g, '\n'); //  Squash space followed by newline
+        const maxWidth = 80;
+
+        let description = input.description.replace(/ +/g, ' ').trim();
+
         while (description) {
             // Longer than width? Find a space to break apart
             let segment = description;
-            if (description.length > width) {
-                segment = description.substr(0, width + 1);
+            if (description.length > maxWidth) {
+                segment = description.substr(0, maxWidth + 1);
                 while (!segment.endsWith(' ') && !segment.endsWith('\n') && segment) {
                     segment = segment.substr(0, segment.length - 1);
                 }
 
                 // Trimmed too much?
-                if (segment.length < width * 0.67) {
+                if (segment.length < maxWidth * 0.67) {
                     segment = description;
                 }
             } else {
@@ -89,18 +90,16 @@ function updateUsage() {
             description = description.substr(segment.length);
         }
 
-        if (input.required !== undefined) {
-            // Append blank line if description had paragraphs
-            if (input.description.trimRight().match(/\n[ ]*\r?\n/)) {
-                newReadme.push(`    #`);
-            }
+        // Append blank line
+        newReadme.push(`    #`);
 
-            // Required
+        // Required
+        if (input.required !== undefined) {
             newReadme.push(`    # Required: ${input.required}`);
         }
 
+        // Default
         if (input.default !== undefined) {
-            // Default
             newReadme.push(`    # Default: ${input.default}`);
         }
 
@@ -117,7 +116,7 @@ function updateUsage() {
 
     // Write the new README
     writeFileSync(README_PATH, newReadme.join(EOL));
-}
+};
 
 const ACTION_NAME = `FantasticFiasco/action-update-license-year@v${getPackageMajorVersion()}`;
 const METADATA_PATH = join(__dirname, '..', 'action.yml');
