@@ -121,8 +121,8 @@ For the majority of repositories on GitHub the following code will do the job. I
 - [I want to update my license annually at 03:00 AM on January 1](#i-want-to-update-my-license-annually-at-0300-am-on-january-1)
 - [I want to update my license using a manual trigger](#i-want-to-update-my-license-using-a-manual-trigger)
 - [I want to update my license, but it isn't called `LICENSE`](#i-want-to-update-my-license-but-it-isnt-called-license)
-- [I want to update all my licenses, I have more than one](#i-want-to-update-all-my-licenses-i-have-more-than-one)
 - [I want to update my license, but it isn't supported by this action](#i-want-to-update-my-license-but-it-isnt-supported-by-this-action)
+- [I want to update all my licenses, I have more than one](#i-want-to-update-all-my-licenses-i-have-more-than-one)
 - [I want to update all my license in my monorepo](#i-want-to-update-all-my-license-in-my-monorepo)
 - [I want to update the license in my source files](#i-want-to-update-the-license-in-my-source-files)
 - [I want my pull requests to follow a convention](#i-want-my-pull-requests-to-follow-a-convention)
@@ -179,7 +179,7 @@ jobs:
 
 ### I want to update my license, but it isn't called `LICENSE`
 
-You have a license in your repository but it isn't called `LICENSE`. Maybe it's called `LICENSE.md`? Then you'd configure the action accordingly.
+You have a license in your repository, but perhaps it isn't called `LICENSE`. Maybe it's called `LICENSE.md`? Then you'd have to configure the action accordingly.
 
 ```yaml
 steps:
@@ -192,28 +192,11 @@ steps:
     path: LICENSE.md
 ```
 
-### I want to update all my licenses, I have more than one
-
-Your repository contains more than one license. Perhaps you have one for open source and one for commercial use? In any case, this action supports specifying multiple paths using literal styled YAML.
-
-```yaml
-steps:
-- uses: actions/checkout@v2
-  with:
-    fetch-depth: 0
-- uses: FantasticFiasco/action-update-license-year@v2
-  with:
-    token: ${{ secrets.GITHUB_TOKEN }}
-    path: |
-      LICENSE-OPEN-SOURCE
-      LICENSE-COMMERCIAL
-```
-
 ### I want to update my license, but it isn't supported by this action
 
 This action has built in support for a couple of common licenses. However, you might use your own special license, and you've discovered that this action doesn't support it. In this case you can define your own transform.
 
-The transform is declared as a regular expression (JavaScript flavor). The expression must have the following properties:
+The transform is declared as a regular expression (JavaScript flavor) and must have the following properties:
 
 - A capturing group named `from`, encapsulating the first year of license validity
 - Written to support the RegExp flags `im` (`ignore case` and `multiline`)
@@ -231,9 +214,26 @@ steps:
     transform: (?<=my own copyright )(?<from>\d{4})-\d{4}
 ```
 
-### I want to update all my license in my monorepo
+### I want to update all my licenses, I have more than one
 
-Your repository is a monorepo and you have a lot of licenses. You would like to update them all at once, preferably without having to specify each and every one.
+Your repository might contain more than one license. Perhaps you have one for open source and one for commercial use? In any case, this action supports specifying multiple paths using literal styled YAML.
+
+```yaml
+steps:
+- uses: actions/checkout@v2
+  with:
+    fetch-depth: 0
+- uses: FantasticFiasco/action-update-license-year@v2
+  with:
+    token: ${{ secrets.GITHUB_TOKEN }}
+    path: |
+      LICENSE-OPEN-SOURCE
+      LICENSE-COMMERCIAL
+```
+
+### I want to update all my licenses in my monorepo
+
+Your repository is perhaps a monorepo and you have a lot of licenses. You would like to update them all at once, preferably without having to specify each and every one. Well, we've got you covered. The `path` input parameter supports glob patterns. Yay!
 
 ```yaml
 steps:
@@ -248,7 +248,7 @@ steps:
 
 ### I want to update the license in my source files
 
-Not only do you have a license file in your repository, you also have a header in each and every source file specifying your license. That's a lot of files to update I guess. Well, we've got you covered.
+Not only do you have a license file in your repository, you also have a header in each and every source file specifying your license. That's a lot of files to update I guess. Well, we've got you covered. Glob patterns to the rescue.
 
 ```yaml
 steps:
