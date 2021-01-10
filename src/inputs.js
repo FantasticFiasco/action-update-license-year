@@ -163,6 +163,8 @@ module.exports = {
     BRANCH_NAME,
     COMMIT_TITLE,
     COMMIT_BODY,
+    COMMIT_AUTHOR_NAME,
+    COMMIT_AUTHOR_EMAIL,
     PR_TITLE,
     PR_BODY,
     ASSIGNEES,
