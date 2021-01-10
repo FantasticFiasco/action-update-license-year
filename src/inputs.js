@@ -35,6 +35,18 @@ const COMMIT_BODY = {
     defaultValue: '',
 };
 
+const COMMIT_AUTHOR_NAME = {
+    name: 'commitAuthorName',
+    env: 'INPUT_COMMITAUTHORNAME',
+    defaultValue: 'github-actions',
+};
+
+const COMMIT_AUTHOR_EMAIL = {
+    name: 'commitAuthorEmail',
+    env: 'INPUT_COMMITAUTHOREMAIL',
+    defaultValue: 'github-actions@github.com',
+};
+
 const PR_TITLE = {
     name: 'prTitle',
     env: 'INPUT_PRTITLE',
@@ -72,6 +84,8 @@ const parseInput = () => {
     const branchName = substituteVariables(getInput(BRANCH_NAME.name) || BRANCH_NAME.defaultValue);
     const commitTitle = substituteVariables(getInput(COMMIT_TITLE.name) || COMMIT_TITLE.defaultValue);
     const commitBody = substituteVariables(getInput(COMMIT_BODY.name) || COMMIT_BODY.defaultValue);
+    const commitAuthorName = getInput(COMMIT_AUTHOR_NAME.name) || COMMIT_AUTHOR_NAME.defaultValue;
+    const commitAuthorEmail = getInput(COMMIT_AUTHOR_EMAIL.name) || COMMIT_AUTHOR_EMAIL.defaultValue;
     const pullRequestTitle = substituteVariables(getInput(PR_TITLE.name) || PR_TITLE.defaultValue);
     const pullRequestBody = substituteVariables(getInput(PR_BODY.name) || PR_BODY.defaultValue);
     const assignees = splitCsv(getInput(ASSIGNEES.name) || ASSIGNEES.defaultValue);
@@ -84,6 +98,8 @@ const parseInput = () => {
         branchName,
         commitTitle,
         commitBody,
+        commitAuthorName,
+        commitAuthorEmail,
         pullRequestTitle,
         pullRequestBody,
         assignees,
