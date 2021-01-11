@@ -61,7 +61,7 @@ inputs:
     required: false
 
   commitAuthorEmail:
-    description: description: The git author e-mail, used when committing changes to the repository.
+    description: The git author e-mail, used when committing changes to the repository.
     default: "github-actions@github.com"
     required: false
 
