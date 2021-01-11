@@ -21,6 +21,8 @@ const run = async () => {
             branchName,
             commitTitle,
             commitBody,
+            commitAuthorName,
+            commitAuthorEmail,
             pullRequestTitle,
             pullRequestBody,
             assignees,
@@ -28,7 +30,7 @@ const run = async () => {
         } = parseInput();
 
         const repo = new Repository(owner, repoName, token);
-        await repo.authenticate();
+        await repo.authenticate(commitAuthorName, commitAuthorEmail);
 
         const branchExists = await repo.branchExists(branchName);
         info(`Checkout ${branchExists ? 'existing' : 'new'} branch named "${branchName}"`);

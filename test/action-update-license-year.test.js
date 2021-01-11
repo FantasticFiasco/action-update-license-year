@@ -29,6 +29,8 @@ const mockInputs = {
     BRANCH_NAME: jest.requireActual('../src/inputs').BRANCH_NAME,
     COMMIT_TITLE: jest.requireActual('../src/inputs').COMMIT_TITLE,
     COMMIT_BODY: jest.requireActual('../src/inputs').COMMIT_BODY,
+    COMMIT_AUTHOR_NAME: jest.requireActual('../src/inputs').COMMIT_AUTHOR_NAME,
+    COMMIT_AUTHOR_EMAIL: jest.requireActual('../src/inputs').COMMIT_AUTHOR_EMAIL,
     PR_TITLE: jest.requireActual('../src/inputs').PR_TITLE,
     PR_BODY: jest.requireActual('../src/inputs').PR_BODY,
     ASSIGNEES: jest.requireActual('../src/inputs').ASSIGNEES,
@@ -85,6 +87,8 @@ const {
     BRANCH_NAME,
     COMMIT_TITLE,
     COMMIT_BODY,
+    COMMIT_AUTHOR_NAME,
+    COMMIT_AUTHOR_EMAIL,
     PR_TITLE,
     PR_BODY,
     CURRENT_YEAR,
@@ -108,10 +112,37 @@ describe('action should', () => {
         expect(setFailed).toBeCalledTimes(1);
     });
 
-    test('authenticate git user', async () => {
+    test('authenticate git user given default commit author name and e-mail', async () => {
         mockSearch.search.mockResolvedValue(['some-file']);
         await run();
-        expect(mockRepository.authenticate).toBeCalled();
+        expect(mockRepository.authenticate).toBeCalledWith(
+            COMMIT_AUTHOR_NAME.defaultValue,
+            COMMIT_AUTHOR_EMAIL.defaultValue
+        );
+        expect(setFailed).toBeCalledTimes(0);
+    });
+
+    test('authenticate git user given custom commit author name', async () => {
+        setupInput({ commitAuthorName: 'some-author-name' });
+        mockSearch.search.mockResolvedValue(['some-file']);
+        await run();
+        expect(mockRepository.authenticate).toBeCalledWith('some-author-name', COMMIT_AUTHOR_EMAIL.defaultValue);
+        expect(setFailed).toBeCalledTimes(0);
+    });
+
+    test('authenticate git user given custom commit author e-mail', async () => {
+        setupInput({ commitAuthorEmail: 'some-author@mail.com' });
+        mockSearch.search.mockResolvedValue(['some-file']);
+        await run();
+        expect(mockRepository.authenticate).toBeCalledWith(COMMIT_AUTHOR_NAME.defaultValue, 'some-author@mail.com');
+        expect(setFailed).toBeCalledTimes(0);
+    });
+
+    test('authenticate git user given custom commit author name and e-mail', async () => {
+        setupInput({ commitAuthorName: 'some-author-name', commitAuthorEmail: 'some-author@mail.com' });
+        mockSearch.search.mockResolvedValue(['some-file']);
+        await run();
+        expect(mockRepository.authenticate).toBeCalledWith('some-author-name', 'some-author@mail.com');
         expect(setFailed).toBeCalledTimes(0);
     });
 
@@ -388,6 +419,8 @@ describe('action should', () => {
  * @property {string} [branchName]
  * @property {string} [commitTitle]
  * @property {string} [commitBody]
+ * @property {string} [commitAuthorName]
+ * @property {string} [commitAuthorEmail]
  * @property {string} [pullRequestTitle]
  * @property {string} [pullRequestBody]
  * @property {string[]} [assignees]
@@ -401,6 +434,8 @@ function setupInput(config) {
         branchName: config.branchName || BRANCH_NAME.defaultValue,
         commitTitle: config.commitTitle || COMMIT_TITLE.defaultValue,
         commitBody: config.commitBody || COMMIT_BODY.defaultValue,
+        commitAuthorName: config.commitAuthorName || COMMIT_AUTHOR_NAME.defaultValue,
+        commitAuthorEmail: config.commitAuthorEmail || COMMIT_AUTHOR_EMAIL.defaultValue,
         pullRequestTitle: config.pullRequestTitle || PR_TITLE.defaultValue,
         pullRequestBody: config.pullRequestBody || PR_BODY.defaultValue,
         assignees: config.assignees || [],
