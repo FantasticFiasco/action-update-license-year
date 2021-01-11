@@ -58,11 +58,11 @@ afterEach(() => {
 describe('#authenticate should', () => {
     test('configure git name and e-mail', async () => {
         const repo = new Repository('some owner', 'some name', 'some token');
-        await repo.authenticate();
+        await repo.authenticate('some-user-name', 'some-user@mail.com');
         const { stdout: username } = await exec('git config user.name');
-        expect(username).toBe('github-actions');
+        expect(username).toBe('some-user-name');
         const { stdout: email } = await exec('git config user.email');
-        expect(email).toBe('github-actions@github.com');
+        expect(email).toBe('some-user@mail.com');
     });
 });
 

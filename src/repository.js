@@ -20,12 +20,16 @@ class Repository {
         this._writtenFiles = [];
     }
 
-    async authenticate() {
+    /**
+     * @param {string} userName
+     * @param {string} email
+     */
+    async authenticate(userName, email) {
         try {
-            await exec('git config user.name github-actions');
-            await exec('git config user.email github-actions@github.com');
+            await exec(`git config user.name ${userName}`);
+            await exec(`git config user.email ${email}`);
         } catch (err) {
-            err.message = `Error authenticating user: ${err.message}`;
+            err.message = `Error authenticating user "${userName}" with e-mail "${email}": ${err.message}`;
             throw err;
         }
     }
