@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ## [Unreleased]
 
+## [2.1.0] - 2021-01-12
+
 ### :zap: Added
 
 - [#119](https://github.com/FantasticFiasco/action-update-license-year/issues/119) Support for specifying commit author name and e-mail (proposed by [@creativecreatorormaybenot](https://github.com/creativecreatorormaybenot))

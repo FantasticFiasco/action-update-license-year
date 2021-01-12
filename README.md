@@ -93,6 +93,18 @@ For the majority of repositories on GitHub the following code will do the job. I
     # Default: 
     commitBody: ''
 
+    # The git author name, used when committing changes to the repository.
+    #
+    # Required: false
+    # Default: github-actions
+    commitAuthorName: ''
+
+    # The git author e-mail, used when committing changes to the repository.
+    #
+    # Required: false
+    # Default: github-actions@github.com
+    commitAuthorEmail: ''
+
     # The title of the new pull request. Supports substituting variable
     # {{currentYear}}.
     #
@@ -108,13 +120,13 @@ For the majority of repositories on GitHub the following code will do the job. I
     prBody: ''
 
     # Comma-separated list with usernames of people to assign when pull request is
-    # created
+    # created.
     #
     # Required: false
     # Default: 
     assignees: ''
 
-    # Comma-separated list of labels to add when pull request is created
+    # Comma-separated list of labels to add when pull request is created.
     #
     # Required: false
     # Default: 
