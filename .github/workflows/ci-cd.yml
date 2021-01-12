@@ -24,6 +24,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
       - run: yarn type-check
       - run: yarn lint
+      - run: node ./scripts/generate-docs.js
 
   release:
     needs: build

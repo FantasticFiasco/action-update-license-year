@@ -2,7 +2,7 @@
 const { readFileSync, writeFileSync } = require('fs');
 const { EOL } = require('os');
 const { join } = require('path');
-const { safeLoad } = require('js-yaml');
+const { load } = require('js-yaml');
 
 const getPackageMajorVersion = () => {
     const version = require(join(__dirname, '..', 'package.json')).version;
@@ -15,7 +15,7 @@ const getPackageMajorVersion = () => {
 
 const updateUsage = () => {
     // Load the action.yml
-    const actionYaml = safeLoad(readFileSync(METADATA_PATH).toString());
+    const actionYaml = load(readFileSync(METADATA_PATH).toString());
 
     // Load the README
     const originalReadme = readFileSync(README_PATH).toString();
