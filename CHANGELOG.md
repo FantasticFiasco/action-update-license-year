@@ -8,7 +8,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ### :zap: Added
 
-- [#119](https://github.com/FantasticFiasco/action-update-license-year/issues/119) Support for specifying commit author name (`commitAuthorName`) and e-mail (`commitAuthorEmail`)
+- [#119](https://github.com/FantasticFiasco/action-update-license-year/issues/119) Support for specifying commit author name and e-mail (proposed by [@creativecreatorormaybenot](https://github.com/creativecreatorormaybenot))
 
 ## [2.0.0] - 2020-12-31
 
