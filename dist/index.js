@@ -1378,6 +1378,8 @@ const run = async () => {
             branchName,
             commitTitle,
             commitBody,
+            commitAuthorName,
+            commitAuthorEmail,
             pullRequestTitle,
             pullRequestBody,
             assignees,
@@ -1385,7 +1387,7 @@ const run = async () => {
         } = parseInput();
 
         const repo = new Repository(owner, repoName, token);
-        await repo.authenticate();
+        await repo.authenticate(commitAuthorName, commitAuthorEmail);
 
         const branchExists = await repo.branchExists(branchName);
         info(`Checkout ${branchExists ? 'existing' : 'new'} branch named "${branchName}"`);
@@ -2536,12 +2538,16 @@ class Repository {
         this._writtenFiles = [];
     }
 
-    async authenticate() {
+    /**
+     * @param {string} userName
+     * @param {string} email
+     */
+    async authenticate(userName, email) {
         try {
-            await exec('git config user.name github-actions');
-            await exec('git config user.email github-actions@github.com');
+            await exec(`git config user.name ${userName}`);
+            await exec(`git config user.email ${email}`);
         } catch (err) {
-            err.message = `Error authenticating user: ${err.message}`;
+            err.message = `Error authenticating user "${userName}" with e-mail "${email}": ${err.message}`;
             throw err;
         }
     }
@@ -9770,6 +9776,18 @@ const COMMIT_BODY = {
     defaultValue: '',
 };
 
+const COMMIT_AUTHOR_NAME = {
+    name: 'commitAuthorName',
+    env: 'INPUT_COMMITAUTHORNAME',
+    defaultValue: 'github-actions',
+};
+
+const COMMIT_AUTHOR_EMAIL = {
+    name: 'commitAuthorEmail',
+    env: 'INPUT_COMMITAUTHOREMAIL',
+    defaultValue: 'github-actions@github.com',
+};
+
 const PR_TITLE = {
     name: 'prTitle',
     env: 'INPUT_PRTITLE',
@@ -9807,6 +9825,8 @@ const parseInput = () => {
     const branchName = substituteVariables(getInput(BRANCH_NAME.name) || BRANCH_NAME.defaultValue);
     const commitTitle = substituteVariables(getInput(COMMIT_TITLE.name) || COMMIT_TITLE.defaultValue);
     const commitBody = substituteVariables(getInput(COMMIT_BODY.name) || COMMIT_BODY.defaultValue);
+    const commitAuthorName = getInput(COMMIT_AUTHOR_NAME.name) || COMMIT_AUTHOR_NAME.defaultValue;
+    const commitAuthorEmail = getInput(COMMIT_AUTHOR_EMAIL.name) || COMMIT_AUTHOR_EMAIL.defaultValue;
     const pullRequestTitle = substituteVariables(getInput(PR_TITLE.name) || PR_TITLE.defaultValue);
     const pullRequestBody = substituteVariables(getInput(PR_BODY.name) || PR_BODY.defaultValue);
     const assignees = splitCsv(getInput(ASSIGNEES.name) || ASSIGNEES.defaultValue);
@@ -9819,6 +9839,8 @@ const parseInput = () => {
         branchName,
         commitTitle,
         commitBody,
+        commitAuthorName,
+        commitAuthorEmail,
         pullRequestTitle,
         pullRequestBody,
         assignees,
@@ -9882,6 +9904,8 @@ module.exports = {
     BRANCH_NAME,
     COMMIT_TITLE,
     COMMIT_BODY,
+    COMMIT_AUTHOR_NAME,
+    COMMIT_AUTHOR_EMAIL,
     PR_TITLE,
     PR_BODY,
     ASSIGNEES,

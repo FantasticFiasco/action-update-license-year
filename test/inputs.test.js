@@ -7,6 +7,8 @@ const {
     CURRENT_YEAR,
     COMMIT_TITLE,
     COMMIT_BODY,
+    COMMIT_AUTHOR_NAME,
+    COMMIT_AUTHOR_EMAIL,
     PR_TITLE,
     PR_BODY,
     ASSIGNEES,
@@ -20,6 +22,8 @@ const INPUTS = {
     BRANCH_NAME,
     COMMIT_TITLE,
     COMMIT_BODY,
+    COMMIT_AUTHOR_NAME,
+    COMMIT_AUTHOR_EMAIL,
     PR_TITLE,
     PR_BODY,
     ASSIGNEES,
@@ -49,6 +53,8 @@ describe('#parseInput should', () => {
                 branchName,
                 commitTitle,
                 commitBody,
+                commitAuthorName,
+                commitAuthorEmail,
                 pullRequestTitle,
                 pullRequestBody,
                 assignees,
@@ -59,6 +65,8 @@ describe('#parseInput should', () => {
             expect(branchName).toBe(`license/copyright-to-${CURRENT_YEAR}`);
             expect(commitTitle).toBe(COMMIT_TITLE.defaultValue);
             expect(commitBody).toBe(COMMIT_BODY.defaultValue);
+            expect(commitAuthorName).toBe(COMMIT_AUTHOR_NAME.defaultValue);
+            expect(commitAuthorEmail).toBe(COMMIT_AUTHOR_EMAIL.defaultValue);
             expect(pullRequestTitle).toBe(PR_TITLE.defaultValue);
             expect(pullRequestBody).toBe(PR_BODY.defaultValue);
             expect(assignees).toStrictEqual([]);
@@ -224,6 +232,22 @@ describe('#parseInput should', () => {
                 process.env[INPUTS.COMMIT_BODY.env] = 'some commit body {{ invalidVariableName }}';
                 const fn = () => parseInput();
                 expect(fn).toThrow();
+            });
+        });
+
+        describe('with commit author name', () => {
+            test('returns it', () => {
+                process.env[INPUTS.COMMIT_AUTHOR_NAME.env] = 'some commit author name';
+                const { commitAuthorName } = parseInput();
+                expect(commitAuthorName).toBe('some commit author name');
+            });
+        });
+
+        describe('with commit author e-mail', () => {
+            test('returns it', () => {
+                process.env[INPUTS.COMMIT_AUTHOR_EMAIL.env] = 'some commit author e-mail';
+                const { commitAuthorEmail } = parseInput();
+                expect(commitAuthorEmail).toBe('some commit author e-mail');
             });
         });
 

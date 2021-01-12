@@ -55,6 +55,16 @@ inputs:
     default: ""
     required: false
 
+  commitAuthorName:
+    description: The git author name, used when committing changes to the repository.
+    default: "github-actions"
+    required: false
+
+  commitAuthorEmail:
+    description: The git author e-mail, used when committing changes to the repository.
+    default: "github-actions@github.com"
+    required: false
+
   prTitle:
     description: The title of the new pull request. Supports substituting variable {{currentYear}}.
     default: Update license copyright year(s)
@@ -67,12 +77,12 @@ inputs:
 
   assignees:
     description: >
-      Comma-separated list with usernames of people to assign when pull request is created
+      Comma-separated list with usernames of people to assign when pull request is created.
     default: ""
     required: false
 
   labels:
-    description: Comma-separated list of labels to add when pull request is created
+    description: Comma-separated list of labels to add when pull request is created.
     default: ""
     required: false
 
