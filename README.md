@@ -144,8 +144,8 @@ For the majority of repositories on GitHub the following code will do the job. I
 - [I want to update all my licenses, I have more than one](#i-want-to-update-all-my-licenses-i-have-more-than-one)
 - [I want to update all my license in my monorepo](#i-want-to-update-all-my-license-in-my-monorepo)
 - [I want to update the license in my source files](#i-want-to-update-the-license-in-my-source-files)
-- [I want my pull requests to follow a convention](#i-want-my-pull-requests-to-follow-a-convention)
 - [I want to update my license and a custom source in the same PR](#i-want-to-update-my-license-and-a-custom-source-in-the-same-pr)
+- [I want my pull requests to follow a convention](#i-want-my-pull-requests-to-follow-a-convention)
 
 ### I'm new to GitHub Actions and don't know where to start
 
@@ -231,7 +231,7 @@ steps:
 - uses: FantasticFiasco/action-update-license-year@v2
   with:
     token: ${{ secrets.GITHUB_TOKEN }}
-    transform: (?<=my own copyright )(?<from>\d{4})-\d{4}
+    transform: (?<=my own copyright )(?<from>\d{4})?-?(\d{4})?
 ```
 
 ### I want to update all my licenses, I have more than one
@@ -281,27 +281,6 @@ steps:
     path: src/**/*.js
 ```
 
-### I want my pull requests to follow a convention
-
-Your pull requests might follow some convention. It might require some specific title, or perhaps you wish the pull request to be assigned to a specific maintainer? Whatever the reason, we've got you covered.
-
-```yaml
-steps:
-- uses: actions/checkout@v2
-    with:
-      fetch-depth: 0
-- uses: FantasticFiasco/action-update-license-year@v2
-  with:
-    token: ${{ secrets.GITHUB_TOKEN }}
-    branchName: license/{{currentYear}}
-    commitTitle: update my license
-    commitBody: Let's keep legal happy.
-    prTitle: Update my license
-    prBody: It's that time of the year, let's update the license.
-    assignees: MyUser, SomeMaintainer
-    labels: documentation, legal
-```
-
 ### I want to update my license and a custom source in the same PR
 
 Additionally to your license file, your project includes other files which require a custom year updating using `transform`. You can do the full update in one pull request chaining multiples jobs with the `needs` directive.
@@ -329,5 +308,44 @@ jobs:
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         path: "*.js"
-        transform: (?<=Some license )(?<from>\d{4})?-?(\d{4})?
+        transform: (?<=my own copyright )(?<from>\d{4})?-?(\d{4})?
 ```
+
+### I want my pull requests to follow a convention
+
+Your pull requests might follow some convention. It might require some specific title, or perhaps you wish the pull request to be assigned to a specific maintainer? Whatever the reason, we've got you covered.
+
+```yaml
+steps:
+- uses: actions/checkout@v2
+    with:
+      fetch-depth: 0
+- uses: FantasticFiasco/action-update-license-year@v2
+  with:
+    token: ${{ secrets.GITHUB_TOKEN }}
+    branchName: license/{{currentYear}}
+    commitTitle: update my license
+    commitBody: Let's keep legal happy.
+    prTitle: Update my license
+    prBody: It's that time of the year, let's update the license.
+    assignees: MyUser, SomeMaintainer
+    labels: documentation, legal
+```
+
+## Contributors
+
+The following users have made significant contributions to this project. Thank you so much!
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+<table>
+  <tr>
+    <td align="center"><a href="https://github.com/mondeja"><img src="https://avatars.githubusercontent.com/u/23049315?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Álvaro Mondéjar</b></sub></a><br /><a href="https://github.com/FantasticFiasco/action-update-license-year/commits?author=mondeja" title="Documentation">📖</a> <a href="#example-mondeja" title="Examples">💡</a></td>
+  </tr>
+</table>
+
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
+
+<!-- ALL-CONTRIBUTORS-LIST:END -->
