@@ -90,7 +90,7 @@ For the majority of repositories on GitHub the following code will do the job. I
     # returns. Supports substituting variable {{currentYear}}.
     #
     # Required: false
-    # Default: 
+    # Default:
     commitBody: ''
 
     # The git author name, used when committing changes to the repository.
@@ -116,20 +116,20 @@ For the majority of repositories on GitHub the following code will do the job. I
     # {{currentYear}}.
     #
     # Required: false
-    # Default: 
+    # Default:
     prBody: ''
 
     # Comma-separated list with usernames of people to assign when pull request is
     # created.
     #
     # Required: false
-    # Default: 
+    # Default:
     assignees: ''
 
     # Comma-separated list of labels to add when pull request is created.
     #
     # Required: false
-    # Default: 
+    # Default:
     labels: ''
 ```
 <!-- end usage -->
@@ -145,6 +145,7 @@ For the majority of repositories on GitHub the following code will do the job. I
 - [I want to update all my license in my monorepo](#i-want-to-update-all-my-license-in-my-monorepo)
 - [I want to update the license in my source files](#i-want-to-update-the-license-in-my-source-files)
 - [I want my pull requests to follow a convention](#i-want-my-pull-requests-to-follow-a-convention)
+- [I want to update my license and a custom source in the same PR](#i-want-to-update-my-license-and-a-custom-source-in-the-same-pr)
 
 ### I'm new to GitHub Actions and don't know where to start
 
@@ -267,7 +268,7 @@ steps:
 
 ### I want to update the license in my source files
 
-Not only do you have a license file in your repository, you also have a header in each and every source file specifying your license. That's a lot of files to update I guess. Well, we've got you covered. Glob patterns to the rescue.
+You have a header in each and every source file specifying your license. That's a lot of files to update I guess. Well, we've got you covered. Glob patterns to the rescue.
 
 ```yaml
 steps:
@@ -299,4 +300,34 @@ steps:
     prBody: It's that time of the year, let's update the license.
     assignees: MyUser, SomeMaintainer
     labels: documentation, legal
+```
+
+### I want to update my license and a custom source in the same PR
+
+Additionally to your license file, your project includes other files which require a custom year updating using `transform`. You can do the full update in one pull request chaining multiples jobs with the `needs` directive.
+
+```yaml
+jobs:
+  license:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - uses: FantasticFiasco/action-update-license-year@v2
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+
+  source:
+    needs: license
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - uses: FantasticFiasco/action-update-license-year@v2
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        path: "*.js"
+        transform: (?<=Some license )(?<from>\d{4})?-?(\d{4})?
 ```
