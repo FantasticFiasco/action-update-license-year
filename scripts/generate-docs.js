@@ -102,7 +102,7 @@ const updateUsage = () => {
         if (input.default !== undefined) {
             let defaultLine = '    # Default:';
             if (input.default !== '') {
-              defaultLine += ` ${input.default}`;
+                defaultLine += ` ${input.default}`;
             }
             newReadme.push(defaultLine);
         }
