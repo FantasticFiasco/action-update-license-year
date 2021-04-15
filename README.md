@@ -341,7 +341,7 @@ The following users have made significant contributions to this project. Thank y
 <!-- markdownlint-disable -->
 <table>
   <tr>
-    <td align="center"><a href="https://github.com/mondeja"><img src="https://avatars.githubusercontent.com/u/23049315?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Álvaro Mondéjar</b></sub></a><br /><a href="https://github.com/FantasticFiasco/action-update-license-year/commits?author=mondeja" title="Documentation">📖</a> <a href="#example-mondeja" title="Examples">💡</a></td>
+    <td align="center"><a href="https://github.com/mondeja"><img src="https://avatars.githubusercontent.com/u/23049315?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Álvaro Mondéjar</b></sub></a><br /><a href="https://github.com/FantasticFiasco/action-update-license-year/commits?author=mondeja" title="Code">💻</a> <a href="https://github.com/FantasticFiasco/action-update-license-year/commits?author=mondeja" title="Documentation">📖</a> <a href="#example-mondeja" title="Examples">💡</a></td>
   </tr>
 </table>
 
