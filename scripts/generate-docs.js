@@ -100,7 +100,11 @@ const updateUsage = () => {
 
         // Default
         if (input.default !== undefined) {
-            newReadme.push(`    # Default: ${input.default}`);
+            let defaultLine = '    # Default:';
+            if (input.default !== '') {
+                defaultLine += ` ${input.default}`;
+            }
+            newReadme.push(defaultLine);
         }
 
         // Input name
