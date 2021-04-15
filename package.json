@@ -30,7 +30,7 @@
     "postversion": "git push --follow-tags"
   },
   "dependencies": {
-    "@actions/core": "1.2.6",
+    "@actions/core": "1.2.7",
     "@actions/github": "4.0.0",
     "@actions/glob": "0.1.1"
   },
