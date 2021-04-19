@@ -45,7 +45,7 @@
     "typescript": "4.2.4"
   },
   "resolutions": {
-    "@actions/http-client": ">=1.0.8",
+    "@actions/http-client": "1.0.11",
     "acorn": ">=7.1.1",
     "kind-of": ">=6.0.3",
     "lodash": ">=4.17.19",
