@@ -46,7 +46,7 @@
   },
   "resolutions": {
     "@actions/http-client": "1.0.11",
-    "acorn": ">=7.1.1",
+    "acorn": "7.4.1",
     "kind-of": ">=6.0.3",
     "lodash": "4.17.21",
     "minimist": ">=1.2.2",
