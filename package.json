@@ -45,13 +45,13 @@
     "typescript": "4.2.4"
   },
   "resolutions": {
-    "@actions/http-client": "1.0.11",
+    "@actions/http-client": ">=1.0.8",
     "acorn": ">=7.1.1",
     "kind-of": ">=6.0.3",
-    "lodash": "4.17.21",
+    "lodash": ">=4.17.19",
     "minimist": ">=1.2.2",
     "node-fetch": ">=2.6.1",
-    "node-notifier": "9.0.1",
+    "node-notifier": ">=8.0.1",
     "y18n": ">=4.0.1"
   }
 }
