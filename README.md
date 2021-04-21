@@ -149,7 +149,7 @@ For the majority of repositories on GitHub the following code will do the job. I
 
 ### I'm new to GitHub Actions and don't know where to start
 
-GitHub Actions is in detail described on the [GitHub Actions documentation](https://docs.github.com/en/actions), but basically it boils down to creating a file in `./.github/workflows/`, e.g. `./.github/workflows/update-copyright-years-in-license-file.yml`, and then decide [when to trigger the action](https://docs.github.com/en/actions/reference/events-that-trigger-workflows), and finally configure it if necessary.
+GitHub Actions is in detail described on the [GitHub Actions documentation](https://docs.github.com/en/actions), but basically it boils down to creating a file in `./.github/workflows/`, e.g. `./.github/workflows/update-copyright-years-in-license-file.yml`, and then decide on [when to trigger the action](https://docs.github.com/en/actions/reference/events-that-trigger-workflows), and finally configure it if necessary.
 
 The following scenarios will provide you with some examples.
 
