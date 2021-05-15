@@ -4,13 +4,15 @@ const { join } = require('path');
 const { exec } = require('../src/process');
 
 const mockOctokit = {
-    pulls: {
-        list: jest.fn(),
-        create: jest.fn(),
-    },
-    issues: {
-        addAssignees: jest.fn(),
-        addLabels: jest.fn(),
+    rest: {
+        pulls: {
+            list: jest.fn(),
+            create: jest.fn(),
+        },
+        issues: {
+            addAssignees: jest.fn(),
+            addLabels: jest.fn(),
+        },
     },
 };
 
@@ -191,7 +193,7 @@ describe('#commit should', () => {
 
 describe('#hasPullRequest should', () => {
     test('return true given pull request exists', async () => {
-        mockOctokit.pulls.list.mockResolvedValue({
+        mockOctokit.rest.pulls.list.mockResolvedValue({
             data: ['some pull request'],
         });
         const repo = new Repository('some owner', 'some name', 'some token');
@@ -200,7 +202,7 @@ describe('#hasPullRequest should', () => {
     });
 
     test("return false given pull request doesn't exist", async () => {
-        mockOctokit.pulls.list.mockResolvedValue({
+        mockOctokit.rest.pulls.list.mockResolvedValue({
             data: [],
         });
         const repo = new Repository('some owner', 'some name', 'some token');
@@ -209,7 +211,7 @@ describe('#hasPullRequest should', () => {
     });
 
     test('throw error given unexpected Octokit error', async () => {
-        mockOctokit.pulls.list.mockRejectedValue({});
+        mockOctokit.rest.pulls.list.mockRejectedValue({});
         const repo = new Repository('some owner', 'some name', 'some token');
         const promise = repo.hasPullRequest('some-branch');
         await expect(promise).rejects.toBeDefined();
@@ -218,14 +220,14 @@ describe('#hasPullRequest should', () => {
 
 describe('#createPullRequest should', () => {
     test('successfully complete', async () => {
-        mockOctokit.pulls.create.mockResolvedValue({});
+        mockOctokit.rest.pulls.create.mockResolvedValue({});
         const repo = new Repository('some owner', 'some name', 'some token');
         const promise = repo.createPullRequest('some-branch', 'some title', 'some body');
         await expect(promise).resolves.toBeDefined();
     });
 
     test('throw error given unexpected Octokit error', async () => {
-        mockOctokit.pulls.create.mockRejectedValue({});
+        mockOctokit.rest.pulls.create.mockRejectedValue({});
         const repo = new Repository('some owner', 'some name', 'some token');
         const promise = repo.createPullRequest('some-branch', 'some title', 'some body');
         await expect(promise).rejects.toBeDefined();
@@ -234,14 +236,14 @@ describe('#createPullRequest should', () => {
 
 describe('#addAssignees should', () => {
     test('successfully complete', async () => {
-        mockOctokit.issues.addAssignees.mockResolvedValue({});
+        mockOctokit.rest.issues.addAssignees.mockResolvedValue({});
         const repo = new Repository('some owner', 'some name', 'some token');
         const promise = repo.addAssignees(42, ['assignee1', 'assignee2', 'assignee3']);
         await expect(promise).resolves.toBeDefined();
     });
 
     test('throw error given unexpected Octokit error', async () => {
-        mockOctokit.issues.addAssignees.mockRejectedValue({});
+        mockOctokit.rest.issues.addAssignees.mockRejectedValue({});
         const repo = new Repository('some owner', 'some name', 'some token');
         const promise = repo.addAssignees(42, ['assignee1', 'assignee2', 'assignee3']);
         await expect(promise).rejects.toBeDefined();
@@ -250,14 +252,14 @@ describe('#addAssignees should', () => {
 
 describe('#addLabels should', () => {
     test('successfully complete', async () => {
-        mockOctokit.issues.addLabels.mockResolvedValue({});
+        mockOctokit.rest.issues.addLabels.mockResolvedValue({});
         const repo = new Repository('some owner', 'some name', 'some token');
         const promise = repo.addLabels(42, ['some label 1', 'some label 2', 'some label 3']);
         await expect(promise).resolves.toBeDefined();
     });
 
     test('throw error given unexpected Octokit error', async () => {
-        mockOctokit.issues.addLabels.mockRejectedValue({});
+        mockOctokit.rest.issues.addLabels.mockRejectedValue({});
         const repo = new Repository('some owner', 'some name', 'some token');
         const promise = repo.addLabels(42, ['some label 1', 'some label 2', 'some label 3']);
         await expect(promise).rejects.toBeDefined();
