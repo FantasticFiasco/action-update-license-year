@@ -18,11 +18,11 @@ jobs:
           node-version: ${{ env.NODE_LTS }}
           check-latest: true
       - run: yarn install --frozen-lockfile
+      - run: yarn type-check
       - run: yarn coverage
       - uses: coverallsapp/github-action@master
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-      - run: yarn type-check
       - run: yarn lint
       - run: node ./scripts/generate-docs.js
 
