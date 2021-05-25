@@ -3,20 +3,18 @@
 ![Build Status](https://github.com/FantasticFiasco/action-update-license-year/workflows/CI/CD/badge.svg)
 [![Coverage Status](https://coveralls.io/repos/github/FantasticFiasco/action-update-license-year/badge.svg?branch=master)](https://coveralls.io/github/FantasticFiasco/action-update-license-year?branch=master)
 [![SemVer compatible](https://img.shields.io/badge/%E2%9C%85-SemVer%20compatible-blue)](https://semver.org/)
-[![dependencies Status](https://david-dm.org/FantasticFiasco/action-update-license-year/status.svg)](https://david-dm.org/FantasticFiasco/action-update-license-year)
-[![devDependencies Status](https://david-dm.org/FantasticFiasco/action-update-license-year/dev-status.svg)](https://david-dm.org/FantasticFiasco/action-update-license-year?type=dev)
 
 So this seems to have happened. Instead of manually updating the license copyright years in my GitHub repositories I created this GitHub Action.
 
 > Oh, the loath I have for manual processes...
 >
-> **- Definitely not a Shakespeare quote**
+> __- Definitely not a Shakespeare quote__
 
-**Was it a success in terms of productivity?** - I *could* lie to you and say that it was.
+__Was it a success in terms of productivity?__ - I _could_ lie to you and say that it was.
 
-**Was it interesting to create?** - Well certainly, it activated the few brains cells I have.
+__Was it interesting to create?__ - Well certainly, it activated the few brains cells I have.
 
-**Can I use it?** - Yes you can. It automatically supports the licenses listed below, but also support custom RegExp transformations where you specify your own license format.
+__Can I use it?__ - Yes you can. It automatically supports the licenses listed below, but also support custom RegExp transformations where you specify your own license format.
 
 - Apache 2.0 (Apache-2.0)
 - BSD 2-clause "Simplified" (BSD-2-Clause)
@@ -24,22 +22,34 @@ So this seems to have happened. Instead of manually updating the license copyrig
 - GNU Affero General Public License v3.0 only (AGPL-3.0-only)
 - MIT (MIT)
 
+__Will this action commit anything on the default branch?__ - No. The action will create a new pull request, merging it will be your responsibility.
+
 ## Super simple to use
 
-For the majority of repositories on GitHub the following code will do the job. If you find that the outcome didn't meet your expectations, please refer to [scenarios](#scenarios) or [open a new issue](https://github.com/FantasticFiasco/action-update-license-year/issues/new/choose).
+For the majority of repositories on GitHub the following workflow file will do the job. If you find that the outcome didn't meet your expectations, please refer to [scenarios](#scenarios) or [open a new issue](https://github.com/FantasticFiasco/action-update-license-year/issues/new/choose).
 
 ```yaml
-- uses: actions/checkout@v2
-  with:
-    fetch-depth: 0
-- uses: FantasticFiasco/action-update-license-year@v2
-  with:
-    token: ${{ secrets.GITHUB_TOKEN }}
+name: Update copyright year(s) in license file
+
+on:
+  schedule:
+    - cron: "0 3 1 1 *" # 03:00 AM on January 1
+
+jobs:
+  update-license-year:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - uses: FantasticFiasco/action-update-license-year@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 ```
 
-## Usage
+## API
 
-<!-- start usage -->
+<!-- start api -->
 ```yaml
 - uses: FantasticFiasco/action-update-license-year@v2
   with:
@@ -132,9 +142,11 @@ For the majority of repositories on GitHub the following code will do the job. I
     # Default:
     labels: ''
 ```
-<!-- end usage -->
+<!-- end api -->
 
 ## Scenarios
+
+The following chapter will showcase some common scenarios and their GitHub Action configuration.
 
 - [I'm new to GitHub Actions and don't know where to start](#Im-new-to-github-actions-and-dont-know-where-to-start)
 - [I want to update my license annually at 03:00 AM on January 1](#i-want-to-update-my-license-annually-at-0300-am-on-january-1)

@@ -13,7 +13,7 @@ const getPackageMajorVersion = () => {
     return match[1];
 };
 
-const updateUsage = () => {
+const updateApi = () => {
     // Load the action.yml
     const actionYaml = load(readFileSync(METADATA_PATH).toString());
 
@@ -21,15 +21,15 @@ const updateUsage = () => {
     const originalReadme = readFileSync(README_PATH).toString();
 
     // Find the start token
-    const startTokenIndex = originalReadme.indexOf(USAGE_START_TOKEN);
+    const startTokenIndex = originalReadme.indexOf(API_START_TOKEN);
     if (startTokenIndex < 0) {
-        throw new Error(`Start token '${USAGE_START_TOKEN}' not found`);
+        throw new Error(`Start token '${API_START_TOKEN}' not found`);
     }
 
     // Find the end token
-    const endTokenIndex = originalReadme.indexOf(USAGE_END_TOKEN);
+    const endTokenIndex = originalReadme.indexOf(API_END_TOKEN);
     if (endTokenIndex < 0) {
-        throw new Error(`End token '${USAGE_END_TOKEN}' not found`);
+        throw new Error(`End token '${API_END_TOKEN}' not found`);
     } else if (endTokenIndex < startTokenIndex) {
         throw new Error('Start token must appear before end token');
     }
@@ -38,9 +38,9 @@ const updateUsage = () => {
     const newReadme = [];
 
     // Append the beginning
-    newReadme.push(originalReadme.substr(0, startTokenIndex + USAGE_START_TOKEN.length));
+    newReadme.push(originalReadme.substr(0, startTokenIndex + API_START_TOKEN.length));
 
-    // Build the new usage section
+    // Build the new API section
     newReadme.push('```yaml');
     newReadme.push(`- uses: ${ACTION_NAME}`);
     newReadme.push('  with:');
@@ -125,7 +125,7 @@ const updateUsage = () => {
 const ACTION_NAME = `FantasticFiasco/action-update-license-year@v${getPackageMajorVersion()}`;
 const METADATA_PATH = join(__dirname, '..', 'action.yml');
 const README_PATH = join(__dirname, '..', 'README.md');
-const USAGE_START_TOKEN = '<!-- start usage -->';
-const USAGE_END_TOKEN = '<!-- end usage -->';
+const API_START_TOKEN = '<!-- start api -->';
+const API_END_TOKEN = '<!-- end api -->';
 
-updateUsage();
+updateApi();
