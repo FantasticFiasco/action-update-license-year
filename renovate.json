@@ -9,5 +9,11 @@
     "node-fetch",
     "node-notifier",
     "y18n"
+  ],
+  "packageRules": [
+    {
+      "matchPackagePatterns": ["jest"],
+      "groupName": "Jest packages"
+    }
   ]
 }
