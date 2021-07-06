@@ -35,7 +35,7 @@
     "@actions/glob": "0.2.0"
   },
   "devDependencies": {
-    "@types/jest": "26.0.23",
+    "@types/jest": "26.0.24",
     "@types/js-yaml": "4.0.2",
     "@zeit/ncc": "0.22.3",
     "eslint": "7.30.0",
