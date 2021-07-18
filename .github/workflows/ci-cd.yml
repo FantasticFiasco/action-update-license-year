@@ -2,9 +2,6 @@ name: CI/CD
 
 on: [push, pull_request]
 
-env:
-  NODE_LTS: "14.x"
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -12,10 +9,10 @@ jobs:
       - name: Logo
         run: echo -e "$(curl --silent https://raw.githubusercontent.com/FantasticFiasco/logo/master/logo.ansi)"
       - uses: actions/checkout@v2
-      - name: Use Node.js ${{ env.NODE_LTS }}
+      - name: Use Node.js lts/*
         uses: actions/setup-node@v2
         with:
-          node-version: ${{ env.NODE_LTS }}
+          node-version: lts/*
           check-latest: true
       - run: yarn install --frozen-lockfile
       - run: yarn type-check
