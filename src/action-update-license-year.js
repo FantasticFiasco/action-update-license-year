@@ -89,6 +89,7 @@ const run = async () => {
             }
         }
     } catch (err) {
+        // @ts-ignore
         setFailed(err.message);
     }
 };
