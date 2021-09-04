@@ -29,6 +29,7 @@ class Repository {
             await exec(`git config user.name ${userName}`);
             await exec(`git config user.email ${email}`);
         } catch (err) {
+            // @ts-ignore
             err.message = `Error authenticating user "${userName}" with e-mail "${email}": ${err.message}`;
             throw err;
         }
@@ -51,6 +52,7 @@ class Repository {
 
             return (await hasLocalBranch()) || (await hasRemoteBranch());
         } catch (err) {
+            // @ts-ignore
             err.message = `Error searching for branch "${name}": ${err.message}`;
             throw err;
         }
@@ -67,6 +69,7 @@ class Repository {
             this._currentBranch = name;
             this._isCurrentBranchNew = isNew;
         } catch (err) {
+            // @ts-ignore
             err.message = `Error checking out ${isNew ? 'new' : 'existing'} branch "${name}": ${err.message}`;
             throw err;
         }
@@ -80,6 +83,7 @@ class Repository {
             const content = await readFileAsync(path, { encoding: 'utf8' });
             return content;
         } catch (err) {
+            // @ts-ignore
             err.message = `Error reading file "${path}": ${err.message}`;
             throw err;
         }
@@ -94,6 +98,7 @@ class Repository {
             await writeFileAsync(path, content, { encoding: 'utf8', flag: 'r+' });
             this._writtenFiles.push(path);
         } catch (err) {
+            // @ts-ignore
             err.message = `Error writing file "${path}": ${err.message}`;
             throw err;
         }
@@ -108,6 +113,7 @@ class Repository {
             try {
                 await exec(`git add "${writtenFile}"`);
             } catch (err) {
+                // @ts-ignore
                 err.message = `Error staging file "${writtenFile}": ${err.message}`;
                 throw err;
             }
@@ -121,6 +127,7 @@ class Repository {
         try {
             await exec(`git commit -m "${message}"`);
         } catch (err) {
+            // @ts-ignore
             err.message = `Error committing files: ${err.message}`;
             throw err;
         }
@@ -137,7 +144,9 @@ class Repository {
             this._isCurrentBranchNew = false;
             this._writtenFiles = [];
         } catch (err) {
+            // @ts-ignore
             err.message = `Error pushing changes to ${this._isCurrentBranchNew ? 'new' : 'existing'} branch: ${
+                // @ts-ignore
                 err.message
             }`;
             throw err;
@@ -157,6 +166,7 @@ class Repository {
 
             return res.data.length === 1;
         } catch (err) {
+            // @ts-ignore
             err.message = `Error when checking whether pull request from ${sourceBranchName} exists: ${err.message}`;
             throw err;
         }
@@ -182,6 +192,7 @@ class Repository {
                 base: defaultBranch,
             });
         } catch (err) {
+            // @ts-ignore
             err.message = `Error when creating pull request from ${sourceBranchName}: ${err.message}`;
             throw err;
         }
@@ -202,6 +213,7 @@ class Repository {
                 assignees,
             });
         } catch (err) {
+            // @ts-ignore
             err.message = `Error when adding assignees to issue ${issueNumber}: ${err.message}`;
             throw err;
         }
@@ -222,6 +234,7 @@ class Repository {
                 labels,
             });
         } catch (err) {
+            // @ts-ignore
             err.message = `Error when adding labels to issue ${issueNumber}: ${err.message}`;
             throw err;
         }
