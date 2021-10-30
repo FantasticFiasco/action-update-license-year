@@ -36,7 +36,7 @@
   },
   "devDependencies": {
     "@types/jest": "27.0.2",
-    "@types/js-yaml": "4.0.3",
+    "@types/js-yaml": "4.0.4",
     "@zeit/ncc": "0.22.3",
     "eslint": "7.32.0",
     "jest": "27.3.1",
