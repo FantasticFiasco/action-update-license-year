@@ -59,7 +59,7 @@ const run = async () => {
         }
 
         if (!repo.hasChanges()) {
-            info(`No licenses where updated, let's abort`);
+            info(`No licenses were updated, let's abort`);
             return;
         }
 
