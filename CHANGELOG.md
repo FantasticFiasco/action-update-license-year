@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ## [Unreleased]
 
+## [2.1.1] - 2021-12-20
+
 ### :dizzy: Changed
 
 - Update dependency [@actions/core](https://github.com/actions/toolkit/tree/main/packages/core) to v1.6.0
