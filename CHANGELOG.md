@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ## [Unreleased]
 
+### :dizzy: Changed
+
+- Update dependency [@actions/core](https://github.com/actions/toolkit/tree/main/packages/core) to v1.6.0
+- Update dependency [@actions/github](https://github.com/actions/toolkit/tree/main/packages/github) to v5.0.0
+- Update dependency [@actions/glob](https://github.com/actions/toolkit/tree/main/packages/glob) to v0.2.0
+
 ## [2.1.0] - 2021-01-12
 
 ### :zap: Added
