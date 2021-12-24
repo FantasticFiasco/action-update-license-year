@@ -343,6 +343,32 @@ steps:
     assignees: MyUser, SomeMaintainer
     labels: documentation, legal
 ```
+### I want my pull requests to be automatically merged
+
+Your pull  requests can be merged by utilizing the gh-cli [cli/cli](https://github.com/cli/cli). Use 'branchName' to create a pr with a specified branch, and use `gh` to merge and close the pr (and delete the branch).
+
+```yaml
+steps:
+
+- uses: actions/checkout@v2
+    with:
+      fetch-depth: 0
+- uses: FantasticFiasco/action-update-license-year@v2
+  with:
+    token: ${{ secrets.GITHUB_TOKEN }}
+    branchName: license
+
+# Auto Merge license -> master
+- uses: actions/checkout@master
+
+  #merge and delete
+- name: Auto Merge license -> master
+  env:
+    GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+  run: |
+    gh pr checkout license  #[gh pr checkout](https://github.com/cli/cli)https://cli.github.com/manual/gh_pr_checkout
+    gh pr merge -d -m       #[gh pr merge](https://github.com/cli/cli)https://cli.github.com/manual/gh_pr_merge
+```
 
 ## Contributors
 
