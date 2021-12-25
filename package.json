@@ -38,7 +38,7 @@
     "@types/jest": "27.0.3",
     "@types/js-yaml": "4.0.5",
     "@zeit/ncc": "0.22.3",
-    "eslint": "8.4.1",
+    "eslint": "8.5.0",
     "jest": "27.4.5",
     "js-yaml": "4.1.0",
     "prettier": "2.5.1",
