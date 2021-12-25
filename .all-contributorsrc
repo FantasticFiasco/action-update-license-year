@@ -30,6 +30,15 @@
         "bug",
         "code"
       ]
+    },
+    {
+      "login": "utkarshsethi",
+      "name": "Utkarsh Sethi",
+      "avatar_url": "https://avatars.githubusercontent.com/u/2989912?v=4",
+      "profile": "https://www.linkedin.com/in/utkarshsethi/",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7

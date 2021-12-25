@@ -158,6 +158,7 @@ The following chapter will showcase some common scenarios and their GitHub Actio
 - [I want to update the license in my source files](#i-want-to-update-the-license-in-my-source-files)
 - [I want to update my license and a custom source in the same PR](#i-want-to-update-my-license-and-a-custom-source-in-the-same-pr)
 - [I want my pull requests to follow a convention](#i-want-my-pull-requests-to-follow-a-convention)
+- [I want my pull requests to be automatically merged](#i-want-my-pull-requests-to-be-automatically-merged)
 
 ### I'm new to GitHub Actions and don't know where to start
 
@@ -344,6 +345,30 @@ steps:
     labels: documentation, legal
 ```
 
+### I want my pull requests to be automatically merged
+
+Your pull requests can be merged and the branch deleted by utilizing [GitHub CLI](https://github.com/cli/cli).
+
+```yaml
+steps:
+- uses: actions/checkout@v2
+    with:
+      fetch-depth: 0
+- uses: FantasticFiasco/action-update-license-year@v2
+  with:
+    token: ${{ secrets.GITHUB_TOKEN }}
+- name: Merge pull request
+  env:
+    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  run: |
+    # Replace '--merge' with '--rebase' to rebase the commits onto the base
+    # branch, or with '--squash' to squash the commits into one commit and merge
+    # it into the base branch.
+    # For more information regarding the merge command, please see
+    # https://cli.github.com/manual/gh_pr_merge.
+    gh pr merge --merge --delete-branch
+```
+
 ## Contributors
 
 The following users have made significant contributions to this project. Thank you so much!
@@ -355,6 +380,7 @@ The following users have made significant contributions to this project. Thank y
   <tr>
     <td align="center"><a href="https://github.com/mondeja"><img src="https://avatars.githubusercontent.com/u/23049315?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Álvaro Mondéjar</b></sub></a><br /><a href="https://github.com/FantasticFiasco/action-update-license-year/commits?author=mondeja" title="Code">💻</a> <a href="https://github.com/FantasticFiasco/action-update-license-year/commits?author=mondeja" title="Documentation">📖</a> <a href="#example-mondeja" title="Examples">💡</a></td>
     <td align="center"><a href="https://gerome.dev/"><img src="https://avatars.githubusercontent.com/u/32737308?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Gérôme Grignon</b></sub></a><br /><a href="https://github.com/FantasticFiasco/action-update-license-year/issues?q=author%3Ageromegrignon" title="Bug reports">🐛</a> <a href="https://github.com/FantasticFiasco/action-update-license-year/commits?author=geromegrignon" title="Code">💻</a></td>
+    <td align="center"><a href="https://www.linkedin.com/in/utkarshsethi/"><img src="https://avatars.githubusercontent.com/u/2989912?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Utkarsh Sethi</b></sub></a><br /><a href="https://github.com/FantasticFiasco/action-update-license-year/commits?author=utkarshsethi" title="Documentation">📖</a></td>
   </tr>
 </table>
 
