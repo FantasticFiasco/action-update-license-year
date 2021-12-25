@@ -358,8 +358,6 @@ steps:
   with:
     token: ${{ secrets.GITHUB_TOKEN }}
     branchName: license
-# Auto Merge license -> master
-- uses: actions/checkout@master
 # Merge and delete
 - name: Auto Merge license -> master
   env:
