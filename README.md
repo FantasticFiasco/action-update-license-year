@@ -357,8 +357,7 @@ steps:
 - uses: FantasticFiasco/action-update-license-year@v2
   with:
     token: ${{ secrets.GITHUB_TOKEN }}
-# Merge and delete
-- name: Auto Merge license -> master
+- name: Merge pull request
   env:
     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   run: gh pr merge -d -m       #[gh pr merge](https://github.com/cli/cli)https://cli.github.com/manual/gh_pr_merge
