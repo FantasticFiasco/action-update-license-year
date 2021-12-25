@@ -347,7 +347,7 @@ steps:
 
 ### I want my pull requests to be automatically merged
 
-Your pull  requests can be merged by utilizing the gh-cli [cli/cli](https://github.com/cli/cli). Use 'branchName' to create a pr with a specified branch, and use `gh` to merge and close the pr (and delete the branch).
+Your pull requests can be merged by utilizing [GitHub CLI](https://github.com/cli/cli). Use 'branchName' to create a pr with a specified branch, and use `gh` to merge and close the pr (and delete the branch).
 
 ```yaml
 steps:
