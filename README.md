@@ -351,7 +351,6 @@ Your pull requests can be merged by utilizing [GitHub CLI](https://github.com/cl
 
 ```yaml
 steps:
-
 - uses: actions/checkout@v2
     with:
       fetch-depth: 0
@@ -359,14 +358,12 @@ steps:
   with:
     token: ${{ secrets.GITHUB_TOKEN }}
     branchName: license
-
 # Auto Merge license -> master
 - uses: actions/checkout@master
-
-  #merge and delete
+# Merge and delete
 - name: Auto Merge license -> master
   env:
-    GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   run: |
     gh pr checkout license  #[gh pr checkout](https://github.com/cli/cli)https://cli.github.com/manual/gh_pr_checkout
     gh pr merge -d -m       #[gh pr merge](https://github.com/cli/cli)https://cli.github.com/manual/gh_pr_merge
