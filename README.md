@@ -158,6 +158,7 @@ The following chapter will showcase some common scenarios and their GitHub Actio
 - [I want to update the license in my source files](#i-want-to-update-the-license-in-my-source-files)
 - [I want to update my license and a custom source in the same PR](#i-want-to-update-my-license-and-a-custom-source-in-the-same-pr)
 - [I want my pull requests to follow a convention](#i-want-my-pull-requests-to-follow-a-convention)
+- [I want my pull requests to be automatically merged](#i-want-my-pull-requests-to-be-automatically-merged)
 
 ### I'm new to GitHub Actions and don't know where to start
 
@@ -343,6 +344,7 @@ steps:
     assignees: MyUser, SomeMaintainer
     labels: documentation, legal
 ```
+
 ### I want my pull requests to be automatically merged
 
 Your pull  requests can be merged by utilizing the gh-cli [cli/cli](https://github.com/cli/cli). Use 'branchName' to create a pr with a specified branch, and use `gh` to merge and close the pr (and delete the branch).
