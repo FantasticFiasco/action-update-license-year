@@ -360,7 +360,13 @@ steps:
 - name: Merge pull request
   env:
     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  run: gh pr merge -d -m       #[gh pr merge](https://github.com/cli/cli)https://cli.github.com/manual/gh_pr_merge
+  run: |
+    # Replace '--merge' with '--rebase' to rebase the commits onto the base
+    # branch, or with '--squash' to squash the commits into one commit and merge
+    # it into the base branch.
+    # For more information regarding the merge command, please see
+    # https://cli.github.com/manual/gh_pr_merge.
+    gh pr merge --merge --delete-branch
 ```
 
 ## Contributors
