@@ -1,9 +1,10 @@
 const { setFailed, info } = require('@actions/core');
-const { context } = require('@actions/github');
-const { parseInput } = require('./inputs');
-const { applyTransform } = require('./transforms');
-const Repository = require('./repository');
-const { search } = require('./search');
+// const { context } = require('@actions/github');
+// const { parseInput } = require('./inputs');
+// const { applyTransform } = require('./transforms');
+// const Repository = require('./repository');
+// const { search } = require('./search');
+const { version } = require('./gpg');
 
 const run = async () => {
     try {
@@ -13,81 +14,83 @@ const run = async () => {
         }
         info(`Working directory: ${cwd}`);
 
-        const { owner, repo: repoName } = context.repo;
-        const {
-            token,
-            path,
-            transform,
-            branchName,
-            commitTitle,
-            commitBody,
-            commitAuthorName,
-            commitAuthorEmail,
-            pullRequestTitle,
-            pullRequestBody,
-            assignees,
-            labels,
-        } = parseInput();
+        await version();
 
-        const repo = new Repository(owner, repoName, token);
-        await repo.authenticate(commitAuthorName, commitAuthorEmail);
+        // const { owner, repo: repoName } = context.repo;
+        // const {
+        //     token,
+        //     path,
+        //     transform,
+        //     branchName,
+        //     commitTitle,
+        //     commitBody,
+        //     commitAuthorName,
+        //     commitAuthorEmail,
+        //     pullRequestTitle,
+        //     pullRequestBody,
+        //     assignees,
+        //     labels,
+        // } = parseInput();
 
-        const branchExists = await repo.branchExists(branchName);
-        info(`Checkout ${branchExists ? 'existing' : 'new'} branch named "${branchName}"`);
-        await repo.checkoutBranch(branchName, !branchExists);
+        // const repo = new Repository(owner, repoName, token);
+        // await repo.authenticate(commitAuthorName, commitAuthorEmail);
 
-        const files = await search(path);
-        if (files.length === 0) {
-            throw new Error(`Found no files matching the path "${singleLine(path)}"`);
-        }
+        // const branchExists = await repo.branchExists(branchName);
+        // info(`Checkout ${branchExists ? 'existing' : 'new'} branch named "${branchName}"`);
+        // await repo.checkoutBranch(branchName, !branchExists);
 
-        info(`Found ${files.length} file(s) matching the path "${singleLine(path)}"`);
+        // const files = await search(path);
+        // if (files.length === 0) {
+        //     throw new Error(`Found no files matching the path "${singleLine(path)}"`);
+        // }
 
-        const currentYear = new Date().getFullYear();
-        info(`Current year is "${currentYear}"`);
+        // info(`Found ${files.length} file(s) matching the path "${singleLine(path)}"`);
 
-        for (const file of files) {
-            const relativeFile = file.replace(cwd, '.');
-            const content = await repo.readFile(file);
-            const updatedContent = applyTransform(transform, content, currentYear, relativeFile);
-            if (updatedContent !== content) {
-                info(`Update license in "${relativeFile}"`);
-                await repo.writeFile(file, updatedContent);
-            } else {
-                info(`File "${relativeFile}" is already up-to-date`);
-            }
-        }
+        // const currentYear = new Date().getFullYear();
+        // info(`Current year is "${currentYear}"`);
 
-        if (!repo.hasChanges()) {
-            info(`No licenses were updated, let's abort`);
-            return;
-        }
+        // for (const file of files) {
+        //     const relativeFile = file.replace(cwd, '.');
+        //     const content = await repo.readFile(file);
+        //     const updatedContent = applyTransform(transform, content, currentYear, relativeFile);
+        //     if (updatedContent !== content) {
+        //         info(`Update license in "${relativeFile}"`);
+        //         await repo.writeFile(file, updatedContent);
+        //     } else {
+        //         info(`File "${relativeFile}" is already up-to-date`);
+        //     }
+        // }
 
-        await repo.stageWrittenFiles();
+        // if (!repo.hasChanges()) {
+        //     info(`No licenses were updated, let's abort`);
+        //     return;
+        // }
 
-        const commitMessage = commitBody ? `${commitTitle}\n\n${commitBody}` : commitTitle;
-        await repo.commit(commitMessage);
-        await repo.push();
+        // await repo.stageWrittenFiles();
 
-        const hasPullRequest = await repo.hasPullRequest(branchName);
-        if (!hasPullRequest) {
-            info(`Create new pull request with title "${pullRequestTitle}"`);
-            const createPullRequestResponse = await repo.createPullRequest(
-                branchName,
-                pullRequestTitle,
-                pullRequestBody
-            );
+        // const commitMessage = commitBody ? `${commitTitle}\n\n${commitBody}` : commitTitle;
+        // await repo.commit(commitMessage);
+        // await repo.push();
 
-            if (assignees.length > 0) {
-                info(`Add assignees to pull request: ${JSON.stringify(assignees)}`);
-                await repo.addAssignees(createPullRequestResponse.data.number, assignees);
-            }
+        // const hasPullRequest = await repo.hasPullRequest(branchName);
+        // if (!hasPullRequest) {
+        //     info(`Create new pull request with title "${pullRequestTitle}"`);
+        //     const createPullRequestResponse = await repo.createPullRequest(
+        //         branchName,
+        //         pullRequestTitle,
+        //         pullRequestBody
+        //     );
 
-            if (labels.length > 0) {
-                info(`Add labels to pull request: ${JSON.stringify(labels)}`);
-                await repo.addLabels(createPullRequestResponse.data.number, labels);
-            }
-        }
+        //     if (assignees.length > 0) {
+        //         info(`Add assignees to pull request: ${JSON.stringify(assignees)}`);
+        //         await repo.addAssignees(createPullRequestResponse.data.number, assignees);
+        //     }
+
+        //     if (labels.length > 0) {
+        //         info(`Add labels to pull request: ${JSON.stringify(labels)}`);
+        //         await repo.addLabels(createPullRequestResponse.data.number, labels);
+        //     }
+        // }
     } catch (err) {
         // @ts-ignore
         setFailed(err.message);
