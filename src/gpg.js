@@ -8,6 +8,16 @@ const list = async () => {
     info(stderr);
 };
 
+/**
+ * @param {string} privateKey
+ * @param {string} passphrase
+ */
+const importPrivateKey = async (privateKey, passphrase) => {
+    info(privateKey.length.toString());
+    info(passphrase.length.toString());
+};
+
 module.exports = {
     list,
+    importPrivateKey,
 };

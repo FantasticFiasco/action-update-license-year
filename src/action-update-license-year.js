@@ -1,10 +1,10 @@
 const { setFailed, info } = require('@actions/core');
 // const { context } = require('@actions/github');
-// const { parseInput } = require('./inputs');
+const { parseInput } = require('./inputs');
 // const { applyTransform } = require('./transforms');
 // const Repository = require('./repository');
 // const { search } = require('./search');
-const { list } = require('./gpg');
+const { list, importPrivateKey } = require('./gpg');
 
 const run = async () => {
     try {
@@ -14,23 +14,26 @@ const run = async () => {
         }
         info(`Working directory: ${cwd}`);
 
-        await list();
-
         // const { owner, repo: repoName } = context.repo;
-        // const {
-        //     token,
-        //     path,
-        //     transform,
-        //     branchName,
-        //     commitTitle,
-        //     commitBody,
-        //     commitAuthorName,
-        //     commitAuthorEmail,
-        //     pullRequestTitle,
-        //     pullRequestBody,
-        //     assignees,
-        //     labels,
-        // } = parseInput();
+        const {
+            // token,
+            // path,
+            // transform,
+            // branchName,
+            // commitTitle,
+            // commitBody,
+            // commitAuthorName,
+            // commitAuthorEmail,
+            gpgPrivateKey,
+            gpgPassphrase,
+            // pullRequestTitle,
+            // pullRequestBody,
+            // assignees,
+            // labels,
+        } = parseInput();
+
+        await importPrivateKey(gpgPrivateKey, gpgPassphrase);
+        await list();
 
         // const repo = new Repository(owner, repoName, token);
         // await repo.authenticate(commitAuthorName, commitAuthorEmail);

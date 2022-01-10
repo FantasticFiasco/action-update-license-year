@@ -65,6 +65,14 @@ inputs:
     default: "github-actions@github.com"
     required: false
 
+  gpgPrivateKey:
+    default: ""
+    required: false
+
+  gpgPassphrase:
+    default: ""
+    required: false
+
   prTitle:
     description: The title of the new pull request. Supports substituting variable {{currentYear}}.
     default: Update license copyright year(s)
