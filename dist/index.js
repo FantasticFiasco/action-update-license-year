@@ -675,8 +675,8 @@ const { exec } = __webpack_require__(930);
 const list = async () => {
     const cmd = 'gpg --list-secret-keys --keyid-format=long';
     const { stdout, stderr } = await exec(cmd);
-    info(stdout);
-    info(stderr);
+    info('list ' + stdout);
+    info('list ' + stderr);
 };
 
 /**
@@ -689,8 +689,14 @@ const importPrivateKey = async (privateKey, passphrase) => {
         const privateKeyFilePath = join(runnerTemp(), 'private.key');
         await writeFile(privateKeyFilePath, privateKey);
 
+        let r = await exec(`ls -la ${runnerTemp()}`);
+        info('[ls] ' + r.stdout);
+        info('[ls] ' + r.stderr);
+
         const cmd = `echo '${passphrase}' | gpg --import --batch --passphrase-fd 0 ${privateKeyFilePath}`;
-        await exec(cmd);
+        r = await exec(cmd);
+        info('[import] ' + r.stdout);
+        info('[import] ' + r.stderr);
     } catch (err) {
         // @ts-ignore
         err.message = `Error importing GPG private key: ${err.message}`;
