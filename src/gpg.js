@@ -25,10 +25,25 @@ const importPrivateKey = async (privateKey, passphrase) => {
         info('[ls] ' + r.stdout);
         info('[ls] ' + r.stderr);
 
-        const cmd = `echo '${passphrase}' | gpg --import --batch --passphrase-fd 0 ${privateKeyFilePath}`;
+        let cmd = `echo '${passphrase}' | gpg --import --batch --passphrase-fd 0 ${privateKeyFilePath}`;
         r = await exec(cmd);
         info('[import] ' + r.stdout);
         info('[import] ' + r.stderr);
+
+        cmd = `echo -e '${passphrase}\n\n' | gpg --batch --change-passphrase --pinentry-mode loopback --command-fd 0 AB5E43D9106353B3`;
+        r = await exec(cmd);
+        info('[change-passphrase] ' + r.stdout);
+        info('[change-passphrase] ' + r.stderr);
+
+        cmd = 'git config user.signingkey AB5E43D9106353B3';
+        r = await exec(cmd);
+        info('[user.signingkey] ' + r.stdout);
+        info('[user.signingkey] ' + r.stderr);
+
+        cmd = 'git config commit.gpgsign true';
+        r = await exec(cmd);
+        info('[commit.gpgsign] ' + r.stdout);
+        info('[commit.gpgsign] ' + r.stderr);
     } catch (err) {
         // @ts-ignore
         err.message = `Error importing GPG private key: ${err.message}`;
