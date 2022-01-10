@@ -1,13 +1,13 @@
 const { exec } = require('./process');
 const { info } = require('@actions/core');
 
-const version = async () => {
-    let cmd = 'gpg --version';
+const list = async () => {
+    let cmd = 'gpg --list-secret-keys --keyid-format=long';
     const { stdout, stderr } = await exec(cmd);
     info(stdout);
     info(stderr);
 };
 
 module.exports = {
-    version,
+    list,
 };

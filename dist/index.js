@@ -129,7 +129,7 @@ const { setFailed, info } = __webpack_require__(470);
 // const { applyTransform } = require('./transforms');
 // const Repository = require('./repository');
 // const { search } = require('./search');
-const { version } = __webpack_require__(329);
+const { list } = __webpack_require__(329);
 
 const run = async () => {
     try {
@@ -139,7 +139,7 @@ const run = async () => {
         }
         info(`Working directory: ${cwd}`);
 
-        await version();
+        await list();
 
         // const { owner, repo: repoName } = context.repo;
         // const {
@@ -643,15 +643,15 @@ exports.PersonalAccessTokenCredentialHandler = PersonalAccessTokenCredentialHand
 const { exec } = __webpack_require__(930);
 const { info } = __webpack_require__(470);
 
-const version = async () => {
-    let cmd = 'gpg --version';
+const list = async () => {
+    let cmd = 'gpg --list-secret-keys --keyid-format=long';
     const { stdout, stderr } = await exec(cmd);
     info(stdout);
     info(stderr);
 };
 
 module.exports = {
-    version,
+    list,
 };
 
 

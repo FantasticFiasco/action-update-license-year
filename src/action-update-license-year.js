@@ -4,7 +4,7 @@ const { setFailed, info } = require('@actions/core');
 // const { applyTransform } = require('./transforms');
 // const Repository = require('./repository');
 // const { search } = require('./search');
-const { version } = require('./gpg');
+const { list } = require('./gpg');
 
 const run = async () => {
     try {
@@ -14,7 +14,7 @@ const run = async () => {
         }
         info(`Working directory: ${cwd}`);
 
-        await version();
+        await list();
 
         // const { owner, repo: repoName } = context.repo;
         // const {
