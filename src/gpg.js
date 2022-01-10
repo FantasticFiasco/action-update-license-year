@@ -21,7 +21,11 @@ const importPrivateKey = async (privateKey, passphrase) => {
         const privateKeyFilePath = join(runnerTemp(), 'private.key');
         await writeFile(privateKeyFilePath, privateKey);
 
-        let r = await exec(`ls -la ${runnerTemp()}`);
+        let r = await exec(`which gpg2`);
+        info('[gpg2] ' + r.stdout);
+        info('[gpg2] ' + r.stderr);
+
+        r = await exec(`ls -la ${runnerTemp()}`);
         info('[ls] ' + r.stdout);
         info('[ls] ' + r.stderr);
 
@@ -31,6 +35,7 @@ const importPrivateKey = async (privateKey, passphrase) => {
         info('[import] ' + r.stderr);
 
         cmd = `echo -e "${passphrase}\n\n" | gpg --batch --change-passphrase --pinentry-mode loopback --command-fd 0 AB5E43D9106353B3`;
+
         r = await exec(cmd);
         info('[change-passphrase] ' + r.stdout);
         info('[change-passphrase] ' + r.stderr);
