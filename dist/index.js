@@ -288,6 +288,29 @@ exports.issueCommand = issueCommand;
 
 /***/ }),
 
+/***/ 116:
+/***/ (function(module) {
+
+/**
+ * The path to a temporary directory on the runner. This directory is emptied at
+ * the beginning and end of each job. Note that files will not be removed if the
+ * runner's user account does not have permission to delete them.
+ */
+const runnerTemp = () => {
+    const value = process.env.RUNNER_TEMP;
+    if (!value) {
+        throw new Error('GitHub Actions has not set the RUNNER_TEMP environment variable');
+    }
+    return value;
+};
+
+module.exports = {
+    runnerTemp,
+};
+
+
+/***/ }),
+
 /***/ 129:
 /***/ (function(module) {
 
@@ -645,6 +668,9 @@ exports.PersonalAccessTokenCredentialHandler = PersonalAccessTokenCredentialHand
 
 const { exec } = __webpack_require__(930);
 const { info } = __webpack_require__(470);
+const { writeFile } = __webpack_require__(747).promises;
+const { join } = __webpack_require__(622);
+const { runnerTemp } = __webpack_require__(116);
 
 const list = async () => {
     let cmd = 'gpg --list-secret-keys --keyid-format=long';
@@ -654,11 +680,17 @@ const list = async () => {
 };
 
 /**
- *
  * @param {string} privateKey
  * @param {string} passphrase
  */
 const importPrivateKey = async (privateKey, passphrase) => {
+    const privateKeyFilePath = join(runnerTemp(), 'private.key');
+    await writeFile(privateKeyFilePath, privateKey);
+
+    const { stdout, stderr } = await exec('cat ' + privateKeyFilePath);
+    info(stdout);
+    info(stderr);
+
     info(privateKey.length.toString());
     info(passphrase.length.toString());
 };
