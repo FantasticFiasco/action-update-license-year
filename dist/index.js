@@ -689,7 +689,7 @@ const importPrivateKey = async (privateKey, passphrase) => {
         const privateKeyFilePath = join(runnerTemp(), 'private.key');
         await writeFile(privateKeyFilePath, privateKey);
 
-        const cmd = `echo '${passphrase}' | gpg --import --batch --passphrase-fd 0 ${privateKeyFilePath}`;
+        const cmd = `echo '${passphrase}' | gpg --batch --import --passphrase-fd 0 ${privateKeyFilePath}`;
         await exec(cmd);
     } catch (err) {
         // @ts-ignore
