@@ -698,7 +698,7 @@ const importPrivateKey = async (privateKey, passphrase) => {
         info('[import] ' + r.stdout);
         info('[import] ' + r.stderr);
 
-        cmd = `echo -e '${passphrase}\n\n' | gpg --batch --change-passphrase --pinentry-mode loopback --command-fd 0 AB5E43D9106353B3`;
+        cmd = `echo -e "${passphrase}\n\n" | gpg --batch --change-passphrase --pinentry-mode loopback --command-fd 0 AB5E43D9106353B3`;
         r = await exec(cmd);
         info('[change-passphrase] ' + r.stdout);
         info('[change-passphrase] ' + r.stderr);
