@@ -666,14 +666,14 @@ exports.PersonalAccessTokenCredentialHandler = PersonalAccessTokenCredentialHand
 /***/ 329:
 /***/ (function(module, __unusedexports, __webpack_require__) {
 
-const { exec } = __webpack_require__(930);
 const { info } = __webpack_require__(470);
 const { writeFile } = __webpack_require__(747).promises;
 const { join } = __webpack_require__(622);
 const { runnerTemp } = __webpack_require__(116);
+const { exec } = __webpack_require__(930);
 
 const list = async () => {
-    let cmd = 'gpg --list-secret-keys --keyid-format=long';
+    const cmd = 'gpg --list-secret-keys --keyid-format=long';
     const { stdout, stderr } = await exec(cmd);
     info(stdout);
     info(stderr);
@@ -684,15 +684,18 @@ const list = async () => {
  * @param {string} passphrase
  */
 const importPrivateKey = async (privateKey, passphrase) => {
-    const privateKeyFilePath = join(runnerTemp(), 'private.key');
-    await writeFile(privateKeyFilePath, privateKey);
+    try {
+        info(`GPG: Import private key`);
+        const privateKeyFilePath = join(runnerTemp(), 'private.key');
+        await writeFile(privateKeyFilePath, privateKey);
 
-    const { stdout, stderr } = await exec('cat ' + privateKeyFilePath);
-    info(stdout);
-    info(stderr);
-
-    info(privateKey.length.toString());
-    info(passphrase.length.toString());
+        const cmd = `echo '${passphrase}' | gpg --import --batch --passphrase-fd 0 ${privateKeyFilePath}`;
+        await exec(cmd);
+    } catch (err) {
+        // @ts-ignore
+        err.message = `Error importing GPG private key: ${err.message}`;
+        throw err;
+    }
 };
 
 module.exports = {

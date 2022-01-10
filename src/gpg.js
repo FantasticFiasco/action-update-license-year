@@ -1,11 +1,11 @@
-const { exec } = require('./process');
 const { info } = require('@actions/core');
 const { writeFile } = require('fs').promises;
 const { join } = require('path');
 const { runnerTemp } = require('./github-actions');
+const { exec } = require('./process');
 
 const list = async () => {
-    let cmd = 'gpg --list-secret-keys --keyid-format=long';
+    const cmd = 'gpg --list-secret-keys --keyid-format=long';
     const { stdout, stderr } = await exec(cmd);
     info(stdout);
     info(stderr);
@@ -16,15 +16,18 @@ const list = async () => {
  * @param {string} passphrase
  */
 const importPrivateKey = async (privateKey, passphrase) => {
-    const privateKeyFilePath = join(runnerTemp(), 'private.key');
-    await writeFile(privateKeyFilePath, privateKey);
+    try {
+        info(`GPG: Import private key`);
+        const privateKeyFilePath = join(runnerTemp(), 'private.key');
+        await writeFile(privateKeyFilePath, privateKey);
 
-    const { stdout, stderr } = await exec('cat ' + privateKeyFilePath);
-    info(stdout);
-    info(stderr);
-
-    info(privateKey.length.toString());
-    info(passphrase.length.toString());
+        const cmd = `echo '${passphrase}' | gpg --import --batch --passphrase-fd 0 ${privateKeyFilePath}`;
+        await exec(cmd);
+    } catch (err) {
+        // @ts-ignore
+        err.message = `Error importing GPG private key: ${err.message}`;
+        throw err;
+    }
 };
 
 module.exports = {
