@@ -4,7 +4,7 @@ const { parseInput } = require('./inputs');
 // const { applyTransform } = require('./transforms');
 // const Repository = require('./repository');
 // const { search } = require('./search');
-const { writePrivateKeyToDisk, importPrivateKey } = require('./gpg/gpg');
+const { writePrivateKeyToDisk, importPrivateKey } = require('./gpg');
 const gpgCli = require('./gpg/cli/gpg');
 
 const run = async () => {

@@ -154,7 +154,7 @@ const { parseInput } = __webpack_require__(659);
 // const { applyTransform } = require('./transforms');
 // const Repository = require('./repository');
 // const { search } = require('./search');
-const { writePrivateKeyToDisk, importPrivateKey } = __webpack_require__(783);
+const { writePrivateKeyToDisk, importPrivateKey } = __webpack_require__(344);
 const gpgCli = __webpack_require__(954);
 
 const run = async () => {
@@ -680,6 +680,43 @@ const runnerTemp = process.env.RUNNER_TEMP;
 
 module.exports = {
     runnerTemp,
+};
+
+
+/***/ }),
+
+/***/ 344:
+/***/ (function(module, __unusedexports, __webpack_require__) {
+
+const { info } = __webpack_require__(470);
+const { writeFile } = __webpack_require__(747).promises;
+const { tempFile } = __webpack_require__(695);
+
+/**
+ * @param {string} privateKey
+ */
+const writePrivateKeyToDisk = async (privateKey) => {
+    await writeFile(privateKeyFilePath(), privateKey);
+};
+
+/**
+ * @param {{importPrivateKey: (filePath: string) => Promise<{stdout: string, stderr: string}>}} cli
+ */
+const importPrivateKey = async (cli) => {
+    const { stdout, stderr } = await cli.importPrivateKey(privateKeyFilePath());
+    info('stdout');
+    info(stdout);
+    info('stderr');
+    info(stderr);
+};
+
+const privateKeyFilePath = () => {
+    return tempFile('git_gpg_private_key.asc');
+};
+
+module.exports = {
+    writePrivateKeyToDisk,
+    importPrivateKey,
 };
 
 
@@ -2014,43 +2051,6 @@ exports.OidcClient = OidcClient;
 /***/ (function(module) {
 
 module.exports = require("fs");
-
-/***/ }),
-
-/***/ 783:
-/***/ (function(module, __unusedexports, __webpack_require__) {
-
-const { info } = __webpack_require__(470);
-const { writeFile } = __webpack_require__(747).promises;
-const { tempFile } = __webpack_require__(695);
-
-/**
- * @param {string} privateKey
- */
-const writePrivateKeyToDisk = async (privateKey) => {
-    await writeFile(privateKeyFilePath(), privateKey);
-};
-
-/**
- * @param {{importPrivateKey: (filePath: string) => Promise<{stdout: string, stderr: string}>}} cli
- */
-const importPrivateKey = async (cli) => {
-    const { stdout, stderr } = await cli.importPrivateKey(privateKeyFilePath());
-    info('stdout');
-    info(stdout);
-    info('stderr');
-    info(stderr);
-};
-
-const privateKeyFilePath = () => {
-    return tempFile('git_gpg_private_key.asc');
-};
-
-module.exports = {
-    writePrivateKeyToDisk,
-    importPrivateKey,
-};
-
 
 /***/ }),
 
