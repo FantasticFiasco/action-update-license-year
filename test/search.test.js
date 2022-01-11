@@ -1,4 +1,4 @@
-const { mkdtempSync, rmdirSync, writeFileSync, mkdirSync } = require('fs');
+const { mkdtempSync, rmSync, writeFileSync, mkdirSync } = require('fs');
 const { join } = require('path');
 const { tmpdir } = require('os');
 const { search } = require('../src/search');
@@ -53,7 +53,7 @@ describe('#search', () => {
     });
 
     afterAll(() => {
-        rmdirSync(tempDir, {
+        rmSync(tempDir, {
             recursive: true,
         });
     });

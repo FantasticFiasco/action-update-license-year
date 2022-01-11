@@ -1,4 +1,4 @@
-const { mkdtempSync, rmdirSync } = require('fs');
+const { mkdtempSync, rmSync } = require('fs');
 const { tmpdir } = require('os');
 const { join } = require('path');
 const { exec } = require('../src/process');
@@ -50,7 +50,7 @@ beforeEach(async () => {
 });
 
 afterEach(() => {
-    rmdirSync(tempRepoDir, {
+    rmSync(tempRepoDir, {
         recursive: true,
     });
 
