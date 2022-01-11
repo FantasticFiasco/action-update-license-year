@@ -49,6 +49,31 @@ module.exports =
 /************************************************************************/
 /******/ ({
 
+/***/ 9:
+/***/ (function(module, __unusedexports, __webpack_require__) {
+
+const { promisify } = __webpack_require__(669);
+const execAsync = promisify(__webpack_require__(129).exec);
+
+/**
+ * @param {string} cmd
+ * @param {import("child_process").ExecOptions | undefined} options
+ */
+const exec = async (cmd, options = undefined) => {
+    const { stdout, stderr } = await execAsync(cmd, options);
+    return {
+        stdout: stdout.toString().trim(),
+        stderr: stderr.toString().trim(),
+    };
+};
+
+module.exports = {
+    exec,
+};
+
+
+/***/ }),
+
 /***/ 16:
 /***/ (function(module) {
 
@@ -129,7 +154,8 @@ const { parseInput } = __webpack_require__(659);
 // const { applyTransform } = require('./transforms');
 // const Repository = require('./repository');
 // const { search } = require('./search');
-const { list, importPrivateKey } = __webpack_require__(329);
+const { writePrivateKeyToDisk, importPrivateKey } = __webpack_require__(783);
+const gpgCli = __webpack_require__(954);
 
 const run = async () => {
     try {
@@ -150,15 +176,17 @@ const run = async () => {
             // commitAuthorName,
             // commitAuthorEmail,
             gpgPrivateKey,
-            gpgPassphrase,
+            // gpgPassphrase,
             // pullRequestTitle,
             // pullRequestBody,
             // assignees,
             // labels,
         } = parseInput();
 
-        await importPrivateKey(gpgPrivateKey, gpgPassphrase);
-        await list();
+        if (gpgPrivateKey) {
+            await writePrivateKeyToDisk(gpgPrivateKey);
+            await importPrivateKey(gpgCli);
+        }
 
         // const repo = new Repository(owner, repoName, token);
         // await repo.authenticate(commitAuthorName, commitAuthorEmail);
@@ -285,29 +313,6 @@ function issueCommand(command, message) {
 }
 exports.issueCommand = issueCommand;
 //# sourceMappingURL=file-command.js.map
-
-/***/ }),
-
-/***/ 116:
-/***/ (function(module) {
-
-/**
- * The path to a temporary directory on the runner. This directory is emptied at
- * the beginning and end of each job. Note that files will not be removed if the
- * runner's user account does not have permission to delete them.
- */
-const runnerTemp = () => {
-    const value = process.env.RUNNER_TEMP;
-    if (!value) {
-        throw new Error('GitHub Actions has not set the RUNNER_TEMP environment variable');
-    }
-    return value;
-};
-
-module.exports = {
-    runnerTemp,
-};
-
 
 /***/ }),
 
@@ -663,70 +668,18 @@ exports.PersonalAccessTokenCredentialHandler = PersonalAccessTokenCredentialHand
 
 /***/ }),
 
-/***/ 329:
-/***/ (function(module, __unusedexports, __webpack_require__) {
-
-const { info } = __webpack_require__(470);
-const { writeFile } = __webpack_require__(747).promises;
-const { join } = __webpack_require__(622);
-const { runnerTemp } = __webpack_require__(116);
-const { exec } = __webpack_require__(930);
-
-const list = async () => {
-    const cmd = 'gpg --list-secret-keys --keyid-format=long';
-    const { stdout, stderr } = await exec(cmd);
-    info('list ' + stdout);
-    info('list ' + stderr);
-};
+/***/ 287:
+/***/ (function(module) {
 
 /**
- * @param {string} privateKey
- * @param {string} passphrase
+ * The path to a temporary directory on the runner. This directory is emptied at
+ * the beginning and end of each job. Note that files will not be removed if the
+ * runner's user account does not have permission to delete them.
  */
-const importPrivateKey = async (privateKey, passphrase) => {
-    try {
-        info(`GPG: Import private key`);
-        const privateKeyFilePath = join(runnerTemp(), 'private.key');
-        await writeFile(privateKeyFilePath, privateKey);
-
-        let r = await exec(`which gpg2`);
-        info('[gpg2] ' + r.stdout);
-        info('[gpg2] ' + r.stderr);
-
-        r = await exec(`ls -la ${runnerTemp()}`);
-        info('[ls] ' + r.stdout);
-        info('[ls] ' + r.stderr);
-
-        let cmd = `echo '${passphrase}' | gpg --import --batch --passphrase-fd 0 ${privateKeyFilePath}`;
-        r = await exec(cmd);
-        info('[import] ' + r.stdout);
-        info('[import] ' + r.stderr);
-
-        cmd = `echo -e "${passphrase}\n\n" | gpg --batch --change-passphrase --pinentry-mode loopback --command-fd 0 AB5E43D9106353B3`;
-
-        r = await exec(cmd);
-        info('[change-passphrase] ' + r.stdout);
-        info('[change-passphrase] ' + r.stderr);
-
-        cmd = 'git config user.signingkey AB5E43D9106353B3';
-        r = await exec(cmd);
-        info('[user.signingkey] ' + r.stdout);
-        info('[user.signingkey] ' + r.stderr);
-
-        cmd = 'git config commit.gpgsign true';
-        r = await exec(cmd);
-        info('[commit.gpgsign] ' + r.stdout);
-        info('[commit.gpgsign] ' + r.stderr);
-    } catch (err) {
-        // @ts-ignore
-        err.message = `Error importing GPG private key: ${err.message}`;
-        throw err;
-    }
-};
+const runnerTemp = process.env.RUNNER_TEMP;
 
 module.exports = {
-    list,
-    importPrivateKey,
+    runnerTemp,
 };
 
 
@@ -1943,6 +1896,36 @@ module.exports = require("util");
 
 /***/ }),
 
+/***/ 695:
+/***/ (function(module, __unusedexports, __webpack_require__) {
+
+const { tmpdir } = __webpack_require__(87);
+const { join } = __webpack_require__(622);
+const { runnerTemp } = __webpack_require__(287);
+
+const tempDir = () => {
+    if (runnerTemp) {
+        return runnerTemp;
+    }
+
+    return tmpdir();
+};
+
+/**
+ * @param {string} fileName
+ */
+const tempFile = (fileName) => {
+    return join(tempDir(), fileName);
+};
+
+module.exports = {
+    tempDir,
+    tempFile,
+};
+
+
+/***/ }),
+
 /***/ 742:
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
@@ -2034,26 +2017,38 @@ module.exports = require("fs");
 
 /***/ }),
 
-/***/ 930:
+/***/ 783:
 /***/ (function(module, __unusedexports, __webpack_require__) {
 
-const { promisify } = __webpack_require__(669);
-const execAsync = promisify(__webpack_require__(129).exec);
+const { info } = __webpack_require__(470);
+const { writeFile } = __webpack_require__(747).promises;
+const { tempFile } = __webpack_require__(695);
 
 /**
- * @param {string} cmd
- * @param {import("child_process").ExecOptions | undefined} options
+ * @param {string} privateKey
  */
-const exec = async (cmd, options = undefined) => {
-    const { stdout, stderr } = await execAsync(cmd, options);
-    return {
-        stdout: stdout.toString().trim(),
-        stderr: stderr.toString().trim(),
-    };
+const writePrivateKeyToDisk = async (privateKey) => {
+    await writeFile(privateKeyFilePath(), privateKey);
+};
+
+/**
+ * @param {{importPrivateKey: (filePath: string) => Promise<{stdout: string, stderr: string}>}} cli
+ */
+const importPrivateKey = async (cli) => {
+    const { stdout, stderr } = await cli.importPrivateKey(privateKeyFilePath());
+    info('stdout');
+    info(stdout);
+    info('stderr');
+    info(stderr);
+};
+
+const privateKeyFilePath = () => {
+    return tempFile('git_gpg_private_key.asc');
 };
 
 module.exports = {
-    exec,
+    writePrivateKeyToDisk,
+    importPrivateKey,
 };
 
 
@@ -2120,6 +2115,27 @@ function checkBypass(reqUrl) {
     return false;
 }
 exports.checkBypass = checkBypass;
+
+
+/***/ }),
+
+/***/ 954:
+/***/ (function(module, __unusedexports, __webpack_require__) {
+
+// This file contains functions that wrap the API of gpg (GnuPG)
+
+const { exec } = __webpack_require__(9);
+
+/**
+ * @param {string} filePath
+ */
+const importPrivateKey = async (filePath) => {
+    return await exec(`gpg --batch --yes --import ${filePath}`);
+};
+
+module.exports = {
+    importPrivateKey,
+};
 
 
 /***/ })

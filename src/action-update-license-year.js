@@ -4,7 +4,8 @@ const { parseInput } = require('./inputs');
 // const { applyTransform } = require('./transforms');
 // const Repository = require('./repository');
 // const { search } = require('./search');
-const { list, importPrivateKey } = require('./gpg');
+const { writePrivateKeyToDisk, importPrivateKey } = require('./gpg/gpg');
+const gpgCli = require('./gpg/cli/gpg');
 
 const run = async () => {
     try {
@@ -25,15 +26,17 @@ const run = async () => {
             // commitAuthorName,
             // commitAuthorEmail,
             gpgPrivateKey,
-            gpgPassphrase,
+            // gpgPassphrase,
             // pullRequestTitle,
             // pullRequestBody,
             // assignees,
             // labels,
         } = parseInput();
 
-        await importPrivateKey(gpgPrivateKey, gpgPassphrase);
-        await list();
+        if (gpgPrivateKey) {
+            await writePrivateKeyToDisk(gpgPrivateKey);
+            await importPrivateKey(gpgCli);
+        }
 
         // const repo = new Repository(owner, repoName, token);
         // await repo.authenticate(commitAuthorName, commitAuthorEmail);

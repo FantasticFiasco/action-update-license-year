@@ -1,8 +1,6 @@
 const { getOctokit } = require('@actions/github');
-const { exec } = require('./process');
-const { promisify } = require('util');
-const readFileAsync = promisify(require('fs').readFile);
-const writeFileAsync = promisify(require('fs').writeFile);
+const { readFile, writeFile } = require('fs').promises;
+const { exec } = require('./os/process');
 
 class Repository {
     /**
@@ -80,7 +78,7 @@ class Repository {
      */
     async readFile(path) {
         try {
-            const content = await readFileAsync(path, { encoding: 'utf8' });
+            const content = await readFile(path, { encoding: 'utf8' });
             return content;
         } catch (err) {
             // @ts-ignore
@@ -95,7 +93,7 @@ class Repository {
      */
     async writeFile(path, content) {
         try {
-            await writeFileAsync(path, content, { encoding: 'utf8', flag: 'r+' });
+            await writeFile(path, content, { encoding: 'utf8', flag: 'r+' });
             this._writtenFiles.push(path);
         } catch (err) {
             // @ts-ignore
