@@ -178,5 +178,5 @@ describe('#applyTransform should', () => {
  * @param {string} fileName
  */
 function readTestFile(fileName) {
-    return readFileSync(`./test/${fileName}`).toString();
+    return readFileSync(`./test/testdata/licenses/${fileName}`).toString();
 }

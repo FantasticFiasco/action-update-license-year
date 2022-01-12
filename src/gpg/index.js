@@ -1,6 +1,11 @@
 const { info } = require('@actions/core');
-const { writeFile } = require('fs').promises;
+const { readFile, writeFile } = require('fs').promises;
 const { tempFile } = require('../os/temp-paths');
+
+const readPrivateKeyFromDisk = async () => {
+    const content = await readFile(privateKeyFilePath());
+    return content.toString();
+};
 
 /**
  * @param {string} privateKey
@@ -25,6 +30,7 @@ const privateKeyFilePath = () => {
 };
 
 module.exports = {
+    readPrivateKeyFromDisk,
     writePrivateKeyToDisk,
     importPrivateKey,
 };
