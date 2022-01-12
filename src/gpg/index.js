@@ -1,6 +1,6 @@
 const { info } = require('@actions/core');
 const { writeFile } = require('fs').promises;
-const { tempFile } = require('../os/temp');
+const { tempFile } = require('../os/temp-paths');
 
 /**
  * @param {string} privateKey

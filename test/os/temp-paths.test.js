@@ -1,4 +1,4 @@
-const { tempDir, tempFile } = require('../../src/os/temp');
+const { tempDir, tempFile } = require('../../src/os/temp-paths');
 const { dirname, basename } = require('path');
 const { existsSync } = require('fs');
 
