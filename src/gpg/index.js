@@ -1,4 +1,3 @@
-const { info } = require('@actions/core');
 const { readFile, writeFile } = require('fs').promises;
 const { tempFile } = require('../os/temp-paths');
 
@@ -16,13 +15,17 @@ const writePrivateKeyToDisk = async (privateKey) => {
 
 /**
  * @param {{importPrivateKey: (filePath: string) => Promise<{stdout: string, stderr: string}>}} cli
+ * @returns The key id
  */
 const importPrivateKey = async (cli) => {
-    const { stdout, stderr } = await cli.importPrivateKey(privateKeyFilePath());
-    info('stdout');
-    info(stdout);
-    info('stderr');
-    info(stderr);
+    const { stderr } = await cli.importPrivateKey(privateKeyFilePath());
+    const regex = /gpg: key ([0123456789ABCDEF]*): secret key imported/;
+    const match = regex.exec(stderr);
+    if (match === null || match.length !== 2) {
+        throw new Error(`Import private GPG key failed: ${stderr}`);
+    }
+
+    return match[1];
 };
 
 const privateKeyFilePath = () => {

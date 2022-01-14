@@ -58,7 +58,7 @@ const mockRepository = {
     addLabels: jest.fn(),
 };
 jest.mock('../src/repository', () => {
-    return function () {
+    return () => {
         return mockRepository;
     };
 });
@@ -426,7 +426,7 @@ describe('action should', () => {
  * @property {string[]} [assignees]
  * @property {string[]} [labels]
  */
-function setupInput(config) {
+const setupInput = (config) => {
     mockInputs.parseInput.mockReturnValue({
         token: config.token || 'some token',
         path: config.path || PATH.defaultValue,
@@ -441,4 +441,4 @@ function setupInput(config) {
         assignees: config.assignees || [],
         labels: config.labels || [],
     });
-}
+};

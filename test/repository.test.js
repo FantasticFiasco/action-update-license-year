@@ -17,7 +17,7 @@ const mockOctokit = {
 };
 
 const mockGithub = {
-    getOctokit: function () {
+    getOctokit: () => {
         return mockOctokit;
     },
 };
