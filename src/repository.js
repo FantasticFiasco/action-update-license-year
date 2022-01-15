@@ -41,7 +41,7 @@ class Repository {
      */
     async setupGpg(keyId, passphrase) {
         try {
-            const signScriptFilePath = tempFile('gpg-sign');
+            const signScriptFilePath = tempFile('git_gpg_sign');
             await createSignScript(signScriptFilePath, passphrase);
             await exec(`git config gpg.program "${signScriptFilePath}"`);
             await exec(`git config commit.gpgsign true`);
