@@ -10,7 +10,7 @@ const { chmod, writeFile } = require('fs').promises;
 const createSignScript = async (filePath, passphrase) => {
     const data = `/usr/bin/gpg2 --passphrase ${passphrase} --batch --no-tty "$@"`;
     await writeFile(filePath, data);
-    await chmod(filePath, 0o700);
+    await chmod(filePath, 0o755);
 };
 
 module.exports = {
