@@ -40,7 +40,7 @@ module.exports =
 /******/ 	// the startup function
 /******/ 	function startup() {
 /******/ 		// Load entry module and return exports
-/******/ 		return __webpack_require__(31);
+/******/ 		return __webpack_require__(676);
 /******/ 	};
 /******/
 /******/ 	// run startup
@@ -255,16 +255,6 @@ module.exports = require("tls");
 /***/ (function(module) {
 
 module.exports = eval("require")("encoding");
-
-
-/***/ }),
-
-/***/ 31:
-/***/ (function(__unusedmodule, __unusedexports, __webpack_require__) {
-
-const { run } = __webpack_require__(95);
-
-run();
 
 
 /***/ }),
@@ -1521,130 +1511,6 @@ function globUnescape (s) {
 function regExpEscape (s) {
   return s.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&')
 }
-
-
-/***/ }),
-
-/***/ 95:
-/***/ (function(module, __unusedexports, __webpack_require__) {
-
-const { setFailed, info } = __webpack_require__(470);
-const { context } = __webpack_require__(469);
-const { parseInput } = __webpack_require__(659);
-const { applyTransform } = __webpack_require__(106);
-const Repository = __webpack_require__(178);
-const { search } = __webpack_require__(491);
-const { writePrivateKeyToDisk, importPrivateKey } = __webpack_require__(344);
-const gpgCli = __webpack_require__(954);
-
-const run = async () => {
-    try {
-        const cwd = process.env.GITHUB_WORKSPACE;
-        if (cwd === undefined) {
-            throw new Error('GitHub Actions has not set the working directory');
-        }
-        info(`Working directory: ${cwd}`);
-
-        const { owner, repo: repoName } = context.repo;
-        const {
-            token,
-            path,
-            transform,
-            branchName,
-            commitTitle,
-            commitBody,
-            commitAuthorName,
-            commitAuthorEmail,
-            gpgPrivateKey,
-            gpgPassphrase,
-            pullRequestTitle,
-            pullRequestBody,
-            assignees,
-            labels,
-        } = parseInput();
-
-        const repo = new Repository(owner, repoName, token);
-        await repo.authenticate(commitAuthorName, commitAuthorEmail);
-
-        if (gpgPrivateKey) {
-            info('Setup GPG to sign commits');
-            await writePrivateKeyToDisk(gpgPrivateKey);
-            const keyId = await importPrivateKey(gpgCli);
-            await repo.setupGpg(keyId, gpgPassphrase);
-        }
-
-        const branchExists = await repo.branchExists(branchName);
-        info(`Checkout ${branchExists ? 'existing' : 'new'} branch named "${branchName}"`);
-        await repo.checkoutBranch(branchName, !branchExists);
-
-        const files = await search(path);
-        if (files.length === 0) {
-            throw new Error(`Found no files matching the path "${singleLine(path)}"`);
-        }
-
-        info(`Found ${files.length} file(s) matching the path "${singleLine(path)}"`);
-
-        const currentYear = new Date().getFullYear();
-        info(`Current year is "${currentYear}"`);
-
-        for (const file of files) {
-            const relativeFile = file.replace(cwd, '.');
-            const content = await repo.readFile(file);
-            const updatedContent = applyTransform(transform, content, currentYear, relativeFile);
-            if (updatedContent !== content) {
-                info(`Update license in "${relativeFile}"`);
-                await repo.writeFile(file, updatedContent);
-            } else {
-                info(`File "${relativeFile}" is already up-to-date`);
-            }
-        }
-
-        if (!repo.hasChanges()) {
-            info(`No licenses were updated, let's abort`);
-            return;
-        }
-
-        await repo.stageWrittenFiles();
-
-        const commitMessage = commitBody ? `${commitTitle}\n\n${commitBody}` : commitTitle;
-        await repo.commit(commitMessage);
-        await repo.push();
-
-        const hasPullRequest = await repo.hasPullRequest(branchName);
-        if (!hasPullRequest) {
-            info(`Create new pull request with title "${pullRequestTitle}"`);
-            const createPullRequestResponse = await repo.createPullRequest(
-                branchName,
-                pullRequestTitle,
-                pullRequestBody
-            );
-
-            if (assignees.length > 0) {
-                info(`Add assignees to pull request: ${JSON.stringify(assignees)}`);
-                await repo.addAssignees(createPullRequestResponse.data.number, assignees);
-            }
-
-            if (labels.length > 0) {
-                info(`Add labels to pull request: ${JSON.stringify(labels)}`);
-                await repo.addLabels(createPullRequestResponse.data.number, labels);
-            }
-        }
-    } catch (err) {
-        // @ts-ignore
-        setFailed(err.message);
-    }
-};
-
-/**
- * @param {string} text
- */
-const singleLine = (text) => {
-    return text.replace(/\n/g, '\\n');
-};
-
-module.exports = {
-    run,
-};
 
 
 /***/ }),
@@ -9912,6 +9778,130 @@ module.exports.sync = (cmd, args, opts) => {
 };
 
 module.exports.shellSync = (cmd, opts) => handleShell(module.exports.sync, cmd, opts);
+
+
+/***/ }),
+
+/***/ 676:
+/***/ (function(module, __unusedexports, __webpack_require__) {
+
+const { setFailed, info } = __webpack_require__(470);
+const { context } = __webpack_require__(469);
+const { parseInput } = __webpack_require__(659);
+const { applyTransform } = __webpack_require__(106);
+const Repository = __webpack_require__(178);
+const { search } = __webpack_require__(491);
+const { writePrivateKeyToDisk, importPrivateKey } = __webpack_require__(344);
+const gpgCli = __webpack_require__(954);
+
+const run = async () => {
+    try {
+        const cwd = process.env.GITHUB_WORKSPACE;
+        if (cwd === undefined) {
+            throw new Error('GitHub Actions has not set the working directory');
+        }
+        info(`Working directory: ${cwd}`);
+
+        const { owner, repo: repoName } = context.repo;
+        const {
+            token,
+            path,
+            transform,
+            branchName,
+            commitTitle,
+            commitBody,
+            commitAuthorName,
+            commitAuthorEmail,
+            gpgPrivateKey,
+            gpgPassphrase,
+            pullRequestTitle,
+            pullRequestBody,
+            assignees,
+            labels,
+        } = parseInput();
+
+        const repo = new Repository(owner, repoName, token);
+        await repo.authenticate(commitAuthorName, commitAuthorEmail);
+
+        if (gpgPrivateKey) {
+            info('Setup GPG to sign commits');
+            await writePrivateKeyToDisk(gpgPrivateKey);
+            const keyId = await importPrivateKey(gpgCli);
+            await repo.setupGpg(keyId, gpgPassphrase);
+        }
+
+        const branchExists = await repo.branchExists(branchName);
+        info(`Checkout ${branchExists ? 'existing' : 'new'} branch named "${branchName}"`);
+        await repo.checkoutBranch(branchName, !branchExists);
+
+        const files = await search(path);
+        if (files.length === 0) {
+            throw new Error(`Found no files matching the path "${singleLine(path)}"`);
+        }
+
+        info(`Found ${files.length} file(s) matching the path "${singleLine(path)}"`);
+
+        const currentYear = new Date().getFullYear();
+        info(`Current year is "${currentYear}"`);
+
+        for (const file of files) {
+            const relativeFile = file.replace(cwd, '.');
+            const content = await repo.readFile(file);
+            const updatedContent = applyTransform(transform, content, currentYear, relativeFile);
+            if (updatedContent !== content) {
+                info(`Update license in "${relativeFile}"`);
+                await repo.writeFile(file, updatedContent);
+            } else {
+                info(`File "${relativeFile}" is already up-to-date`);
+            }
+        }
+
+        if (!repo.hasChanges()) {
+            info(`No licenses were updated, let's abort`);
+            return;
+        }
+
+        await repo.stageWrittenFiles();
+
+        const commitMessage = commitBody ? `${commitTitle}\n\n${commitBody}` : commitTitle;
+        await repo.commit(commitMessage);
+        await repo.push();
+
+        const hasPullRequest = await repo.hasPullRequest(branchName);
+        if (!hasPullRequest) {
+            info(`Create new pull request with title "${pullRequestTitle}"`);
+            const createPullRequestResponse = await repo.createPullRequest(
+                branchName,
+                pullRequestTitle,
+                pullRequestBody
+            );
+
+            if (assignees.length > 0) {
+                info(`Add assignees to pull request: ${JSON.stringify(assignees)}`);
+                await repo.addAssignees(createPullRequestResponse.data.number, assignees);
+            }
+
+            if (labels.length > 0) {
+                info(`Add labels to pull request: ${JSON.stringify(labels)}`);
+                await repo.addLabels(createPullRequestResponse.data.number, labels);
+            }
+        }
+    } catch (err) {
+        // @ts-ignore
+        setFailed(err.message);
+    }
+};
+
+/**
+ * @param {string} text
+ */
+const singleLine = (text) => {
+    return text.replace(/\n/g, '\\n');
+};
+
+module.exports = {
+    run,
+};
 
 
 /***/ }),

@@ -80,7 +80,7 @@ jest.mock('../src/transforms', () => {
 });
 
 const { setFailed } = require('@actions/core');
-const { run } = require('../src/action-update-license-year');
+const { run } = require('../src/index');
 const {
     PATH,
     TRANSFORM,
