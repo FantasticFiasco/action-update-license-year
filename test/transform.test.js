@@ -1,5 +1,6 @@
 const { readFileSync } = require('fs');
 const { join } = require('path');
+
 const { applyTransform } = require('../src/transforms');
 
 describe('#applyTransform should', () => {

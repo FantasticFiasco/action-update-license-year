@@ -1,11 +1,11 @@
 const { setFailed, info } = require('@actions/core');
 const { context } = require('@actions/github');
+
+const { defaultCli, importPrivateKey, writePrivateKeyToDisk } = require('./gpg');
 const { parseInput } = require('./inputs');
-const { applyTransform } = require('./transforms');
 const Repository = require('./repository');
 const { search } = require('./search');
-const { writePrivateKeyToDisk, importPrivateKey } = require('./gpg');
-const gpgCli = require('./gpg/cli/gpg');
+const { applyTransform } = require('./transforms');
 
 const run = async () => {
     try {
@@ -39,7 +39,7 @@ const run = async () => {
         if (gpgPrivateKey) {
             info('Setup GPG to sign commits');
             await writePrivateKeyToDisk(gpgPrivateKey);
-            const keyId = await importPrivateKey(gpgCli);
+            const keyId = await importPrivateKey(defaultCli);
             await repo.setupGpg(keyId, gpgPassphrase);
         }
 
@@ -115,3 +115,7 @@ const singleLine = (text) => {
 (async () => {
     await run();
 })();
+
+module.exports = {
+    run,
+};

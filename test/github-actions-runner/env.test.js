@@ -1,4 +1,5 @@
 const { existsSync } = require('fs');
+
 const { ci, runnerTemp } = require('../../src/github-actions-runner/env');
 
 describe('#runnerTemp should', () => {

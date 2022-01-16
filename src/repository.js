@@ -1,6 +1,7 @@
 const { getOctokit } = require('@actions/github');
 const { readFile, writeFile } = require('fs').promises;
-const { createSignScript } = require('./gpg/cli/gpg2');
+
+const { createSignScript } = require('./gpg');
 const { exec } = require('./os/process');
 const { tempFile } = require('./os/temp-paths');
 

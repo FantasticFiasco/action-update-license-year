@@ -1,5 +1,5 @@
-const { statSync } = require('fs');
 const { create } = require('@actions/glob');
+const { statSync } = require('fs');
 
 /**
  * @param {string} pattern

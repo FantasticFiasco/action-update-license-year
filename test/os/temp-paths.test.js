@@ -1,6 +1,7 @@
-const { tempDir, tempFile } = require('../../src/os/temp-paths');
-const { dirname, basename } = require('path');
 const { existsSync } = require('fs');
+const { dirname, basename } = require('path');
+
+const { tempDir, tempFile } = require('../../src/os/temp-paths');
 
 describe('#tempDir should', () => {
     test('return an existing directory', () => {

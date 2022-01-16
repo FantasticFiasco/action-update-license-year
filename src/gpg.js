@@ -1,5 +1,7 @@
-const { readFile, writeFile } = require('fs').promises;
-const { tempFile } = require('../os/temp-paths');
+const { readFile, unlink, writeFile } = require('fs').promises;
+
+const { exec } = require('./os/process');
+const { tempFile } = require('./os/temp-paths');
 
 const readPrivateKeyFromDisk = async () => {
     const content = await readFile(privateKeyFilePath());
@@ -13,6 +15,10 @@ const writePrivateKeyToDisk = async (privateKey) => {
     await writeFile(privateKeyFilePath(), privateKey, {
         mode: 0o600,
     });
+};
+
+const deletePrivateKeyFromDisk = async () => {
+    await unlink(privateKeyFilePath());
 };
 
 /**
@@ -30,12 +36,32 @@ const importPrivateKey = async (cli) => {
     return match[1];
 };
 
+/**
+ * @param {string} filePath
+ * @param {string} passphrase
+ */
+const createSignScript = async (filePath, passphrase) => {
+    const data = `gpg2 --pinentry-mode loopback --passphrase '${passphrase}' --no-tty "$@"`;
+    await writeFile(filePath, data, {
+        mode: 0o700,
+    });
+};
+
 const privateKeyFilePath = () => {
     return tempFile('git_gpg_private_key.asc');
+};
+
+const defaultCli = {
+    importPrivateKey: async (/** @type {string} */ filePath) => {
+        return await exec(`gpg2 --batch --yes --import '${filePath}'`);
+    },
 };
 
 module.exports = {
     readPrivateKeyFromDisk,
     writePrivateKeyToDisk,
+    deletePrivateKeyFromDisk,
     importPrivateKey,
+    createSignScript,
+    defaultCli,
 };
