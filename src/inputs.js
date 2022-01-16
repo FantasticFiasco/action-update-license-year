@@ -89,7 +89,7 @@ const VARIABLES = {
     currentYear: CURRENT_YEAR.toString(),
 };
 
-const parseInput = () => {
+const parse = () => {
     const token = getInput(TOKEN.name, { required: true });
     const path = getInput(PATH.name) || PATH.defaultValue;
     const transform = validateTransform(getInput(TRANSFORM.name) || TRANSFORM.defaultValue);
@@ -172,7 +172,7 @@ const validateTransform = (transform) => {
 };
 
 module.exports = {
-    parseInput,
+    parse,
     TOKEN,
     PATH,
     TRANSFORM,

@@ -1,4 +1,4 @@
-const { existsSync } = require('fs');
+const fs = require('fs');
 
 const { ci, runnerTemp } = require('../../src/github-actions-runner/env');
 
@@ -7,7 +7,7 @@ describe('#runnerTemp should', () => {
         const got = runnerTemp;
         if (ci) {
             expect(got).toBeDefined();
-            expect(existsSync(got || '')).toBeTruthy();
+            expect(fs.existsSync(got || '')).toBeTruthy();
         } else {
             expect(got).toBeUndefined();
         }

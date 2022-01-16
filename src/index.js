@@ -1,11 +1,11 @@
 const { setFailed, info } = require('@actions/core');
 const { context } = require('@actions/github');
 
-const { defaultCli, importPrivateKey, writePrivateKeyToDisk } = require('./gpg');
-const { parseInput } = require('./inputs');
+const gpg = require('./gpg');
+const inputs = require('./inputs');
 const Repository = require('./repository');
-const { search } = require('./search');
-const { applyTransform } = require('./transforms');
+const file = require('./file');
+const transforms = require('./transforms');
 
 const run = async () => {
     try {
@@ -31,15 +31,15 @@ const run = async () => {
             pullRequestBody,
             assignees,
             labels,
-        } = parseInput();
+        } = inputs.parse();
 
         const repo = new Repository(owner, repoName, token);
         await repo.authenticate(commitAuthorName, commitAuthorEmail);
 
         if (gpgPrivateKey) {
             info('Setup GPG to sign commits');
-            await writePrivateKeyToDisk(gpgPrivateKey);
-            const keyId = await importPrivateKey(defaultCli);
+            await gpg.writePrivateKeyToDisk(gpgPrivateKey);
+            const keyId = await gpg.importPrivateKey(gpg.defaultCli);
             await repo.setupGpg(keyId, gpgPassphrase);
         }
 
@@ -47,7 +47,7 @@ const run = async () => {
         info(`Checkout ${branchExists ? 'existing' : 'new'} branch named "${branchName}"`);
         await repo.checkoutBranch(branchName, !branchExists);
 
-        const files = await search(path);
+        const files = await file.search(path);
         if (files.length === 0) {
             throw new Error(`Found no files matching the path "${singleLine(path)}"`);
         }
@@ -60,7 +60,7 @@ const run = async () => {
         for (const file of files) {
             const relativeFile = file.replace(cwd, '.');
             const content = await repo.readFile(file);
-            const updatedContent = applyTransform(transform, content, currentYear, relativeFile);
+            const updatedContent = transforms.applyTransform(transform, content, currentYear, relativeFile);
             if (updatedContent !== content) {
                 info(`Update license in "${relativeFile}"`);
                 await repo.writeFile(file, updatedContent);

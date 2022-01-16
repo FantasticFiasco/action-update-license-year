@@ -1,8 +1,8 @@
-const { mkdtempSync, rmdirSync } = require('fs');
-const { tmpdir } = require('os');
-const { join } = require('path');
+const fs = require('fs');
+const os = require('os');
+const path = require('path');
 
-const { exec } = require('../src/os/process');
+const processes = require('../src/os/processes');
 
 const mockOctokit = {
     rest: {
@@ -30,28 +30,28 @@ jest.mock('@actions/github', () => {
 const Repository = require('../src/repository');
 
 // The path to the root of this git repo
-const thisRepoDir = join(__dirname, '..');
+const thisRepoDir = path.join(__dirname, '..');
 
 // The path to the root of a temporary local git repository that we can run our tests on
 let tempRepoDir = '';
 
 beforeEach(async () => {
-    tempRepoDir = mkdtempSync(join(tmpdir(), 'repository-'));
+    tempRepoDir = fs.mkdtempSync(path.join(os.tmpdir(), 'repository-'));
 
     // Let's make the temp repo the working directory
     process.chdir(tempRepoDir);
-    await exec('git init');
-    await exec('git config user.name "John Doe"');
-    await exec('git config user.email "john.doe@mail.com"');
-    await exec('echo "# Test repo" > README.md');
-    await exec('git add README.md');
-    await exec('git commit -m "docs(readme): add"');
+    await processes.exec('git init');
+    await processes.exec('git config user.name "John Doe"');
+    await processes.exec('git config user.email "john.doe@mail.com"');
+    await processes.exec('echo "# Test repo" > README.md');
+    await processes.exec('git add README.md');
+    await processes.exec('git commit -m "docs(readme): add"');
 
     jest.resetAllMocks();
 });
 
 afterEach(() => {
-    rmdirSync(tempRepoDir, {
+    fs.rmdirSync(tempRepoDir, {
         recursive: true,
     });
 
@@ -62,9 +62,9 @@ describe('#authenticate should', () => {
     test('configure git name and e-mail', async () => {
         const repo = new Repository('some owner', 'some name', 'some token');
         await repo.authenticate('some-user-name', 'some-user@mail.com');
-        const { stdout: username } = await exec('git config user.name');
+        const { stdout: username } = await processes.exec('git config user.name');
         expect(username).toBe('some-user-name');
-        const { stdout: email } = await exec('git config user.email');
+        const { stdout: email } = await processes.exec('git config user.email');
         expect(email).toBe('some-user@mail.com');
     });
 });
@@ -161,7 +161,7 @@ describe('#stageWrittenFiles should', () => {
     test('complete given no written files', async () => {
         const repo = new Repository('some owner', 'some name', 'some token');
         await repo.stageWrittenFiles();
-        const { stdout } = await exec('git diff --name-only --cached');
+        const { stdout } = await processes.exec('git diff --name-only --cached');
         expect(stdout).toBe('');
     });
 
@@ -169,7 +169,7 @@ describe('#stageWrittenFiles should', () => {
         const repo = new Repository('some owner', 'some name', 'some token');
         await repo.writeFile('README.md', '# New title\n');
         await repo.stageWrittenFiles();
-        const { stdout } = await exec('git diff --name-only --cached');
+        const { stdout } = await processes.exec('git diff --name-only --cached');
         expect(stdout).toBe('README.md');
     });
 });
@@ -181,7 +181,7 @@ describe('#commit should', () => {
         await repo.stageWrittenFiles();
         const message = 'some commit message';
         await repo.commit(message);
-        const { stdout } = await exec('git log -n 1');
+        const { stdout } = await processes.exec('git log -n 1');
         expect(stdout).toContain(message);
     });
 

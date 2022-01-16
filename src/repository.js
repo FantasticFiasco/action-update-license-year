@@ -1,9 +1,9 @@
 const { getOctokit } = require('@actions/github');
 const { readFile, writeFile } = require('fs').promises;
 
-const { createSignScript } = require('./gpg');
-const { exec } = require('./os/process');
-const { tempFile } = require('./os/temp-paths');
+const gpg = require('./gpg');
+const processes = require('./os/processes');
+const temp = require('./os/temp');
 
 class Repository {
     /**
@@ -27,8 +27,8 @@ class Repository {
      */
     async authenticate(userName, email) {
         try {
-            await exec(`git config user.name ${userName}`);
-            await exec(`git config user.email ${email}`);
+            await processes.exec(`git config user.name ${userName}`);
+            await processes.exec(`git config user.email ${email}`);
         } catch (err) {
             // @ts-ignore
             err.message = `Error authenticating user "${userName}" with e-mail "${email}": ${err.message}`;
@@ -42,11 +42,11 @@ class Repository {
      */
     async setupGpg(keyId, passphrase) {
         try {
-            const signScriptFilePath = tempFile('git_gpg_sign');
-            await createSignScript(signScriptFilePath, passphrase);
-            await exec(`git config gpg.program "${signScriptFilePath}"`);
-            await exec(`git config commit.gpgsign true`);
-            await exec(`git config user.signingkey ${keyId}`);
+            const signScriptFilePath = temp.file('git_gpg_sign');
+            await gpg.createSignScript(signScriptFilePath, passphrase);
+            await processes.exec(`git config gpg.program "${signScriptFilePath}"`);
+            await processes.exec(`git config commit.gpgsign true`);
+            await processes.exec(`git config user.signingkey ${keyId}`);
         } catch (err) {
             // @ts-ignore
             err.message = `Error setting up GPG": ${err.message}`;
@@ -60,12 +60,12 @@ class Repository {
     async branchExists(name) {
         try {
             const hasLocalBranch = async () => {
-                const { stdout } = await exec(`git branch --list "${name}"`);
+                const { stdout } = await processes.exec(`git branch --list "${name}"`);
                 return stdout.includes(name);
             };
 
             const hasRemoteBranch = async () => {
-                const { stdout } = await exec(`git ls-remote --heads origin "${name}"`);
+                const { stdout } = await processes.exec(`git ls-remote --heads origin "${name}"`);
                 return stdout.includes(name);
             };
 
@@ -83,7 +83,7 @@ class Repository {
      */
     async checkoutBranch(name, isNew) {
         try {
-            await exec(`git checkout ${isNew ? '-b' : ''} "${name}"`);
+            await processes.exec(`git checkout ${isNew ? '-b' : ''} "${name}"`);
 
             this._currentBranch = name;
             this._isCurrentBranchNew = isNew;
@@ -130,7 +130,7 @@ class Repository {
     async stageWrittenFiles() {
         for (const writtenFile of this._writtenFiles) {
             try {
-                await exec(`git add "${writtenFile}"`);
+                await processes.exec(`git add "${writtenFile}"`);
             } catch (err) {
                 // @ts-ignore
                 err.message = `Error staging file "${writtenFile}": ${err.message}`;
@@ -144,7 +144,7 @@ class Repository {
      */
     async commit(message) {
         try {
-            await exec(`git commit -m "${message}"`);
+            await processes.exec(`git commit -m "${message}"`);
         } catch (err) {
             // @ts-ignore
             err.message = `Error committing files: ${err.message}`;
@@ -158,7 +158,7 @@ class Repository {
             if (this._isCurrentBranchNew) {
                 cmd += ` --set-upstream origin ${this._currentBranch}`;
             }
-            await exec(cmd);
+            await processes.exec(cmd);
 
             this._isCurrentBranchNew = false;
             this._writtenFiles = [];
@@ -198,7 +198,7 @@ class Repository {
      */
     async createPullRequest(sourceBranchName, title, body) {
         try {
-            const { stdout: defaultBranch } = await exec(
+            const { stdout: defaultBranch } = await processes.exec(
                 `git remote show origin | grep 'HEAD branch' | cut -d ' ' -f5`
             );
 
