@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ## [Unreleased]
 
+### :zap: Added
+
+- [#217](https://github.com/FantasticFiasco/action-update-license-year/issues/217) Support for [GitHub commit signature verification](https://docs.github.com/en/authentication/managing-commit-signature-verification/about-commit-signature-verification) by means of GPG signing commits
+
 ## [2.1.1] - 2021-12-20
 
 ### :dizzy: Changed
