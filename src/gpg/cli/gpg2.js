@@ -1,7 +1,7 @@
 // This file contains functions that wrap the API of gpg2 (OpenPGP part of
 // GnuPG)
 
-const { chmod, writeFile } = require('fs').promises;
+const { writeFile } = require('fs').promises;
 
 /**
  * @param {string} filePath
@@ -9,8 +9,9 @@ const { chmod, writeFile } = require('fs').promises;
  */
 const createSignScript = async (filePath, passphrase) => {
     const data = `/usr/bin/gpg2 --pinentry-mode loopback --passphrase '${passphrase}' --no-tty "$@"`;
-    await writeFile(filePath, data);
-    await chmod(filePath, 0o700);
+    await writeFile(filePath, data, {
+        mode: 0o700,
+    });
 };
 
 module.exports = {
