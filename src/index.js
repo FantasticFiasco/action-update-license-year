@@ -112,6 +112,6 @@ const singleLine = (text) => {
     return text.replace(/\n/g, '\\n');
 };
 
-module.exports = {
-    run,
-};
+(async () => {
+    await run();
+})();

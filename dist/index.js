@@ -9783,7 +9783,7 @@ module.exports.shellSync = (cmd, opts) => handleShell(module.exports.sync, cmd, 
 /***/ }),
 
 /***/ 676:
-/***/ (function(module, __unusedexports, __webpack_require__) {
+/***/ (function(__unusedmodule, __unusedexports, __webpack_require__) {
 
 const { setFailed, info } = __webpack_require__(470);
 const { context } = __webpack_require__(469);
@@ -9899,9 +9899,9 @@ const singleLine = (text) => {
     return text.replace(/\n/g, '\\n');
 };
 
-module.exports = {
-    run,
-};
+(async () => {
+    await run();
+})();
 
 
 /***/ }),
