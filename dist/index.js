@@ -4615,7 +4615,7 @@ const { chmod, writeFile } = __webpack_require__(747).promises;
  * @param {string} passphrase
  */
 const createSignScript = async (filePath, passphrase) => {
-    const data = `/usr/bin/gpg2 --passphrase '${passphrase}' --batch --no-tty "$@"`;
+    const data = `/usr/bin/gpg2 --pinentry-mode loopback --passphrase '${passphrase}' --no-tty "$@"`;
     await writeFile(filePath, data);
     await chmod(filePath, 0o755);
 };
