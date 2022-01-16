@@ -4571,7 +4571,9 @@ const readPrivateKeyFromDisk = async () => {
  * @param {string} privateKey
  */
 const writePrivateKeyToDisk = async (privateKey) => {
-    await writeFile(privateKeyFilePath(), privateKey);
+    await writeFile(privateKeyFilePath(), privateKey, {
+        mode: 0o600,
+    });
 };
 
 /**
@@ -4617,6 +4619,7 @@ const { chmod, writeFile } = __webpack_require__(747).promises;
 const createSignScript = async (filePath, passphrase) => {
     const data = `/usr/bin/gpg2 --pinentry-mode loopback --passphrase '${passphrase}' --no-tty "$@"`;
     await writeFile(filePath, data);
+    // TODO: Maybe set 700?
     await chmod(filePath, 0o755);
 };
 

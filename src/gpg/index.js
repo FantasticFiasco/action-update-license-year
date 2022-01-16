@@ -10,7 +10,9 @@ const readPrivateKeyFromDisk = async () => {
  * @param {string} privateKey
  */
 const writePrivateKeyToDisk = async (privateKey) => {
-    await writeFile(privateKeyFilePath(), privateKey);
+    await writeFile(privateKeyFilePath(), privateKey, {
+        mode: 0o600,
+    });
 };
 
 /**
