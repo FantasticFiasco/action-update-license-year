@@ -2958,7 +2958,7 @@ class Repository {
             await createSignScript(signScriptFilePath, passphrase);
             await exec(`git config gpg.program "${signScriptFilePath}"`);
             await exec(`git config commit.gpgsign true`);
-            await exec(`git config --global user.signingkey ${keyId}`);
+            await exec(`git config user.signingkey ${keyId}`);
         } catch (err) {
             // @ts-ignore
             err.message = `Error setting up GPG": ${err.message}`;
