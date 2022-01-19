@@ -1,11 +1,11 @@
 // @ts-nocheck
-const { readFileSync, writeFileSync } = require('fs');
-const { EOL } = require('os');
-const { join } = require('path');
-const { load } = require('js-yaml');
+const fs = require('fs');
+const os = require('os');
+const path = require('path');
+const yaml = require('js-yaml');
 
 const getPackageMajorVersion = () => {
-    const version = require(join(__dirname, '..', 'package.json')).version;
+    const version = require(path.join(__dirname, '..', 'package.json')).version;
     const match = /(\d+)\.\d+\.\d+/.exec(version);
     if (!match) {
         throw new Error(`Package version '${version}' did not meet expected format`);
@@ -15,10 +15,10 @@ const getPackageMajorVersion = () => {
 
 const updateApi = () => {
     // Load the action.yml
-    const actionYaml = load(readFileSync(METADATA_PATH).toString());
+    const actionYaml = yaml.load(fs.readFileSync(METADATA_PATH).toString());
 
     // Load the README
-    const originalReadme = readFileSync(README_PATH).toString();
+    const originalReadme = fs.readFileSync(README_PATH).toString();
 
     // Find the start token
     const startTokenIndex = originalReadme.indexOf(API_START_TOKEN);
@@ -119,12 +119,12 @@ const updateApi = () => {
     newReadme.push(originalReadme.substr(endTokenIndex));
 
     // Write the new README
-    writeFileSync(README_PATH, newReadme.join(EOL));
+    fs.writeFileSync(README_PATH, newReadme.join(os.EOL));
 };
 
 const ACTION_NAME = `FantasticFiasco/action-update-license-year@v${getPackageMajorVersion()}`;
-const METADATA_PATH = join(__dirname, '..', 'action.yml');
-const README_PATH = join(__dirname, '..', 'README.md');
+const METADATA_PATH = path.join(__dirname, '..', 'action.yml');
+const README_PATH = path.join(__dirname, '..', 'README.md');
 const API_START_TOKEN = '<!-- start api -->';
 const API_END_TOKEN = '<!-- end api -->';
 
