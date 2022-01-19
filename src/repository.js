@@ -1,9 +1,7 @@
 const { getOctokit } = require('@actions/github');
 const { readFile, writeFile } = require('fs').promises;
 
-const gpg = require('./gpg');
 const processes = require('./os/processes');
-const temp = require('./os/temp');
 
 class Repository {
     /**
@@ -38,15 +36,13 @@ class Repository {
 
     /**
      * @param {string} keyId
-     * @param {string} passphrase
+     * @param {string} gpgProgram
      */
-    async setupGpg(keyId, passphrase) {
+    async setupGpg(keyId, gpgProgram) {
         try {
-            const signScriptFilePath = temp.file('git_gpg_sign');
-            await gpg.createSignScript(signScriptFilePath, passphrase);
-            await processes.exec(`git config gpg.program "${signScriptFilePath}"`);
             await processes.exec(`git config commit.gpgsign true`);
             await processes.exec(`git config user.signingkey ${keyId}`);
+            await processes.exec(`git config gpg.program "${gpgProgram}"`);
         } catch (err) {
             // @ts-ignore
             err.message = `Error setting up GPG": ${err.message}`;

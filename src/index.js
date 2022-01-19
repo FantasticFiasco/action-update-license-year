@@ -1,10 +1,10 @@
 const { setFailed, info } = require('@actions/core');
 const { context } = require('@actions/github');
 
+const file = require('./file');
 const gpg = require('./gpg');
 const inputs = require('./inputs');
 const Repository = require('./repository');
-const file = require('./file');
 const transforms = require('./transforms');
 
 const run = async () => {
@@ -26,7 +26,6 @@ const run = async () => {
             commitAuthorName,
             commitAuthorEmail,
             gpgPrivateKey,
-            gpgPassphrase,
             pullRequestTitle,
             pullRequestBody,
             assignees,
@@ -38,9 +37,9 @@ const run = async () => {
 
         if (gpgPrivateKey) {
             info('Setup GPG to sign commits');
-            await gpg.writePrivateKeyToDisk(gpgPrivateKey);
-            const keyId = await gpg.importPrivateKey(gpg.defaultCli);
-            await repo.setupGpg(keyId, gpgPassphrase);
+            const keyId = await gpg.importPrivateKey(gpg.cli, gpgPrivateKey);
+            const gpgProgramFilePath = await gpg.createGpgProgram(inputs.GPG_PASSPHRASE.env);
+            await repo.setupGpg(keyId, gpgProgramFilePath);
         }
 
         const branchExists = await repo.branchExists(branchName);
