@@ -33,7 +33,7 @@ const createGpgProgram = async (passphraseEnvName) => {
 };
 
 const cli = {
-    importPrivateKey: async (/** @type {string} */ privateKey) => {
+    importPrivateKey: async function (/** @type {string} */ privateKey) {
         return await processes.exec(`gpg2 --batch --yes --import <(echo "${privateKey}")`);
     },
 };
