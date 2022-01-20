@@ -1515,251 +1515,6 @@ function regExpEscape (s) {
 
 /***/ }),
 
-/***/ 97:
-/***/ (function(__unusedmodule, exports, __webpack_require__) {
-
-"use strict";
-
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
-    return result;
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const command_1 = __webpack_require__(219);
-const file_command_1 = __webpack_require__(959);
-const utils_1 = __webpack_require__(285);
-const os = __importStar(__webpack_require__(87));
-const path = __importStar(__webpack_require__(622));
-/**
- * The code to exit an action
- */
-var ExitCode;
-(function (ExitCode) {
-    /**
-     * A code indicating that the action was successful
-     */
-    ExitCode[ExitCode["Success"] = 0] = "Success";
-    /**
-     * A code indicating that the action was a failure
-     */
-    ExitCode[ExitCode["Failure"] = 1] = "Failure";
-})(ExitCode = exports.ExitCode || (exports.ExitCode = {}));
-//-----------------------------------------------------------------------
-// Variables
-//-----------------------------------------------------------------------
-/**
- * Sets env variable for this action and future actions in the job
- * @param name the name of the variable to set
- * @param val the value of the variable. Non-string values will be converted to a string via JSON.stringify
- */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function exportVariable(name, val) {
-    const convertedVal = utils_1.toCommandValue(val);
-    process.env[name] = convertedVal;
-    const filePath = process.env['GITHUB_ENV'] || '';
-    if (filePath) {
-        const delimiter = '_GitHubActionsFileCommandDelimeter_';
-        const commandValue = `${name}<<${delimiter}${os.EOL}${convertedVal}${os.EOL}${delimiter}`;
-        file_command_1.issueCommand('ENV', commandValue);
-    }
-    else {
-        command_1.issueCommand('set-env', { name }, convertedVal);
-    }
-}
-exports.exportVariable = exportVariable;
-/**
- * Registers a secret which will get masked from logs
- * @param secret value of the secret
- */
-function setSecret(secret) {
-    command_1.issueCommand('add-mask', {}, secret);
-}
-exports.setSecret = setSecret;
-/**
- * Prepends inputPath to the PATH (for this action and future actions)
- * @param inputPath
- */
-function addPath(inputPath) {
-    const filePath = process.env['GITHUB_PATH'] || '';
-    if (filePath) {
-        file_command_1.issueCommand('PATH', inputPath);
-    }
-    else {
-        command_1.issueCommand('add-path', {}, inputPath);
-    }
-    process.env['PATH'] = `${inputPath}${path.delimiter}${process.env['PATH']}`;
-}
-exports.addPath = addPath;
-/**
- * Gets the value of an input.  The value is also trimmed.
- *
- * @param     name     name of the input to get
- * @param     options  optional. See InputOptions.
- * @returns   string
- */
-function getInput(name, options) {
-    const val = process.env[`INPUT_${name.replace(/ /g, '_').toUpperCase()}`] || '';
-    if (options && options.required && !val) {
-        throw new Error(`Input required and not supplied: ${name}`);
-    }
-    return val.trim();
-}
-exports.getInput = getInput;
-/**
- * Sets the value of an output.
- *
- * @param     name     name of the output to set
- * @param     value    value to store. Non-string values will be converted to a string via JSON.stringify
- */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function setOutput(name, value) {
-    command_1.issueCommand('set-output', { name }, value);
-}
-exports.setOutput = setOutput;
-/**
- * Enables or disables the echoing of commands into stdout for the rest of the step.
- * Echoing is disabled by default if ACTIONS_STEP_DEBUG is not set.
- *
- */
-function setCommandEcho(enabled) {
-    command_1.issue('echo', enabled ? 'on' : 'off');
-}
-exports.setCommandEcho = setCommandEcho;
-//-----------------------------------------------------------------------
-// Results
-//-----------------------------------------------------------------------
-/**
- * Sets the action status to failed.
- * When the action exits it will be with an exit code of 1
- * @param message add error issue message
- */
-function setFailed(message) {
-    process.exitCode = ExitCode.Failure;
-    error(message);
-}
-exports.setFailed = setFailed;
-//-----------------------------------------------------------------------
-// Logging Commands
-//-----------------------------------------------------------------------
-/**
- * Gets whether Actions Step Debug is on or not
- */
-function isDebug() {
-    return process.env['RUNNER_DEBUG'] === '1';
-}
-exports.isDebug = isDebug;
-/**
- * Writes debug message to user log
- * @param message debug message
- */
-function debug(message) {
-    command_1.issueCommand('debug', {}, message);
-}
-exports.debug = debug;
-/**
- * Adds an error issue
- * @param message error issue message. Errors will be converted to string via toString()
- */
-function error(message) {
-    command_1.issue('error', message instanceof Error ? message.toString() : message);
-}
-exports.error = error;
-/**
- * Adds an warning issue
- * @param message warning issue message. Errors will be converted to string via toString()
- */
-function warning(message) {
-    command_1.issue('warning', message instanceof Error ? message.toString() : message);
-}
-exports.warning = warning;
-/**
- * Writes info to log with console.log.
- * @param message info message
- */
-function info(message) {
-    process.stdout.write(message + os.EOL);
-}
-exports.info = info;
-/**
- * Begin an output group.
- *
- * Output until the next `groupEnd` will be foldable in this group
- *
- * @param name The name of the output group
- */
-function startGroup(name) {
-    command_1.issue('group', name);
-}
-exports.startGroup = startGroup;
-/**
- * End an output group.
- */
-function endGroup() {
-    command_1.issue('endgroup');
-}
-exports.endGroup = endGroup;
-/**
- * Wrap an asynchronous function call in a group.
- *
- * Returns the same type as the function itself.
- *
- * @param name The name of the group
- * @param fn The function to wrap in the group
- */
-function group(name, fn) {
-    return __awaiter(this, void 0, void 0, function* () {
-        startGroup(name);
-        let result;
-        try {
-            result = yield fn();
-        }
-        finally {
-            endGroup();
-        }
-        return result;
-    });
-}
-exports.group = group;
-//-----------------------------------------------------------------------
-// Wrapper action state
-//-----------------------------------------------------------------------
-/**
- * Saves state for current action, the state can only be retrieved by this action's post job execution.
- *
- * @param     name     name of the state to store
- * @param     value    value to store. Non-string values will be converted to a string via JSON.stringify
- */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function saveState(name, value) {
-    command_1.issueCommand('save-state', { name }, value);
-}
-exports.saveState = saveState;
-/**
- * Gets the value of an state set by this action's main execution.
- *
- * @param     name     name of the state to get
- * @returns   string
- */
-function getState(name) {
-    return process.env[`STATE_${name}`] || '';
-}
-exports.getState = getState;
-//# sourceMappingURL=core.js.map
-
-/***/ }),
-
 /***/ 102:
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
@@ -2443,6 +2198,32 @@ module.exports = require("child_process");
 
 /***/ }),
 
+/***/ 130:
+/***/ (function(module, __unusedexports, __webpack_require__) {
+
+const { create } = __webpack_require__(281);
+const fs = __webpack_require__(747);
+
+/**
+ * @param {string} pattern
+ */
+const search = async (pattern) => {
+    const globber = await create(pattern);
+    const paths = await globber.glob();
+    const files = paths.filter((path) => {
+        return fs.statSync(path).isFile();
+    });
+
+    return files;
+};
+
+module.exports = {
+    search,
+};
+
+
+/***/ }),
+
 /***/ 141:
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
@@ -2779,9 +2560,8 @@ module.exports = /^#!.*/;
 
 const { getOctokit } = __webpack_require__(469);
 const { readFile, writeFile } = __webpack_require__(747).promises;
-const { createSignScript } = __webpack_require__(345);
-const { exec } = __webpack_require__(365);
-const { tempFile } = __webpack_require__(447);
+
+const processes = __webpack_require__(305);
 
 class Repository {
     /**
@@ -2805,8 +2585,8 @@ class Repository {
      */
     async authenticate(userName, email) {
         try {
-            await exec(`git config user.name ${userName}`);
-            await exec(`git config user.email ${email}`);
+            await processes.exec(`git config user.name ${userName}`);
+            await processes.exec(`git config user.email ${email}`);
         } catch (err) {
             // @ts-ignore
             err.message = `Error authenticating user "${userName}" with e-mail "${email}": ${err.message}`;
@@ -2816,15 +2596,13 @@ class Repository {
 
     /**
      * @param {string} keyId
-     * @param {string} passphrase
+     * @param {string} gpgProgram
      */
-    async setupGpg(keyId, passphrase) {
+    async setupGpg(keyId, gpgProgram) {
         try {
-            const signScriptFilePath = tempFile('git_gpg_sign');
-            await createSignScript(signScriptFilePath, passphrase);
-            await exec(`git config gpg.program "${signScriptFilePath}"`);
-            await exec(`git config commit.gpgsign true`);
-            await exec(`git config user.signingkey ${keyId}`);
+            await processes.exec(`git config commit.gpgsign true`);
+            await processes.exec(`git config user.signingkey ${keyId}`);
+            await processes.exec(`git config gpg.program "${gpgProgram}"`);
         } catch (err) {
             // @ts-ignore
             err.message = `Error setting up GPG": ${err.message}`;
@@ -2838,12 +2616,12 @@ class Repository {
     async branchExists(name) {
         try {
             const hasLocalBranch = async () => {
-                const { stdout } = await exec(`git branch --list "${name}"`);
+                const { stdout } = await processes.exec(`git branch --list "${name}"`);
                 return stdout.includes(name);
             };
 
             const hasRemoteBranch = async () => {
-                const { stdout } = await exec(`git ls-remote --heads origin "${name}"`);
+                const { stdout } = await processes.exec(`git ls-remote --heads origin "${name}"`);
                 return stdout.includes(name);
             };
 
@@ -2861,7 +2639,7 @@ class Repository {
      */
     async checkoutBranch(name, isNew) {
         try {
-            await exec(`git checkout ${isNew ? '-b' : ''} "${name}"`);
+            await processes.exec(`git checkout ${isNew ? '-b' : ''} "${name}"`);
 
             this._currentBranch = name;
             this._isCurrentBranchNew = isNew;
@@ -2908,7 +2686,7 @@ class Repository {
     async stageWrittenFiles() {
         for (const writtenFile of this._writtenFiles) {
             try {
-                await exec(`git add "${writtenFile}"`);
+                await processes.exec(`git add "${writtenFile}"`);
             } catch (err) {
                 // @ts-ignore
                 err.message = `Error staging file "${writtenFile}": ${err.message}`;
@@ -2922,7 +2700,7 @@ class Repository {
      */
     async commit(message) {
         try {
-            await exec(`git commit -m "${message}"`);
+            await processes.exec(`git commit -m "${message}"`);
         } catch (err) {
             // @ts-ignore
             err.message = `Error committing files: ${err.message}`;
@@ -2936,7 +2714,7 @@ class Repository {
             if (this._isCurrentBranchNew) {
                 cmd += ` --set-upstream origin ${this._currentBranch}`;
             }
-            await exec(cmd);
+            await processes.exec(cmd);
 
             this._isCurrentBranchNew = false;
             this._writtenFiles = [];
@@ -2976,7 +2754,7 @@ class Repository {
      */
     async createPullRequest(sourceBranchName, title, body) {
         try {
-            const { stdout: defaultBranch } = await exec(
+            const { stdout: defaultBranch } = await processes.exec(
                 `git remote show origin | grep 'HEAD branch' | cut -d ' ' -f5`
             );
 
@@ -3809,7 +3587,7 @@ var __asyncGenerator = (this && this.__asyncGenerator) || function (thisArg, _ar
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DefaultGlobber = void 0;
-const core = __importStar(__webpack_require__(97));
+const core = __importStar(__webpack_require__(345));
 const fs = __importStar(__webpack_require__(747));
 const globOptionsHelper = __importStar(__webpack_require__(601));
 const path = __importStar(__webpack_require__(622));
@@ -4149,6 +3927,31 @@ exports.paginatingEndpoints = paginatingEndpoints;
 
 /***/ }),
 
+/***/ 305:
+/***/ (function(module, __unusedexports, __webpack_require__) {
+
+const { promisify } = __webpack_require__(669);
+const execAsync = promisify(__webpack_require__(129).exec);
+
+/**
+ * @param {string} cmd
+ * @param {import("child_process").ExecOptions | undefined} options
+ */
+const exec = async (cmd, options = undefined) => {
+    const { stdout, stderr } = await execAsync(cmd, options);
+    return {
+        stdout: stdout.toString().trim(),
+        stderr: stderr.toString().trim(),
+    };
+};
+
+module.exports = {
+    exec,
+};
+
+
+/***/ }),
+
 /***/ 306:
 /***/ (function(module, __unusedexports, __webpack_require__) {
 
@@ -4382,6 +4185,58 @@ var MatchKind;
 
 /***/ }),
 
+/***/ 329:
+/***/ (function(module, __unusedexports, __webpack_require__) {
+
+const fs = __webpack_require__(747).promises;
+
+const processes = __webpack_require__(305);
+const temp = __webpack_require__(695);
+
+/**
+ * @param {{importPrivateKey: (privateKey: string) => Promise<{stdout: string, stderr: string}>}} cli
+ * @param {string} privateKey
+ * @returns The key id
+ */
+const importPrivateKey = async (cli, privateKey) => {
+    const { stderr } = await cli.importPrivateKey(privateKey);
+    const regex = /gpg: key ([0123456789ABCDEF]*): secret key imported/;
+    const match = regex.exec(stderr);
+    if (match === null || match.length !== 2) {
+        throw new Error(`Import private GPG key failed: ${stderr}`);
+    }
+
+    return match[1];
+};
+
+/**
+ * @param {string} passphraseEnvName
+ * @returns The GPG program file path
+ */
+const createGpgProgram = async (passphraseEnvName) => {
+    const filePath = temp.file('git_gpg_signer');
+    const data = `gpg2 --pinentry-mode loopback --passphrase "$${passphraseEnvName}" --no-tty "$@"`;
+    await fs.writeFile(filePath, data, {
+        mode: 0o700,
+    });
+    return filePath;
+};
+
+const cli = {
+    importPrivateKey: async function (/** @type {string} */ privateKey) {
+        return await processes.exec(`gpg2 --batch --yes --import <(echo "${privateKey}")`);
+    },
+};
+
+module.exports = {
+    importPrivateKey,
+    createGpgProgram,
+    cli,
+};
+
+
+/***/ }),
+
 /***/ 336:
 /***/ (function(module, __unusedexports, __webpack_require__) {
 
@@ -4422,77 +4277,248 @@ module.exports = readShebang;
 
 /***/ }),
 
-/***/ 344:
-/***/ (function(module, __unusedexports, __webpack_require__) {
-
-const { readFile, writeFile } = __webpack_require__(747).promises;
-const { tempFile } = __webpack_require__(447);
-
-const readPrivateKeyFromDisk = async () => {
-    const content = await readFile(privateKeyFilePath());
-    return content.toString();
-};
-
-/**
- * @param {string} privateKey
- */
-const writePrivateKeyToDisk = async (privateKey) => {
-    await writeFile(privateKeyFilePath(), privateKey, {
-        mode: 0o600,
-    });
-};
-
-/**
- * @param {{importPrivateKey: (filePath: string) => Promise<{stdout: string, stderr: string}>}} cli
- * @returns The key id
- */
-const importPrivateKey = async (cli) => {
-    const { stderr } = await cli.importPrivateKey(privateKeyFilePath());
-    const regex = /gpg: key ([0123456789ABCDEF]*): secret key imported/;
-    const match = regex.exec(stderr);
-    if (match === null || match.length !== 2) {
-        throw new Error(`Import private GPG key failed: ${stderr}`);
-    }
-
-    return match[1];
-};
-
-const privateKeyFilePath = () => {
-    return tempFile('git_gpg_private_key.asc');
-};
-
-module.exports = {
-    readPrivateKeyFromDisk,
-    writePrivateKeyToDisk,
-    importPrivateKey,
-};
-
-
-/***/ }),
-
 /***/ 345:
-/***/ (function(module, __unusedexports, __webpack_require__) {
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
 
-// This file contains functions that wrap the API of gpg2 (OpenPGP part of
-// GnuPG)
+"use strict";
 
-const { writeFile } = __webpack_require__(747).promises;
-
-/**
- * @param {string} filePath
- * @param {string} passphrase
- */
-const createSignScript = async (filePath, passphrase) => {
-    const data = `/usr/bin/gpg2 --pinentry-mode loopback --passphrase '${passphrase}' --no-tty "$@"`;
-    await writeFile(filePath, data, {
-        mode: 0o700,
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-
-module.exports = {
-    createSignScript,
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
 };
-
+Object.defineProperty(exports, "__esModule", { value: true });
+const command_1 = __webpack_require__(219);
+const file_command_1 = __webpack_require__(959);
+const utils_1 = __webpack_require__(285);
+const os = __importStar(__webpack_require__(87));
+const path = __importStar(__webpack_require__(622));
+/**
+ * The code to exit an action
+ */
+var ExitCode;
+(function (ExitCode) {
+    /**
+     * A code indicating that the action was successful
+     */
+    ExitCode[ExitCode["Success"] = 0] = "Success";
+    /**
+     * A code indicating that the action was a failure
+     */
+    ExitCode[ExitCode["Failure"] = 1] = "Failure";
+})(ExitCode = exports.ExitCode || (exports.ExitCode = {}));
+//-----------------------------------------------------------------------
+// Variables
+//-----------------------------------------------------------------------
+/**
+ * Sets env variable for this action and future actions in the job
+ * @param name the name of the variable to set
+ * @param val the value of the variable. Non-string values will be converted to a string via JSON.stringify
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function exportVariable(name, val) {
+    const convertedVal = utils_1.toCommandValue(val);
+    process.env[name] = convertedVal;
+    const filePath = process.env['GITHUB_ENV'] || '';
+    if (filePath) {
+        const delimiter = '_GitHubActionsFileCommandDelimeter_';
+        const commandValue = `${name}<<${delimiter}${os.EOL}${convertedVal}${os.EOL}${delimiter}`;
+        file_command_1.issueCommand('ENV', commandValue);
+    }
+    else {
+        command_1.issueCommand('set-env', { name }, convertedVal);
+    }
+}
+exports.exportVariable = exportVariable;
+/**
+ * Registers a secret which will get masked from logs
+ * @param secret value of the secret
+ */
+function setSecret(secret) {
+    command_1.issueCommand('add-mask', {}, secret);
+}
+exports.setSecret = setSecret;
+/**
+ * Prepends inputPath to the PATH (for this action and future actions)
+ * @param inputPath
+ */
+function addPath(inputPath) {
+    const filePath = process.env['GITHUB_PATH'] || '';
+    if (filePath) {
+        file_command_1.issueCommand('PATH', inputPath);
+    }
+    else {
+        command_1.issueCommand('add-path', {}, inputPath);
+    }
+    process.env['PATH'] = `${inputPath}${path.delimiter}${process.env['PATH']}`;
+}
+exports.addPath = addPath;
+/**
+ * Gets the value of an input.  The value is also trimmed.
+ *
+ * @param     name     name of the input to get
+ * @param     options  optional. See InputOptions.
+ * @returns   string
+ */
+function getInput(name, options) {
+    const val = process.env[`INPUT_${name.replace(/ /g, '_').toUpperCase()}`] || '';
+    if (options && options.required && !val) {
+        throw new Error(`Input required and not supplied: ${name}`);
+    }
+    return val.trim();
+}
+exports.getInput = getInput;
+/**
+ * Sets the value of an output.
+ *
+ * @param     name     name of the output to set
+ * @param     value    value to store. Non-string values will be converted to a string via JSON.stringify
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function setOutput(name, value) {
+    command_1.issueCommand('set-output', { name }, value);
+}
+exports.setOutput = setOutput;
+/**
+ * Enables or disables the echoing of commands into stdout for the rest of the step.
+ * Echoing is disabled by default if ACTIONS_STEP_DEBUG is not set.
+ *
+ */
+function setCommandEcho(enabled) {
+    command_1.issue('echo', enabled ? 'on' : 'off');
+}
+exports.setCommandEcho = setCommandEcho;
+//-----------------------------------------------------------------------
+// Results
+//-----------------------------------------------------------------------
+/**
+ * Sets the action status to failed.
+ * When the action exits it will be with an exit code of 1
+ * @param message add error issue message
+ */
+function setFailed(message) {
+    process.exitCode = ExitCode.Failure;
+    error(message);
+}
+exports.setFailed = setFailed;
+//-----------------------------------------------------------------------
+// Logging Commands
+//-----------------------------------------------------------------------
+/**
+ * Gets whether Actions Step Debug is on or not
+ */
+function isDebug() {
+    return process.env['RUNNER_DEBUG'] === '1';
+}
+exports.isDebug = isDebug;
+/**
+ * Writes debug message to user log
+ * @param message debug message
+ */
+function debug(message) {
+    command_1.issueCommand('debug', {}, message);
+}
+exports.debug = debug;
+/**
+ * Adds an error issue
+ * @param message error issue message. Errors will be converted to string via toString()
+ */
+function error(message) {
+    command_1.issue('error', message instanceof Error ? message.toString() : message);
+}
+exports.error = error;
+/**
+ * Adds an warning issue
+ * @param message warning issue message. Errors will be converted to string via toString()
+ */
+function warning(message) {
+    command_1.issue('warning', message instanceof Error ? message.toString() : message);
+}
+exports.warning = warning;
+/**
+ * Writes info to log with console.log.
+ * @param message info message
+ */
+function info(message) {
+    process.stdout.write(message + os.EOL);
+}
+exports.info = info;
+/**
+ * Begin an output group.
+ *
+ * Output until the next `groupEnd` will be foldable in this group
+ *
+ * @param name The name of the output group
+ */
+function startGroup(name) {
+    command_1.issue('group', name);
+}
+exports.startGroup = startGroup;
+/**
+ * End an output group.
+ */
+function endGroup() {
+    command_1.issue('endgroup');
+}
+exports.endGroup = endGroup;
+/**
+ * Wrap an asynchronous function call in a group.
+ *
+ * Returns the same type as the function itself.
+ *
+ * @param name The name of the group
+ * @param fn The function to wrap in the group
+ */
+function group(name, fn) {
+    return __awaiter(this, void 0, void 0, function* () {
+        startGroup(name);
+        let result;
+        try {
+            result = yield fn();
+        }
+        finally {
+            endGroup();
+        }
+        return result;
+    });
+}
+exports.group = group;
+//-----------------------------------------------------------------------
+// Wrapper action state
+//-----------------------------------------------------------------------
+/**
+ * Saves state for current action, the state can only be retrieved by this action's post job execution.
+ *
+ * @param     name     name of the state to store
+ * @param     value    value to store. Non-string values will be converted to a string via JSON.stringify
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function saveState(name, value) {
+    command_1.issueCommand('save-state', { name }, value);
+}
+exports.saveState = saveState;
+/**
+ * Gets the value of an state set by this action's main execution.
+ *
+ * @param     name     name of the state to get
+ * @returns   string
+ */
+function getState(name) {
+    return process.env[`STATE_${name}`] || '';
+}
+exports.getState = getState;
+//# sourceMappingURL=core.js.map
 
 /***/ }),
 
@@ -4567,31 +4593,6 @@ module.exports = {
 /***/ (function(module) {
 
 module.exports = require("assert");
-
-/***/ }),
-
-/***/ 365:
-/***/ (function(module, __unusedexports, __webpack_require__) {
-
-const { promisify } = __webpack_require__(669);
-const execAsync = promisify(__webpack_require__(129).exec);
-
-/**
- * @param {string} cmd
- * @param {import("child_process").ExecOptions | undefined} options
- */
-const exec = async (cmd, options = undefined) => {
-    const { stdout, stderr } = await execAsync(cmd, options);
-    return {
-        stdout: stdout.toString().trim(),
-        stderr: stderr.toString().trim(),
-    };
-};
-
-module.exports = {
-    exec,
-};
-
 
 /***/ }),
 
@@ -5409,36 +5410,6 @@ function escapeProperty(s) {
         .replace(/,/g, '%2C');
 }
 //# sourceMappingURL=command.js.map
-
-/***/ }),
-
-/***/ 447:
-/***/ (function(module, __unusedexports, __webpack_require__) {
-
-const { tmpdir } = __webpack_require__(87);
-const { join } = __webpack_require__(622);
-const { runnerTemp } = __webpack_require__(287);
-
-const tempDir = () => {
-    if (runnerTemp) {
-        return runnerTemp;
-    }
-
-    return tmpdir();
-};
-
-/**
- * @param {string} fileName
- */
-const tempFile = (fileName) => {
-    return join(tempDir(), fileName);
-};
-
-module.exports = {
-    tempDir,
-    tempFile,
-};
-
 
 /***/ }),
 
@@ -7733,32 +7704,6 @@ exports.getIDToken = getIDToken;
 
 /***/ }),
 
-/***/ 491:
-/***/ (function(module, __unusedexports, __webpack_require__) {
-
-const { statSync } = __webpack_require__(747);
-const { create } = __webpack_require__(281);
-
-/**
- * @param {string} pattern
- */
-const search = async (pattern) => {
-    const globber = await create(pattern);
-    const paths = await globber.glob();
-    const files = paths.filter((path) => {
-        return statSync(path).isFile();
-    });
-
-    return files;
-};
-
-module.exports = {
-    search,
-};
-
-
-/***/ }),
-
 /***/ 496:
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
@@ -8861,7 +8806,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getOptions = void 0;
-const core = __importStar(__webpack_require__(97));
+const core = __importStar(__webpack_require__(345));
 /**
  * Returns a copy with defaults filled in.
  */
@@ -9302,7 +9247,7 @@ const VARIABLES = {
     currentYear: CURRENT_YEAR.toString(),
 };
 
-const parseInput = () => {
+const parse = () => {
     const token = getInput(TOKEN.name, { required: true });
     const path = getInput(PATH.name) || PATH.defaultValue;
     const transform = validateTransform(getInput(TRANSFORM.name) || TRANSFORM.defaultValue);
@@ -9385,7 +9330,7 @@ const validateTransform = (transform) => {
 };
 
 module.exports = {
-    parseInput,
+    parse,
     TOKEN,
     PATH,
     TRANSFORM,
@@ -9783,16 +9728,16 @@ module.exports.shellSync = (cmd, opts) => handleShell(module.exports.sync, cmd, 
 /***/ }),
 
 /***/ 676:
-/***/ (function(__unusedmodule, __unusedexports, __webpack_require__) {
+/***/ (function(module, __unusedexports, __webpack_require__) {
 
 const { setFailed, info } = __webpack_require__(470);
 const { context } = __webpack_require__(469);
-const { parseInput } = __webpack_require__(659);
-const { applyTransform } = __webpack_require__(106);
+
+const file = __webpack_require__(130);
+const gpg = __webpack_require__(329);
+const inputs = __webpack_require__(659);
 const Repository = __webpack_require__(178);
-const { search } = __webpack_require__(491);
-const { writePrivateKeyToDisk, importPrivateKey } = __webpack_require__(344);
-const gpgCli = __webpack_require__(954);
+const transforms = __webpack_require__(106);
 
 const run = async () => {
     try {
@@ -9813,28 +9758,27 @@ const run = async () => {
             commitAuthorName,
             commitAuthorEmail,
             gpgPrivateKey,
-            gpgPassphrase,
             pullRequestTitle,
             pullRequestBody,
             assignees,
             labels,
-        } = parseInput();
+        } = inputs.parse();
 
         const repo = new Repository(owner, repoName, token);
         await repo.authenticate(commitAuthorName, commitAuthorEmail);
 
         if (gpgPrivateKey) {
             info('Setup GPG to sign commits');
-            await writePrivateKeyToDisk(gpgPrivateKey);
-            const keyId = await importPrivateKey(gpgCli);
-            await repo.setupGpg(keyId, gpgPassphrase);
+            const keyId = await gpg.importPrivateKey(gpg.cli, gpgPrivateKey);
+            const gpgProgramFilePath = await gpg.createGpgProgram(inputs.GPG_PASSPHRASE.env);
+            await repo.setupGpg(keyId, gpgProgramFilePath);
         }
 
         const branchExists = await repo.branchExists(branchName);
         info(`Checkout ${branchExists ? 'existing' : 'new'} branch named "${branchName}"`);
         await repo.checkoutBranch(branchName, !branchExists);
 
-        const files = await search(path);
+        const files = await file.search(path);
         if (files.length === 0) {
             throw new Error(`Found no files matching the path "${singleLine(path)}"`);
         }
@@ -9847,7 +9791,7 @@ const run = async () => {
         for (const file of files) {
             const relativeFile = file.replace(cwd, '.');
             const content = await repo.readFile(file);
-            const updatedContent = applyTransform(transform, content, currentYear, relativeFile);
+            const updatedContent = transforms.applyTransform(transform, content, currentYear, relativeFile);
             if (updatedContent !== content) {
                 info(`Update license in "${relativeFile}"`);
                 await repo.writeFile(file, updatedContent);
@@ -9903,6 +9847,10 @@ const singleLine = (text) => {
     await run();
 })();
 
+module.exports = {
+    run,
+};
+
 
 /***/ }),
 
@@ -9930,6 +9878,36 @@ class Deprecation extends Error {
 }
 
 exports.Deprecation = Deprecation;
+
+
+/***/ }),
+
+/***/ 695:
+/***/ (function(module, __unusedexports, __webpack_require__) {
+
+const os = __webpack_require__(87);
+const path = __webpack_require__(622);
+
+const { runnerTemp } = __webpack_require__(287);
+
+const dir = () => {
+    if (runnerTemp) {
+        return runnerTemp;
+    }
+    return os.tmpdir();
+};
+
+/**
+ * @param {string} fileName
+ */
+const file = (fileName) => {
+    return path.join(dir(), fileName);
+};
+
+module.exports = {
+    dir,
+    file,
+};
 
 
 /***/ }),
@@ -10120,7 +10098,7 @@ var __asyncValues = (this && this.__asyncValues) || function (o) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.hashFiles = void 0;
 const crypto = __importStar(__webpack_require__(417));
-const core = __importStar(__webpack_require__(97));
+const core = __importStar(__webpack_require__(345));
 const fs = __importStar(__webpack_require__(747));
 const stream = __importStar(__webpack_require__(794));
 const util = __importStar(__webpack_require__(669));
@@ -12518,27 +12496,6 @@ function checkBypass(reqUrl) {
     return false;
 }
 exports.checkBypass = checkBypass;
-
-
-/***/ }),
-
-/***/ 954:
-/***/ (function(module, __unusedexports, __webpack_require__) {
-
-// This file contains functions that wrap the API of gpg (GnuPG)
-
-const { exec } = __webpack_require__(365);
-
-/**
- * @param {string} filePath
- */
-const importPrivateKey = async (filePath) => {
-    return await exec(`gpg --batch --yes --import ${filePath}`);
-};
-
-module.exports = {
-    importPrivateKey,
-};
 
 
 /***/ }),

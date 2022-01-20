@@ -24,7 +24,7 @@ const importPrivateKey = async (cli, privateKey) => {
  * @returns The GPG program file path
  */
 const createGpgProgram = async (passphraseEnvName) => {
-    const filePath = temp.file('git_gpg_sign');
+    const filePath = temp.file('git_gpg_signer');
     const data = `gpg2 --pinentry-mode loopback --passphrase "$${passphraseEnvName}" --no-tty "$@"`;
     await fs.writeFile(filePath, data, {
         mode: 0o700,
