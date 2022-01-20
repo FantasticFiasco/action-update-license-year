@@ -20,9 +20,27 @@ jest.mock('@actions/github', () => {
     return mockGithub;
 });
 
+// ../src/file
+const mockFile = {
+    search: jest.fn(),
+};
+jest.mock('../src/file', () => {
+    return mockFile;
+});
+
+// ../src/gpg
+const mockGpg = {
+    importPrivateKey: jest.fn(),
+    cli: jest.fn(),
+    createGpgProgram: jest.fn(),
+};
+jest.mock('../src/gpg', () => {
+    return mockGpg;
+});
+
 // ../src/inputs
 const mockInputs = {
-    parseInput: jest.fn(),
+    parse: jest.fn(),
     TOKEN: jest.requireActual('../src/inputs').TOKEN,
     PATH: jest.requireActual('../src/inputs').PATH,
     TRANSFORM: jest.requireActual('../src/inputs').TRANSFORM,
@@ -31,6 +49,8 @@ const mockInputs = {
     COMMIT_BODY: jest.requireActual('../src/inputs').COMMIT_BODY,
     COMMIT_AUTHOR_NAME: jest.requireActual('../src/inputs').COMMIT_AUTHOR_NAME,
     COMMIT_AUTHOR_EMAIL: jest.requireActual('../src/inputs').COMMIT_AUTHOR_EMAIL,
+    GPG_PRIVATE_KEY: jest.requireActual('../src/inputs').GPG_PRIVATE_KEY,
+    GPG_PASSPHRASE: jest.requireActual('../src/inputs').GPG_PASSPHRASE,
     PR_TITLE: jest.requireActual('../src/inputs').PR_TITLE,
     PR_BODY: jest.requireActual('../src/inputs').PR_BODY,
     ASSIGNEES: jest.requireActual('../src/inputs').ASSIGNEES,
@@ -44,6 +64,7 @@ jest.mock('../src/inputs', () => {
 // ../src/repository
 const mockRepository = {
     authenticate: jest.fn(),
+    setupGpg: jest.fn(),
     branchExists: jest.fn(),
     checkoutBranch: jest.fn(),
     readFile: jest.fn(),
@@ -63,14 +84,6 @@ jest.mock('../src/repository', () => {
     };
 });
 
-// ../src/search
-const mockSearch = {
-    search: jest.fn(),
-};
-jest.mock('../src/search', () => {
-    return mockSearch;
-});
-
 // ../src/transforms
 const mockTransforms = {
     applyTransform: jest.fn(),
@@ -80,7 +93,7 @@ jest.mock('../src/transforms', () => {
 });
 
 const { setFailed } = require('@actions/core');
-const { run } = require('../src/action-update-license-year');
+const { run } = require('../src/main');
 const {
     PATH,
     TRANSFORM,
@@ -89,6 +102,8 @@ const {
     COMMIT_BODY,
     COMMIT_AUTHOR_NAME,
     COMMIT_AUTHOR_EMAIL,
+    GPG_PRIVATE_KEY,
+    GPG_PASSPHRASE,
     PR_TITLE,
     PR_BODY,
     CURRENT_YEAR,
@@ -113,7 +128,7 @@ describe('action should', () => {
     });
 
     test('authenticate git user given default commit author name and e-mail', async () => {
-        mockSearch.search.mockResolvedValue(['some-file']);
+        mockFile.search.mockResolvedValue(['some-file']);
         await run();
         expect(mockRepository.authenticate).toBeCalledWith(
             COMMIT_AUTHOR_NAME.defaultValue,
@@ -124,7 +139,7 @@ describe('action should', () => {
 
     test('authenticate git user given custom commit author name', async () => {
         setupInput({ commitAuthorName: 'some-author-name' });
-        mockSearch.search.mockResolvedValue(['some-file']);
+        mockFile.search.mockResolvedValue(['some-file']);
         await run();
         expect(mockRepository.authenticate).toBeCalledWith('some-author-name', COMMIT_AUTHOR_EMAIL.defaultValue);
         expect(setFailed).toBeCalledTimes(0);
@@ -132,7 +147,7 @@ describe('action should', () => {
 
     test('authenticate git user given custom commit author e-mail', async () => {
         setupInput({ commitAuthorEmail: 'some-author@mail.com' });
-        mockSearch.search.mockResolvedValue(['some-file']);
+        mockFile.search.mockResolvedValue(['some-file']);
         await run();
         expect(mockRepository.authenticate).toBeCalledWith(COMMIT_AUTHOR_NAME.defaultValue, 'some-author@mail.com');
         expect(setFailed).toBeCalledTimes(0);
@@ -140,15 +155,34 @@ describe('action should', () => {
 
     test('authenticate git user given custom commit author name and e-mail', async () => {
         setupInput({ commitAuthorName: 'some-author-name', commitAuthorEmail: 'some-author@mail.com' });
-        mockSearch.search.mockResolvedValue(['some-file']);
+        mockFile.search.mockResolvedValue(['some-file']);
         await run();
         expect(mockRepository.authenticate).toBeCalledWith('some-author-name', 'some-author@mail.com');
         expect(setFailed).toBeCalledTimes(0);
     });
 
+    test('setup gpg given gpg private key with passphrase', async () => {
+        setupInput({ gpgPrivateKey: 'some private key', gpgPassphrase: 'some passphrase' });
+        mockGpg.importPrivateKey.mockResolvedValue('some key');
+        mockGpg.createGpgProgram.mockResolvedValue('some file path');
+        mockFile.search.mockResolvedValue(['some-file']);
+        await run();
+        expect(mockGpg.importPrivateKey).toBeCalledWith(mockGpg.cli, GPG_PRIVATE_KEY.env);
+        expect(mockGpg.createGpgProgram).toBeCalledWith(GPG_PASSPHRASE.env);
+        expect(mockRepository.setupGpg).toBeCalledWith('some key', 'some file path');
+        expect(setFailed).toBeCalledTimes(0);
+    });
+
+    test('set failed given gpg private key without passphrase', async () => {
+        setupInput({ gpgPrivateKey: 'some private key' });
+        mockFile.search.mockResolvedValue(['some-file']);
+        await run();
+        expect(setFailed).toBeCalledTimes(1);
+    });
+
     test('checkout existing branch with default name given it exists', async () => {
         mockRepository.branchExists.mockResolvedValue(true);
-        mockSearch.search.mockResolvedValue(['some-file']);
+        mockFile.search.mockResolvedValue(['some-file']);
         await run();
         expect(mockRepository.checkoutBranch).toBeCalledWith(BRANCH_NAME.defaultValue, false);
         expect(setFailed).toBeCalledTimes(0);
@@ -157,7 +191,7 @@ describe('action should', () => {
     test('checkout existing branch with custom name given it exists', async () => {
         setupInput({ branchName: 'some-branch-name' });
         mockRepository.branchExists.mockResolvedValue(true);
-        mockSearch.search.mockResolvedValue(['some-file']);
+        mockFile.search.mockResolvedValue(['some-file']);
         await run();
         expect(mockRepository.checkoutBranch).toBeCalledWith('some-branch-name', false);
         expect(setFailed).toBeCalledTimes(0);
@@ -165,7 +199,7 @@ describe('action should', () => {
 
     test("create new branch with default name given it doesn't exist", async () => {
         mockRepository.branchExists.mockResolvedValue(false);
-        mockSearch.search.mockResolvedValue(['some-file']);
+        mockFile.search.mockResolvedValue(['some-file']);
         await run();
         expect(mockRepository.checkoutBranch).toBeCalledWith(BRANCH_NAME.defaultValue, true);
         expect(setFailed).toBeCalledTimes(0);
@@ -174,20 +208,20 @@ describe('action should', () => {
     test("create new branch with custom name given it doesn't exist", async () => {
         setupInput({ branchName: 'some-branch-name' });
         mockRepository.branchExists.mockResolvedValue(false);
-        mockSearch.search.mockResolvedValue(['some-file']);
+        mockFile.search.mockResolvedValue(['some-file']);
         await run();
         expect(mockRepository.checkoutBranch).toBeCalledWith('some-branch-name', true);
         expect(setFailed).toBeCalledTimes(0);
     });
 
     test('set failed given no files matching the path', async () => {
-        mockSearch.search.mockResolvedValue([]);
+        mockFile.search.mockResolvedValue([]);
         await run();
         expect(setFailed).toBeCalledTimes(1);
     });
 
     test('applies default transform on all files matching the path', async () => {
-        mockSearch.search.mockResolvedValue(['some-file-1', 'some-file-2']);
+        mockFile.search.mockResolvedValue(['some-file-1', 'some-file-2']);
         await run();
         expect(mockTransforms.applyTransform).nthCalledWith(
             1,
@@ -208,7 +242,7 @@ describe('action should', () => {
 
     test('applies custom transform on all files matching the path', async () => {
         setupInput({ transform: 'custom transform' });
-        mockSearch.search.mockResolvedValue(['some-file-1', 'some-file-2']);
+        mockFile.search.mockResolvedValue(['some-file-1', 'some-file-2']);
         await run();
         expect(mockTransforms.applyTransform).nthCalledWith(
             1,
@@ -228,7 +262,7 @@ describe('action should', () => {
     });
 
     test('writes file given transform updates it', async () => {
-        mockSearch.search.mockResolvedValue(['some-file']);
+        mockFile.search.mockResolvedValue(['some-file']);
         mockTransforms.applyTransform.mockReturnValue('updated content');
         await run();
         expect(mockRepository.writeFile).toBeCalledWith('some-file', 'updated content');
@@ -236,7 +270,7 @@ describe('action should', () => {
     });
 
     test('aborts if no files where changed', async () => {
-        mockSearch.search.mockResolvedValue(['some-file']);
+        mockFile.search.mockResolvedValue(['some-file']);
         mockRepository.hasChanges.mockReturnValue(false);
         await run();
         expect(mockRepository.stageWrittenFiles).toBeCalledTimes(0);
@@ -246,7 +280,7 @@ describe('action should', () => {
     });
 
     test('stages, commits and pushes if files where changed', async () => {
-        mockSearch.search.mockResolvedValue(['some-file']);
+        mockFile.search.mockResolvedValue(['some-file']);
         mockRepository.hasChanges.mockReturnValue(true);
         await run();
         expect(mockRepository.stageWrittenFiles).toBeCalledTimes(1);
@@ -256,7 +290,7 @@ describe('action should', () => {
     });
 
     test('commits with default commit title and body', async () => {
-        mockSearch.search.mockResolvedValue(['some-file']);
+        mockFile.search.mockResolvedValue(['some-file']);
         mockRepository.hasChanges.mockReturnValue(true);
         await run();
         expect(mockRepository.commit).toBeCalledWith(COMMIT_TITLE.defaultValue);
@@ -265,7 +299,7 @@ describe('action should', () => {
 
     test('commits with custom commit title and default body', async () => {
         setupInput({ commitTitle: 'some commit title' });
-        mockSearch.search.mockResolvedValue(['some-file']);
+        mockFile.search.mockResolvedValue(['some-file']);
         mockRepository.hasChanges.mockReturnValue(true);
         await run();
         expect(mockRepository.commit).toBeCalledWith('some commit title');
@@ -274,7 +308,7 @@ describe('action should', () => {
 
     test('commits with default commit title and custom body', async () => {
         setupInput({ commitBody: 'some commit body' });
-        mockSearch.search.mockResolvedValue(['some-file']);
+        mockFile.search.mockResolvedValue(['some-file']);
         mockRepository.hasChanges.mockReturnValue(true);
         await run();
         expect(mockRepository.commit).toBeCalledWith(`${COMMIT_TITLE.defaultValue}\n\nsome commit body`);
@@ -283,7 +317,7 @@ describe('action should', () => {
 
     test('commits with custom commit title and custom body', async () => {
         setupInput({ commitTitle: 'some commit title', commitBody: 'some commit body' });
-        mockSearch.search.mockResolvedValue(['some-file']);
+        mockFile.search.mockResolvedValue(['some-file']);
         mockRepository.hasChanges.mockReturnValue(true);
         await run();
         expect(mockRepository.commit).toBeCalledWith('some commit title\n\nsome commit body');
@@ -292,7 +326,7 @@ describe('action should', () => {
 
     describe("given pull request doesn't exist", () => {
         test('skip creating pull request given files are unchanged', async () => {
-            mockSearch.search.mockResolvedValue(['some-file']);
+            mockFile.search.mockResolvedValue(['some-file']);
             mockRepository.hasChanges.mockReturnValue(false);
             await run();
             expect(mockRepository.createPullRequest).toBeCalledTimes(0);
@@ -301,7 +335,7 @@ describe('action should', () => {
 
         test('create pull request with default title and body', async () => {
             setupInput({ pullRequestTitle: PR_TITLE.defaultValue, pullRequestBody: PR_BODY.defaultValue });
-            mockSearch.search.mockResolvedValue(['some-file']);
+            mockFile.search.mockResolvedValue(['some-file']);
             mockRepository.hasChanges.mockReturnValue(true);
             await run();
             expect(mockRepository.createPullRequest).toBeCalledWith(
@@ -314,7 +348,7 @@ describe('action should', () => {
 
         test('create pull request with default title and custom body', async () => {
             setupInput({ pullRequestTitle: PR_TITLE.defaultValue, pullRequestBody: 'some pr body' });
-            mockSearch.search.mockResolvedValue(['some-file']);
+            mockFile.search.mockResolvedValue(['some-file']);
             mockRepository.hasChanges.mockReturnValue(true);
             await run();
             expect(mockRepository.createPullRequest).toBeCalledWith(
@@ -327,7 +361,7 @@ describe('action should', () => {
 
         test('create pull request with custom title and default body', async () => {
             setupInput({ pullRequestTitle: 'some pr title', pullRequestBody: PR_BODY.defaultValue });
-            mockSearch.search.mockResolvedValue(['some-file']);
+            mockFile.search.mockResolvedValue(['some-file']);
             mockRepository.hasChanges.mockReturnValue(true);
             await run();
             expect(mockRepository.createPullRequest).toBeCalledWith(
@@ -340,7 +374,7 @@ describe('action should', () => {
 
         test('create pull request with custom title and body', async () => {
             setupInput({ pullRequestTitle: 'some pr title', pullRequestBody: 'some pr body' });
-            mockSearch.search.mockResolvedValue(['some-file']);
+            mockFile.search.mockResolvedValue(['some-file']);
             mockRepository.hasChanges.mockReturnValue(true);
             await run();
             expect(setFailed).toBeCalledTimes(0);
@@ -354,7 +388,7 @@ describe('action should', () => {
 
         test('create pull request and add assignees given configuration', async () => {
             setupInput({ assignees: ['assignee1', 'assignee2', 'assignee3'] });
-            mockSearch.search.mockResolvedValue(['some-file']);
+            mockFile.search.mockResolvedValue(['some-file']);
             mockRepository.hasChanges.mockReturnValue(true);
             mockRepository.createPullRequest.mockResolvedValue({ data: { number: 42 } });
             await run();
@@ -363,7 +397,7 @@ describe('action should', () => {
         });
 
         test('create pull request and skip adding assignees given no configuration', async () => {
-            mockSearch.search.mockResolvedValue(['some-file']);
+            mockFile.search.mockResolvedValue(['some-file']);
             mockRepository.hasChanges.mockReturnValue(true);
             await run();
             expect(mockRepository.addAssignees).toBeCalledTimes(0);
@@ -372,7 +406,7 @@ describe('action should', () => {
 
         test('create pull request and add labels given configuration', async () => {
             setupInput({ labels: ['some label 1', 'some label 2', 'some label 3'] });
-            mockSearch.search.mockResolvedValue(['some-file']);
+            mockFile.search.mockResolvedValue(['some-file']);
             mockRepository.hasChanges.mockReturnValue(true);
             mockRepository.createPullRequest.mockResolvedValue({ data: { number: 42 } });
             await run();
@@ -381,7 +415,7 @@ describe('action should', () => {
         });
 
         test('create pull request and skip adding labels given no configuration', async () => {
-            mockSearch.search.mockResolvedValue(['some-file']);
+            mockFile.search.mockResolvedValue(['some-file']);
             mockRepository.hasChanges.mockReturnValue(true);
             await run();
             expect(mockRepository.addLabels).toBeCalledTimes(0);
@@ -389,7 +423,7 @@ describe('action should', () => {
         });
 
         test('set failed given creating pull request fails', async () => {
-            mockSearch.search.mockResolvedValue(['some-file']);
+            mockFile.search.mockResolvedValue(['some-file']);
             mockRepository.hasChanges.mockReturnValue(true);
             mockRepository.createPullRequest.mockRejectedValue({});
             await run();
@@ -400,7 +434,7 @@ describe('action should', () => {
 
     describe('given pull request exists', () => {
         test('skip creating pull request', async () => {
-            mockSearch.search.mockResolvedValue(['some-file']);
+            mockFile.search.mockResolvedValue(['some-file']);
             mockRepository.hasChanges.mockReturnValue(true);
             mockRepository.hasPullRequest.mockResolvedValue(true);
             await run();
@@ -421,13 +455,15 @@ describe('action should', () => {
  * @property {string} [commitBody]
  * @property {string} [commitAuthorName]
  * @property {string} [commitAuthorEmail]
+ * @property {string} [gpgPrivateKey]
+ * @property {string} [gpgPassphrase]
  * @property {string} [pullRequestTitle]
  * @property {string} [pullRequestBody]
  * @property {string[]} [assignees]
  * @property {string[]} [labels]
  */
-function setupInput(config) {
-    mockInputs.parseInput.mockReturnValue({
+const setupInput = (config) => {
+    mockInputs.parse.mockReturnValue({
         token: config.token || 'some token',
         path: config.path || PATH.defaultValue,
         transform: config.transform || TRANSFORM.defaultValue,
@@ -436,9 +472,11 @@ function setupInput(config) {
         commitBody: config.commitBody || COMMIT_BODY.defaultValue,
         commitAuthorName: config.commitAuthorName || COMMIT_AUTHOR_NAME.defaultValue,
         commitAuthorEmail: config.commitAuthorEmail || COMMIT_AUTHOR_EMAIL.defaultValue,
+        gpgPrivateKey: config.gpgPrivateKey || GPG_PRIVATE_KEY.defaultValue,
+        gpgPassphrase: config.gpgPassphrase || GPG_PASSPHRASE.defaultValue,
         pullRequestTitle: config.pullRequestTitle || PR_TITLE.defaultValue,
         pullRequestBody: config.pullRequestBody || PR_BODY.defaultValue,
         assignees: config.assignees || [],
         labels: config.labels || [],
     });
-}
+};

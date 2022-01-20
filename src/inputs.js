@@ -47,6 +47,18 @@ const COMMIT_AUTHOR_EMAIL = {
     defaultValue: 'github-actions@github.com',
 };
 
+const GPG_PRIVATE_KEY = {
+    name: 'gpgPrivateKey',
+    env: 'INPUT_GPGPRIVATEKEY',
+    defaultValue: '',
+};
+
+const GPG_PASSPHRASE = {
+    name: 'gpgPassphrase',
+    env: 'INPUT_GPGPASSPHRASE',
+    defaultValue: '',
+};
+
 const PR_TITLE = {
     name: 'prTitle',
     env: 'INPUT_PRTITLE',
@@ -77,7 +89,7 @@ const VARIABLES = {
     currentYear: CURRENT_YEAR.toString(),
 };
 
-const parseInput = () => {
+const parse = () => {
     const token = getInput(TOKEN.name, { required: true });
     const path = getInput(PATH.name) || PATH.defaultValue;
     const transform = validateTransform(getInput(TRANSFORM.name) || TRANSFORM.defaultValue);
@@ -86,6 +98,8 @@ const parseInput = () => {
     const commitBody = substituteVariables(getInput(COMMIT_BODY.name) || COMMIT_BODY.defaultValue);
     const commitAuthorName = getInput(COMMIT_AUTHOR_NAME.name) || COMMIT_AUTHOR_NAME.defaultValue;
     const commitAuthorEmail = getInput(COMMIT_AUTHOR_EMAIL.name) || COMMIT_AUTHOR_EMAIL.defaultValue;
+    const gpgPrivateKey = getInput(GPG_PRIVATE_KEY.name) || GPG_PRIVATE_KEY.defaultValue;
+    const gpgPassphrase = getInput(GPG_PASSPHRASE.name) || GPG_PASSPHRASE.defaultValue;
     const pullRequestTitle = substituteVariables(getInput(PR_TITLE.name) || PR_TITLE.defaultValue);
     const pullRequestBody = substituteVariables(getInput(PR_BODY.name) || PR_BODY.defaultValue);
     const assignees = splitCsv(getInput(ASSIGNEES.name) || ASSIGNEES.defaultValue);
@@ -100,6 +114,8 @@ const parseInput = () => {
         commitBody,
         commitAuthorName,
         commitAuthorEmail,
+        gpgPrivateKey,
+        gpgPassphrase,
         pullRequestTitle,
         pullRequestBody,
         assignees,
@@ -156,7 +172,7 @@ const validateTransform = (transform) => {
 };
 
 module.exports = {
-    parseInput,
+    parse,
     TOKEN,
     PATH,
     TRANSFORM,
@@ -165,6 +181,8 @@ module.exports = {
     COMMIT_BODY,
     COMMIT_AUTHOR_NAME,
     COMMIT_AUTHOR_EMAIL,
+    GPG_PRIVATE_KEY,
+    GPG_PASSPHRASE,
     PR_TITLE,
     PR_BODY,
     ASSIGNEES,

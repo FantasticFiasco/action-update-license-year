@@ -40,7 +40,7 @@ module.exports =
 /******/ 	// the startup function
 /******/ 	function startup() {
 /******/ 		// Load entry module and return exports
-/******/ 		return __webpack_require__(31);
+/******/ 		return __webpack_require__(676);
 /******/ 	};
 /******/
 /******/ 	// run startup
@@ -260,11 +260,129 @@ module.exports = eval("require")("encoding");
 /***/ }),
 
 /***/ 31:
-/***/ (function(__unusedmodule, __unusedexports, __webpack_require__) {
+/***/ (function(module, __unusedexports, __webpack_require__) {
 
-const { run } = __webpack_require__(95);
+const { setFailed, info } = __webpack_require__(470);
+const { context } = __webpack_require__(469);
 
-run();
+const file = __webpack_require__(130);
+const gpg = __webpack_require__(329);
+const inputs = __webpack_require__(659);
+const Repository = __webpack_require__(178);
+const transforms = __webpack_require__(106);
+
+const run = async () => {
+    try {
+        const cwd = process.env.GITHUB_WORKSPACE;
+        if (cwd === undefined) {
+            throw new Error('GitHub Actions has not set the working directory');
+        }
+        info(`Working directory: ${cwd}`);
+
+        const { owner, repo: repoName } = context.repo;
+        const {
+            token,
+            path,
+            transform,
+            branchName,
+            commitTitle,
+            commitBody,
+            commitAuthorName,
+            commitAuthorEmail,
+            gpgPrivateKey,
+            gpgPassphrase,
+            pullRequestTitle,
+            pullRequestBody,
+            assignees,
+            labels,
+        } = inputs.parse();
+
+        const repo = new Repository(owner, repoName, token);
+        await repo.authenticate(commitAuthorName, commitAuthorEmail);
+
+        if (gpgPrivateKey) {
+            if (!gpgPassphrase) {
+                throw new Error('No GPG passphrase specified');
+            }
+
+            info('Setup GPG to sign commits');
+            const keyId = await gpg.importPrivateKey(gpg.cli, inputs.GPG_PRIVATE_KEY.env);
+            const gpgProgramFilePath = await gpg.createGpgProgram(inputs.GPG_PASSPHRASE.env);
+            await repo.setupGpg(keyId, gpgProgramFilePath);
+        }
+
+        const branchExists = await repo.branchExists(branchName);
+        info(`Checkout ${branchExists ? 'existing' : 'new'} branch named "${branchName}"`);
+        await repo.checkoutBranch(branchName, !branchExists);
+
+        const files = await file.search(path);
+        if (files.length === 0) {
+            throw new Error(`Found no files matching the path "${singleLine(path)}"`);
+        }
+
+        info(`Found ${files.length} file(s) matching the path "${singleLine(path)}"`);
+
+        const currentYear = new Date().getFullYear();
+        info(`Current year is "${currentYear}"`);
+
+        for (const file of files) {
+            const relativeFile = file.replace(cwd, '.');
+            const content = await repo.readFile(file);
+            const updatedContent = transforms.applyTransform(transform, content, currentYear, relativeFile);
+            if (updatedContent !== content) {
+                info(`Update license in "${relativeFile}"`);
+                await repo.writeFile(file, updatedContent);
+            } else {
+                info(`File "${relativeFile}" is already up-to-date`);
+            }
+        }
+
+        if (!repo.hasChanges()) {
+            info(`No licenses were updated, let's abort`);
+            return;
+        }
+
+        await repo.stageWrittenFiles();
+
+        const commitMessage = commitBody ? `${commitTitle}\n\n${commitBody}` : commitTitle;
+        await repo.commit(commitMessage);
+        await repo.push();
+
+        const hasPullRequest = await repo.hasPullRequest(branchName);
+        if (!hasPullRequest) {
+            info(`Create new pull request with title "${pullRequestTitle}"`);
+            const createPullRequestResponse = await repo.createPullRequest(
+                branchName,
+                pullRequestTitle,
+                pullRequestBody
+            );
+
+            if (assignees.length > 0) {
+                info(`Add assignees to pull request: ${JSON.stringify(assignees)}`);
+                await repo.addAssignees(createPullRequestResponse.data.number, assignees);
+            }
+
+            if (labels.length > 0) {
+                info(`Add labels to pull request: ${JSON.stringify(labels)}`);
+                await repo.addLabels(createPullRequestResponse.data.number, labels);
+            }
+        }
+    } catch (err) {
+        // @ts-ignore
+        setFailed(err.message);
+    }
+};
+
+/**
+ * @param {string} text
+ */
+const singleLine = (text) => {
+    return text.replace(/\n/g, '\\n');
+};
+
+module.exports = {
+    run,
+};
 
 
 /***/ }),
@@ -1525,119 +1643,6 @@ function regExpEscape (s) {
 
 /***/ }),
 
-/***/ 95:
-/***/ (function(module, __unusedexports, __webpack_require__) {
-
-const { setFailed, info } = __webpack_require__(470);
-const { context } = __webpack_require__(469);
-const { parseInput } = __webpack_require__(659);
-const { applyTransform } = __webpack_require__(106);
-const Repository = __webpack_require__(178);
-const { search } = __webpack_require__(491);
-
-const run = async () => {
-    try {
-        const cwd = process.env.GITHUB_WORKSPACE;
-        if (cwd === undefined) {
-            throw new Error('GitHub Actions has not set the working directory');
-        }
-        info(`Working directory: ${cwd}`);
-
-        const { owner, repo: repoName } = context.repo;
-        const {
-            token,
-            path,
-            transform,
-            branchName,
-            commitTitle,
-            commitBody,
-            commitAuthorName,
-            commitAuthorEmail,
-            pullRequestTitle,
-            pullRequestBody,
-            assignees,
-            labels,
-        } = parseInput();
-
-        const repo = new Repository(owner, repoName, token);
-        await repo.authenticate(commitAuthorName, commitAuthorEmail);
-
-        const branchExists = await repo.branchExists(branchName);
-        info(`Checkout ${branchExists ? 'existing' : 'new'} branch named "${branchName}"`);
-        await repo.checkoutBranch(branchName, !branchExists);
-
-        const files = await search(path);
-        if (files.length === 0) {
-            throw new Error(`Found no files matching the path "${singleLine(path)}"`);
-        }
-
-        info(`Found ${files.length} file(s) matching the path "${singleLine(path)}"`);
-
-        const currentYear = new Date().getFullYear();
-        info(`Current year is "${currentYear}"`);
-
-        for (const file of files) {
-            const relativeFile = file.replace(cwd, '.');
-            const content = await repo.readFile(file);
-            const updatedContent = applyTransform(transform, content, currentYear, relativeFile);
-            if (updatedContent !== content) {
-                info(`Update license in "${relativeFile}"`);
-                await repo.writeFile(file, updatedContent);
-            } else {
-                info(`File "${relativeFile}" is already up-to-date`);
-            }
-        }
-
-        if (!repo.hasChanges()) {
-            info(`No licenses were updated, let's abort`);
-            return;
-        }
-
-        await repo.stageWrittenFiles();
-
-        const commitMessage = commitBody ? `${commitTitle}\n\n${commitBody}` : commitTitle;
-        await repo.commit(commitMessage);
-        await repo.push();
-
-        const hasPullRequest = await repo.hasPullRequest(branchName);
-        if (!hasPullRequest) {
-            info(`Create new pull request with title "${pullRequestTitle}"`);
-            const createPullRequestResponse = await repo.createPullRequest(
-                branchName,
-                pullRequestTitle,
-                pullRequestBody
-            );
-
-            if (assignees.length > 0) {
-                info(`Add assignees to pull request: ${JSON.stringify(assignees)}`);
-                await repo.addAssignees(createPullRequestResponse.data.number, assignees);
-            }
-
-            if (labels.length > 0) {
-                info(`Add labels to pull request: ${JSON.stringify(labels)}`);
-                await repo.addLabels(createPullRequestResponse.data.number, labels);
-            }
-        }
-    } catch (err) {
-        // @ts-ignore
-        setFailed(err.message);
-    }
-};
-
-/**
- * @param {string} text
- */
-const singleLine = (text) => {
-    return text.replace(/\n/g, '\\n');
-};
-
-module.exports = {
-    run,
-};
-
-
-/***/ }),
-
 /***/ 102:
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
@@ -2321,6 +2326,32 @@ module.exports = require("child_process");
 
 /***/ }),
 
+/***/ 130:
+/***/ (function(module, __unusedexports, __webpack_require__) {
+
+const { create } = __webpack_require__(281);
+const fs = __webpack_require__(747);
+
+/**
+ * @param {string} pattern
+ */
+const search = async (pattern) => {
+    const globber = await create(pattern);
+    const paths = await globber.glob();
+    const files = paths.filter((path) => {
+        return fs.statSync(path).isFile();
+    });
+
+    return files;
+};
+
+module.exports = {
+    search,
+};
+
+
+/***/ }),
+
 /***/ 141:
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
@@ -2656,10 +2687,9 @@ module.exports = /^#!.*/;
 /***/ (function(module, __unusedexports, __webpack_require__) {
 
 const { getOctokit } = __webpack_require__(469);
-const { exec } = __webpack_require__(930);
-const { promisify } = __webpack_require__(669);
-const readFileAsync = promisify(__webpack_require__(747).readFile);
-const writeFileAsync = promisify(__webpack_require__(747).writeFile);
+const { readFile, writeFile } = __webpack_require__(747).promises;
+
+const processes = __webpack_require__(305);
 
 class Repository {
     /**
@@ -2683,11 +2713,27 @@ class Repository {
      */
     async authenticate(userName, email) {
         try {
-            await exec(`git config user.name ${userName}`);
-            await exec(`git config user.email ${email}`);
+            await processes.exec(`git config user.name ${userName}`);
+            await processes.exec(`git config user.email ${email}`);
         } catch (err) {
             // @ts-ignore
             err.message = `Error authenticating user "${userName}" with e-mail "${email}": ${err.message}`;
+            throw err;
+        }
+    }
+
+    /**
+     * @param {string} keyId
+     * @param {string} gpgProgram
+     */
+    async setupGpg(keyId, gpgProgram) {
+        try {
+            await processes.exec(`git config commit.gpgsign true`);
+            await processes.exec(`git config user.signingkey ${keyId}`);
+            await processes.exec(`git config gpg.program "${gpgProgram}"`);
+        } catch (err) {
+            // @ts-ignore
+            err.message = `Error setting up GPG": ${err.message}`;
             throw err;
         }
     }
@@ -2698,12 +2744,12 @@ class Repository {
     async branchExists(name) {
         try {
             const hasLocalBranch = async () => {
-                const { stdout } = await exec(`git branch --list "${name}"`);
+                const { stdout } = await processes.exec(`git branch --list "${name}"`);
                 return stdout.includes(name);
             };
 
             const hasRemoteBranch = async () => {
-                const { stdout } = await exec(`git ls-remote --heads origin "${name}"`);
+                const { stdout } = await processes.exec(`git ls-remote --heads origin "${name}"`);
                 return stdout.includes(name);
             };
 
@@ -2721,7 +2767,7 @@ class Repository {
      */
     async checkoutBranch(name, isNew) {
         try {
-            await exec(`git checkout ${isNew ? '-b' : ''} "${name}"`);
+            await processes.exec(`git checkout ${isNew ? '-b' : ''} "${name}"`);
 
             this._currentBranch = name;
             this._isCurrentBranchNew = isNew;
@@ -2737,7 +2783,7 @@ class Repository {
      */
     async readFile(path) {
         try {
-            const content = await readFileAsync(path, { encoding: 'utf8' });
+            const content = await readFile(path, { encoding: 'utf8' });
             return content;
         } catch (err) {
             // @ts-ignore
@@ -2752,7 +2798,7 @@ class Repository {
      */
     async writeFile(path, content) {
         try {
-            await writeFileAsync(path, content, { encoding: 'utf8', flag: 'r+' });
+            await writeFile(path, content, { encoding: 'utf8', flag: 'r+' });
             this._writtenFiles.push(path);
         } catch (err) {
             // @ts-ignore
@@ -2768,7 +2814,7 @@ class Repository {
     async stageWrittenFiles() {
         for (const writtenFile of this._writtenFiles) {
             try {
-                await exec(`git add "${writtenFile}"`);
+                await processes.exec(`git add "${writtenFile}"`);
             } catch (err) {
                 // @ts-ignore
                 err.message = `Error staging file "${writtenFile}": ${err.message}`;
@@ -2782,7 +2828,7 @@ class Repository {
      */
     async commit(message) {
         try {
-            await exec(`git commit -m "${message}"`);
+            await processes.exec(`git commit -m "${message}"`);
         } catch (err) {
             // @ts-ignore
             err.message = `Error committing files: ${err.message}`;
@@ -2796,7 +2842,7 @@ class Repository {
             if (this._isCurrentBranchNew) {
                 cmd += ` --set-upstream origin ${this._currentBranch}`;
             }
-            await exec(cmd);
+            await processes.exec(cmd);
 
             this._isCurrentBranchNew = false;
             this._writtenFiles = [];
@@ -2836,7 +2882,7 @@ class Repository {
      */
     async createPullRequest(sourceBranchName, title, body) {
         try {
-            const { stdout: defaultBranch } = await exec(
+            const { stdout: defaultBranch } = await processes.exec(
                 `git remote show origin | grep 'HEAD branch' | cut -d ' ' -f5`
             );
 
@@ -3592,6 +3638,29 @@ exports.toCommandValue = toCommandValue;
 
 /***/ }),
 
+/***/ 287:
+/***/ (function(module) {
+
+/**
+ * Always set to true.
+ */
+const ci = process.env.CI;
+
+/**
+ * The path to a temporary directory on the runner. This directory is emptied at
+ * the beginning and end of each job. Note that files will not be removed if the
+ * runner's user account does not have permission to delete them.
+ */
+const runnerTemp = process.env.RUNNER_TEMP;
+
+module.exports = {
+    ci,
+    runnerTemp,
+};
+
+
+/***/ }),
+
 /***/ 297:
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
@@ -3986,6 +4055,31 @@ exports.paginatingEndpoints = paginatingEndpoints;
 
 /***/ }),
 
+/***/ 305:
+/***/ (function(module, __unusedexports, __webpack_require__) {
+
+const { promisify } = __webpack_require__(669);
+const execAsync = promisify(__webpack_require__(129).exec);
+
+/**
+ * @param {string} cmd
+ * @param {import("child_process").ExecOptions | undefined} options
+ */
+const exec = async (cmd, options = undefined) => {
+    const { stdout, stderr } = await execAsync(cmd, options);
+    return {
+        stdout: stdout.toString().trim(),
+        stderr: stderr.toString().trim(),
+    };
+};
+
+module.exports = {
+    exec,
+};
+
+
+/***/ }),
+
 /***/ 306:
 /***/ (function(module, __unusedexports, __webpack_require__) {
 
@@ -4216,6 +4310,65 @@ var MatchKind;
     MatchKind[MatchKind["All"] = 3] = "All";
 })(MatchKind = exports.MatchKind || (exports.MatchKind = {}));
 //# sourceMappingURL=internal-match-kind.js.map
+
+/***/ }),
+
+/***/ 329:
+/***/ (function(module, __unusedexports, __webpack_require__) {
+
+const fs = __webpack_require__(747).promises;
+
+const processes = __webpack_require__(305);
+const temp = __webpack_require__(695);
+
+/**
+ * @param {{importPrivateKey: (privateKey: string) => Promise<{stdout: string, stderr: string}>}} cli
+ * @param {string} privateKeyEnvName
+ * @returns The key id
+ */
+const importPrivateKey = async (cli, privateKeyEnvName) => {
+    const { stderr } = await cli.importPrivateKey(privateKeyEnvName);
+    const regex = /gpg: key ([0123456789ABCDEF]*): secret key imported/;
+    const match = regex.exec(stderr);
+    if (match === null || match.length !== 2) {
+        throw new Error(`Import private GPG key failed: ${stderr}`);
+    }
+
+    return match[1];
+};
+
+const cli = {
+    importPrivateKey: async function (/** @type {string} */ privateKeyEnvName) {
+        const filePath = temp.file('gpg_import');
+        // Node.js is running processes using sh, but in this case we need support for process
+        // substitution. That's the reason for the shebang workaround.
+        const data = `#!/bin/bash\n\ngpg2 --batch --yes --import <(echo "$${privateKeyEnvName}")`;
+        await fs.writeFile(filePath, data, {
+            mode: 0o700,
+        });
+        return await processes.exec(filePath);
+    },
+};
+
+/**
+ * @param {string} passphraseEnvName
+ * @returns The GPG program file path
+ */
+const createGpgProgram = async (passphraseEnvName) => {
+    const filePath = temp.file('git_gpg_signer');
+    const data = `gpg2 --pinentry-mode loopback --passphrase "$${passphraseEnvName}" --no-tty "$@"`;
+    await fs.writeFile(filePath, data, {
+        mode: 0o700,
+    });
+    return filePath;
+};
+
+module.exports = {
+    importPrivateKey,
+    cli,
+    createGpgProgram,
+};
+
 
 /***/ }),
 
@@ -7686,32 +7839,6 @@ exports.getIDToken = getIDToken;
 
 /***/ }),
 
-/***/ 491:
-/***/ (function(module, __unusedexports, __webpack_require__) {
-
-const { statSync } = __webpack_require__(747);
-const { create } = __webpack_require__(281);
-
-/**
- * @param {string} pattern
- */
-const search = async (pattern) => {
-    const globber = await create(pattern);
-    const paths = await globber.glob();
-    const files = paths.filter((path) => {
-        return statSync(path).isFile();
-    });
-
-    return files;
-};
-
-module.exports = {
-    search,
-};
-
-
-/***/ }),
-
 /***/ 496:
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
@@ -9213,6 +9340,18 @@ const COMMIT_AUTHOR_EMAIL = {
     defaultValue: 'github-actions@github.com',
 };
 
+const GPG_PRIVATE_KEY = {
+    name: 'gpgPrivateKey',
+    env: 'INPUT_GPGPRIVATEKEY',
+    defaultValue: '',
+};
+
+const GPG_PASSPHRASE = {
+    name: 'gpgPassphrase',
+    env: 'INPUT_GPGPASSPHRASE',
+    defaultValue: '',
+};
+
 const PR_TITLE = {
     name: 'prTitle',
     env: 'INPUT_PRTITLE',
@@ -9243,7 +9382,7 @@ const VARIABLES = {
     currentYear: CURRENT_YEAR.toString(),
 };
 
-const parseInput = () => {
+const parse = () => {
     const token = getInput(TOKEN.name, { required: true });
     const path = getInput(PATH.name) || PATH.defaultValue;
     const transform = validateTransform(getInput(TRANSFORM.name) || TRANSFORM.defaultValue);
@@ -9252,6 +9391,8 @@ const parseInput = () => {
     const commitBody = substituteVariables(getInput(COMMIT_BODY.name) || COMMIT_BODY.defaultValue);
     const commitAuthorName = getInput(COMMIT_AUTHOR_NAME.name) || COMMIT_AUTHOR_NAME.defaultValue;
     const commitAuthorEmail = getInput(COMMIT_AUTHOR_EMAIL.name) || COMMIT_AUTHOR_EMAIL.defaultValue;
+    const gpgPrivateKey = getInput(GPG_PRIVATE_KEY.name) || GPG_PRIVATE_KEY.defaultValue;
+    const gpgPassphrase = getInput(GPG_PASSPHRASE.name) || GPG_PASSPHRASE.defaultValue;
     const pullRequestTitle = substituteVariables(getInput(PR_TITLE.name) || PR_TITLE.defaultValue);
     const pullRequestBody = substituteVariables(getInput(PR_BODY.name) || PR_BODY.defaultValue);
     const assignees = splitCsv(getInput(ASSIGNEES.name) || ASSIGNEES.defaultValue);
@@ -9266,6 +9407,8 @@ const parseInput = () => {
         commitBody,
         commitAuthorName,
         commitAuthorEmail,
+        gpgPrivateKey,
+        gpgPassphrase,
         pullRequestTitle,
         pullRequestBody,
         assignees,
@@ -9322,7 +9465,7 @@ const validateTransform = (transform) => {
 };
 
 module.exports = {
-    parseInput,
+    parse,
     TOKEN,
     PATH,
     TRANSFORM,
@@ -9331,6 +9474,8 @@ module.exports = {
     COMMIT_BODY,
     COMMIT_AUTHOR_NAME,
     COMMIT_AUTHOR_EMAIL,
+    GPG_PRIVATE_KEY,
+    GPG_PASSPHRASE,
     PR_TITLE,
     PR_BODY,
     ASSIGNEES,
@@ -9717,6 +9862,18 @@ module.exports.shellSync = (cmd, opts) => handleShell(module.exports.sync, cmd, 
 
 /***/ }),
 
+/***/ 676:
+/***/ (function(__unusedmodule, __unusedexports, __webpack_require__) {
+
+const main = __webpack_require__(31);
+
+(async () => {
+    await main.run();
+})();
+
+
+/***/ }),
+
 /***/ 692:
 /***/ (function(__unusedmodule, exports) {
 
@@ -9741,6 +9898,36 @@ class Deprecation extends Error {
 }
 
 exports.Deprecation = Deprecation;
+
+
+/***/ }),
+
+/***/ 695:
+/***/ (function(module, __unusedexports, __webpack_require__) {
+
+const os = __webpack_require__(87);
+const path = __webpack_require__(622);
+
+const { runnerTemp } = __webpack_require__(287);
+
+const dir = () => {
+    if (runnerTemp) {
+        return runnerTemp;
+    }
+    return os.tmpdir();
+};
+
+/**
+ * @param {string} fileName
+ */
+const file = (fileName) => {
+    return path.join(dir(), fileName);
+};
+
+module.exports = {
+    dir,
+    file,
+};
 
 
 /***/ }),
@@ -12246,31 +12433,6 @@ class Pattern {
 }
 exports.Pattern = Pattern;
 //# sourceMappingURL=internal-pattern.js.map
-
-/***/ }),
-
-/***/ 930:
-/***/ (function(module, __unusedexports, __webpack_require__) {
-
-const { promisify } = __webpack_require__(669);
-const execAsync = promisify(__webpack_require__(129).exec);
-
-/**
- * @param {string} cmd
- * @param {import("child_process").ExecOptions | undefined} options
- */
-const exec = async (cmd, options = undefined) => {
-    const { stdout, stderr } = await execAsync(cmd, options);
-    return {
-        stdout: stdout.toString().trim(),
-        stderr: stderr.toString().trim(),
-    };
-};
-
-module.exports = {
-    exec,
-};
-
 
 /***/ }),
 

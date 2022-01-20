@@ -65,6 +65,19 @@ inputs:
     default: "github-actions@github.com"
     required: false
 
+  gpgPrivateKey:
+    description: >
+      The GPG private key, used in combination with gpgPassphrase when signing commits. Private keys
+      protected by a passphrase are supported while private keys without a passphrase are
+      unsupported.
+    default: ""
+    required: false
+
+  gpgPassphrase:
+    description: The GPG passphrase, used in combination with gpgPrivateKey when signing commits.
+    default: ""
+    required: false
+
   prTitle:
     description: The title of the new pull request. Supports substituting variable {{currentYear}}.
     default: Update license copyright year(s)

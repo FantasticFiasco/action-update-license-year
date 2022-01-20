@@ -1,0 +1,2 @@
+gpg: can't open 'missing-file.asc': No such file or directory
+gpg: Total number processed: 0
