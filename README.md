@@ -171,6 +171,7 @@ The following chapter will showcase some common scenarios and their GitHub Actio
 - [I want to update all my license in my monorepo](#i-want-to-update-all-my-license-in-my-monorepo)
 - [I want to update the license in my source files](#i-want-to-update-the-license-in-my-source-files)
 - [I want to update my license and a custom source in the same PR](#i-want-to-update-my-license-and-a-custom-source-in-the-same-pr)
+- [I want to GPG sign my commits](#i-want-to-gpg-sign-my-commits)
 - [I want my pull requests to follow a convention](#i-want-my-pull-requests-to-follow-a-convention)
 - [I want my pull requests to be automatically merged](#i-want-my-pull-requests-to-be-automatically-merged)
 
