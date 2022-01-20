@@ -4195,11 +4195,11 @@ const temp = __webpack_require__(695);
 
 /**
  * @param {{importPrivateKey: (privateKey: string) => Promise<{stdout: string, stderr: string}>}} cli
- * @param {string} privateKey
+ * @param {string} privateKeyEnvName
  * @returns The key id
  */
-const importPrivateKey = async (cli, privateKey) => {
-    const { stderr } = await cli.importPrivateKey(privateKey);
+const importPrivateKey = async (cli, privateKeyEnvName) => {
+    const { stderr } = await cli.importPrivateKey(privateKeyEnvName);
     const regex = /gpg: key ([0123456789ABCDEF]*): secret key imported/;
     const match = regex.exec(stderr);
     if (match === null || match.length !== 2) {
@@ -4207,6 +4207,17 @@ const importPrivateKey = async (cli, privateKey) => {
     }
 
     return match[1];
+};
+
+const cli = {
+    importPrivateKey: async function (/** @type {string} */ privateKeyEnvName) {
+        const filePath = temp.file('gpg_import');
+        const data = `#!/bin/bash\n\ngpg2 --batch --yes --import <(echo "$${privateKeyEnvName}")`;
+        await fs.writeFile(filePath, data, {
+            mode: 0o700,
+        });
+        return await processes.exec(filePath);
+    },
 };
 
 /**
@@ -4222,16 +4233,10 @@ const createGpgProgram = async (passphraseEnvName) => {
     return filePath;
 };
 
-const cli = {
-    importPrivateKey: async function (/** @type {string} */ privateKey) {
-        return await processes.exec(`gpg2 --batch --yes --import <(echo "${privateKey}")`);
-    },
-};
-
 module.exports = {
     importPrivateKey,
-    createGpgProgram,
     cli,
+    createGpgProgram,
 };
 
 
@@ -9769,7 +9774,7 @@ const run = async () => {
 
         if (gpgPrivateKey) {
             info('Setup GPG to sign commits');
-            const keyId = await gpg.importPrivateKey(gpg.cli, gpgPrivateKey);
+            const keyId = await gpg.importPrivateKey(gpg.cli, inputs.GPG_PASSPHRASE.env);
             const gpgProgramFilePath = await gpg.createGpgProgram(inputs.GPG_PASSPHRASE.env);
             await repo.setupGpg(keyId, gpgProgramFilePath);
         }
