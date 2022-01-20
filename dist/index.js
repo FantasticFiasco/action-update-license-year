@@ -2687,7 +2687,7 @@ module.exports = /^#!.*/;
 /***/ (function(module, __unusedexports, __webpack_require__) {
 
 const { getOctokit } = __webpack_require__(469);
-const { readFile, writeFile } = __webpack_require__(747).promises;
+const fs = __webpack_require__(747).promises;
 
 const processes = __webpack_require__(305);
 
@@ -2783,7 +2783,7 @@ class Repository {
      */
     async readFile(path) {
         try {
-            const content = await readFile(path, { encoding: 'utf8' });
+            const content = await fs.readFile(path, { encoding: 'utf8' });
             return content;
         } catch (err) {
             // @ts-ignore
@@ -2798,7 +2798,7 @@ class Repository {
      */
     async writeFile(path, content) {
         try {
-            await writeFile(path, content, { encoding: 'utf8', flag: 'r+' });
+            await fs.writeFile(path, content, { encoding: 'utf8', flag: 'r+' });
             this._writtenFiles.push(path);
         } catch (err) {
             // @ts-ignore
