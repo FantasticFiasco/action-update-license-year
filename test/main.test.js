@@ -173,16 +173,11 @@ describe('action should', () => {
         expect(setFailed).toBeCalledTimes(0);
     });
 
-    test('setup gpg given gpg private key without passphrase', async () => {
+    test('set failed given gpg private key without passphrase', async () => {
         setupInput({ gpgPrivateKey: 'some private key' });
-        mockGpg.importPrivateKey.mockResolvedValue('some key');
-        mockGpg.createGpgProgram.mockResolvedValue('some file path');
         mockFile.search.mockResolvedValue(['some-file']);
         await run();
-        expect(mockGpg.importPrivateKey).toBeCalledWith(mockGpg.cli, GPG_PRIVATE_KEY.env);
-        expect(mockGpg.createGpgProgram).toBeCalledWith(GPG_PASSPHRASE.env);
-        expect(mockRepository.setupGpg).toBeCalledWith('some key', 'some file path');
-        expect(setFailed).toBeCalledTimes(0);
+        expect(setFailed).toBeCalledTimes(1);
     });
 
     test('checkout existing branch with default name given it exists', async () => {

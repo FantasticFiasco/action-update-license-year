@@ -66,7 +66,10 @@ inputs:
     required: false
 
   gpgPrivateKey:
-    description: The GPG private key, used in combination with gpgPassphrase when signing commits.
+    description: >
+      The GPG private key, used in combination with gpgPassphrase when signing commits. Private keys
+      protected by a passphrase are supported while private keys without a passphrase are
+      unsupported.
     default: ""
     required: false
 

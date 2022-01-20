@@ -26,6 +26,7 @@ const run = async () => {
             commitAuthorName,
             commitAuthorEmail,
             gpgPrivateKey,
+            gpgPassphrase,
             pullRequestTitle,
             pullRequestBody,
             assignees,
@@ -36,6 +37,10 @@ const run = async () => {
         await repo.authenticate(commitAuthorName, commitAuthorEmail);
 
         if (gpgPrivateKey) {
+            if (!gpgPassphrase) {
+                throw new Error('No GPG passphrase specified');
+            }
+
             info('Setup GPG to sign commits');
             const keyId = await gpg.importPrivateKey(gpg.cli, inputs.GPG_PRIVATE_KEY.env);
             const gpgProgramFilePath = await gpg.createGpgProgram(inputs.GPG_PASSPHRASE.env);
