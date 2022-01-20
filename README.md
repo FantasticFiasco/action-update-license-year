@@ -58,7 +58,7 @@ jobs:
     # We recommend using a service account with the least permissions necessary. Also
     # when generating a new PAT, select the least scopes necessary.
     #
-    # [Learn more about creating and using encrypted secrets](https://help.github.com/en/actions/automating-your-workflow-with-github-actions/creating-and-using-encrypted-secrets)
+    # [Learn more about creating and using encrypted secrets](https://help.github.com/actions/automating-your-workflow-with-github-actions/creating-and-using-encrypted-secrets)
     #
     # Required: true
     token: ''
@@ -115,6 +115,20 @@ jobs:
     # Default: github-actions@github.com
     commitAuthorEmail: ''
 
+    # The GPG private key, used in combination with gpgPassphrase when signing
+    # commits. Private keys protected by a passphrase are supported while private keys
+    # without a passphrase are unsupported.
+    #
+    # Required: false
+    # Default:
+    gpgPrivateKey: ''
+
+    # The GPG passphrase, used in combination with gpgPrivateKey when signing commits.
+    #
+    # Required: false
+    # Default:
+    gpgPassphrase: ''
+
     # The title of the new pull request. Supports substituting variable
     # {{currentYear}}.
     #
@@ -162,7 +176,7 @@ The following chapter will showcase some common scenarios and their GitHub Actio
 
 ### I'm new to GitHub Actions and don't know where to start
 
-GitHub Actions is in detail described on the [GitHub Actions documentation](https://docs.github.com/en/actions), but basically it boils down to creating a file in `./.github/workflows/`, e.g. `./.github/workflows/update-copyright-years-in-license-file.yml`, and then decide on [when to trigger the action](https://docs.github.com/en/actions/reference/events-that-trigger-workflows), and finally configure it if necessary.
+GitHub Actions is in detail described on the [GitHub Actions documentation](https://docs.github.com/actions), but basically it boils down to creating a file in `./.github/workflows/`, e.g. `./.github/workflows/update-copyright-years-in-license-file.yml`, and then decide on [when to trigger the action](https://docs.github.com/actions/reference/events-that-trigger-workflows), and finally configure it if necessary.
 
 The following scenarios will provide you with some examples.
 
@@ -181,12 +195,12 @@ jobs:
   run:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-      with:
-        fetch-depth: 0
-    - uses: FantasticFiasco/action-update-license-year@v2
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - uses: FantasticFiasco/action-update-license-year@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 ```
 
 ### I want to update my license using a manual trigger
@@ -202,12 +216,12 @@ jobs:
   run:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-      with:
-        fetch-depth: 0
-    - uses: FantasticFiasco/action-update-license-year@v2
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - uses: FantasticFiasco/action-update-license-year@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 ```
 
 ### I want to update my license, but it isn't called `LICENSE`
@@ -216,13 +230,13 @@ You have a license in your repository, but perhaps it isn't called `LICENSE`. Ma
 
 ```yaml
 steps:
-- uses: actions/checkout@v2
-  with:
-    fetch-depth: 0
-- uses: FantasticFiasco/action-update-license-year@v2
-  with:
-    token: ${{ secrets.GITHUB_TOKEN }}
-    path: LICENSE.md
+  - uses: actions/checkout@v2
+    with:
+      fetch-depth: 0
+  - uses: FantasticFiasco/action-update-license-year@v2
+    with:
+      token: ${{ secrets.GITHUB_TOKEN }}
+      path: LICENSE.md
 ```
 
 ### I want to update my license, but it isn't supported by this action
@@ -238,13 +252,13 @@ The expression will be used by `String.prototype.replace()` to apply the transfo
 
 ```yaml
 steps:
-- uses: actions/checkout@v2
-  with:
-    fetch-depth: 0
-- uses: FantasticFiasco/action-update-license-year@v2
-  with:
-    token: ${{ secrets.GITHUB_TOKEN }}
-    transform: (?<=my own copyright )(?<from>\d{4})?-?(\d{4})?
+  - uses: actions/checkout@v2
+    with:
+      fetch-depth: 0
+  - uses: FantasticFiasco/action-update-license-year@v2
+    with:
+      token: ${{ secrets.GITHUB_TOKEN }}
+      transform: (?<=my own copyright )(?<from>\d{4})?-?(\d{4})?
 ```
 
 ### I want to update all my licenses, I have more than one
@@ -253,15 +267,15 @@ Your repository might contain more than one license. Perhaps you have one for op
 
 ```yaml
 steps:
-- uses: actions/checkout@v2
-  with:
-    fetch-depth: 0
-- uses: FantasticFiasco/action-update-license-year@v2
-  with:
-    token: ${{ secrets.GITHUB_TOKEN }}
-    path: |
-      LICENSE-OPEN-SOURCE
-      LICENSE-COMMERCIAL
+  - uses: actions/checkout@v2
+    with:
+      fetch-depth: 0
+  - uses: FantasticFiasco/action-update-license-year@v2
+    with:
+      token: ${{ secrets.GITHUB_TOKEN }}
+      path: |
+        LICENSE-OPEN-SOURCE
+        LICENSE-COMMERCIAL
 ```
 
 ### I want to update all my licenses in my monorepo
@@ -270,13 +284,13 @@ Your repository is perhaps a monorepo and you have a lot of licenses. You would 
 
 ```yaml
 steps:
-- uses: actions/checkout@v2
-  with:
-    fetch-depth: 0
-- uses: FantasticFiasco/action-update-license-year@v2
-  with:
-    token: ${{ secrets.GITHUB_TOKEN }}
-    path: packages/*/LICENSE
+  - uses: actions/checkout@v2
+    with:
+      fetch-depth: 0
+  - uses: FantasticFiasco/action-update-license-year@v2
+    with:
+      token: ${{ secrets.GITHUB_TOKEN }}
+      path: packages/*/LICENSE
 ```
 
 ### I want to update the license in my source files
@@ -285,13 +299,13 @@ You have a header in each and every source file specifying your license. That's 
 
 ```yaml
 steps:
-- uses: actions/checkout@v2
-  with:
-    fetch-depth: 0
-- uses: FantasticFiasco/action-update-license-year@v2
-  with:
-    token: ${{ secrets.GITHUB_TOKEN }}
-    path: src/**/*.js
+  - uses: actions/checkout@v2
+    with:
+      fetch-depth: 0
+  - uses: FantasticFiasco/action-update-license-year@v2
+    with:
+      token: ${{ secrets.GITHUB_TOKEN }}
+      path: src/**/*.js
 ```
 
 ### I want to update my license and a custom source in the same PR
@@ -303,25 +317,44 @@ jobs:
   license:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-      with:
-        fetch-depth: 0
-    - uses: FantasticFiasco/action-update-license-year@v2
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - uses: FantasticFiasco/action-update-license-year@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
   source:
     needs: license
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-      with:
-        fetch-depth: 0
-    - uses: FantasticFiasco/action-update-license-year@v2
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        path: "*.js"
-        transform: (?<=my own copyright )(?<from>\d{4})?-?(\d{4})?
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - uses: FantasticFiasco/action-update-license-year@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          path: "*.js"
+          transform: (?<=my own copyright )(?<from>\d{4})?-?(\d{4})?
+```
+
+### I want to GPG sign my commits
+
+You might rely on [GitHub commit signature verification](https://docs.github.com/authentication/managing-commit-signature-verification/about-commit-signature-verification) and just love the green sparkling badges. No worries, you can configure this action to use the private key with its corresponding passphrase to sign the commit.
+
+Just remember that the GPG key must be registered to a valid GitHub user, and the e-mail address of that user must be configured as well.
+
+```yaml
+steps:
+  - uses: actions/checkout@v2
+    with:
+      fetch-depth: 0
+  - uses: FantasticFiasco/action-update-license-year@master
+    with:
+      token: ${{ secrets.GITHUB_TOKEN }}
+      commitAuthorEmail: <your github email>
+      gpgPrivateKey: ${{ secrets.gpgPrivateKey }}
+      gpgPassphrase: ${{ secrets.gpgPassphrase }}
 ```
 
 ### I want my pull requests to follow a convention
@@ -330,19 +363,19 @@ Your pull requests might follow some convention. It might require some specific 
 
 ```yaml
 steps:
-- uses: actions/checkout@v2
+  - uses: actions/checkout@v2
     with:
       fetch-depth: 0
-- uses: FantasticFiasco/action-update-license-year@v2
-  with:
-    token: ${{ secrets.GITHUB_TOKEN }}
-    branchName: license/{{currentYear}}
-    commitTitle: update my license
-    commitBody: Let's keep legal happy.
-    prTitle: Update my license
-    prBody: It's that time of the year, let's update the license.
-    assignees: MyUser, SomeMaintainer
-    labels: documentation, legal
+  - uses: FantasticFiasco/action-update-license-year@v2
+    with:
+      token: ${{ secrets.GITHUB_TOKEN }}
+      branchName: license/{{currentYear}}
+      commitTitle: update my license
+      commitBody: Let's keep legal happy.
+      prTitle: Update my license
+      prBody: It's that time of the year, let's update the license.
+      assignees: MyUser, SomeMaintainer
+      labels: documentation, legal
 ```
 
 ### I want my pull requests to be automatically merged
@@ -351,22 +384,22 @@ Your pull requests can be merged and the branch deleted by utilizing [GitHub CLI
 
 ```yaml
 steps:
-- uses: actions/checkout@v2
+  - uses: actions/checkout@v2
     with:
       fetch-depth: 0
-- uses: FantasticFiasco/action-update-license-year@v2
-  with:
-    token: ${{ secrets.GITHUB_TOKEN }}
-- name: Merge pull request
-  env:
-    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  run: |
-    # Replace '--merge' with '--rebase' to rebase the commits onto the base
-    # branch, or with '--squash' to squash the commits into one commit and merge
-    # it into the base branch.
-    # For more information regarding the merge command, please see
-    # https://cli.github.com/manual/gh_pr_merge.
-    gh pr merge --merge --delete-branch
+  - uses: FantasticFiasco/action-update-license-year@v2
+    with:
+      token: ${{ secrets.GITHUB_TOKEN }}
+  - name: Merge pull request
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    run: |
+      # Replace '--merge' with '--rebase' to rebase the commits onto the base
+      # branch, or with '--squash' to squash the commits into one commit and merge
+      # it into the base branch.
+      # For more information regarding the merge command, please see
+      # https://cli.github.com/manual/gh_pr_merge.
+      gh pr merge --merge --delete-branch
 ```
 
 ## Contributors
