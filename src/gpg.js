@@ -22,6 +22,8 @@ const importPrivateKey = async (cli, privateKeyEnvName) => {
 const cli = {
     importPrivateKey: async function (/** @type {string} */ privateKeyEnvName) {
         const filePath = temp.file('gpg_import');
+        // Node.js is running processes using sh, but in this case we need support for process
+        // substitution. That's the reason for the shebang workaround.
         const data = `#!/bin/bash\n\ngpg2 --batch --yes --import <(echo "$${privateKeyEnvName}")`;
         await fs.writeFile(filePath, data, {
             mode: 0o700,
