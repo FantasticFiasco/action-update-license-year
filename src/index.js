@@ -37,7 +37,7 @@ const run = async () => {
 
         if (gpgPrivateKey) {
             info('Setup GPG to sign commits');
-            const keyId = await gpg.importPrivateKey(gpg.cli, inputs.GPG_PASSPHRASE.env);
+            const keyId = await gpg.importPrivateKey(gpg.cli, inputs.GPG_PRIVATE_KEY.env);
             const gpgProgramFilePath = await gpg.createGpgProgram(inputs.GPG_PASSPHRASE.env);
             await repo.setupGpg(keyId, gpgProgramFilePath);
         }
