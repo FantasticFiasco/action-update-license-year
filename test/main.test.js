@@ -20,6 +20,24 @@ jest.mock('@actions/github', () => {
     return mockGithub;
 });
 
+// ../src/file
+const mockFile = {
+    search: jest.fn(),
+};
+jest.mock('../src/file', () => {
+    return mockFile;
+});
+
+// ../src/gpg
+const mockGpg = {
+    importPrivateKey: jest.fn(),
+    cli: jest.fn(),
+    createGpgProgram: jest.fn(),
+};
+jest.mock('../src/gpg', () => {
+    return mockGpg;
+});
+
 // ../src/inputs
 const mockInputs = {
     parse: jest.fn(),
@@ -61,17 +79,9 @@ const mockRepository = {
     addLabels: jest.fn(),
 };
 jest.mock('../src/repository', () => {
-    return () => {
+    return function () {
         return mockRepository;
     };
-});
-
-// ../src/file
-const mockFile = {
-    search: jest.fn(),
-};
-jest.mock('../src/file', () => {
-    return mockFile;
 });
 
 // ../src/transforms
@@ -148,6 +158,30 @@ describe('action should', () => {
         mockFile.search.mockResolvedValue(['some-file']);
         await run();
         expect(mockRepository.authenticate).toBeCalledWith('some-author-name', 'some-author@mail.com');
+        expect(setFailed).toBeCalledTimes(0);
+    });
+
+    test('setup gpg given gpg private key with passphrase', async () => {
+        setupInput({ gpgPrivateKey: 'some private key', gpgPassphrase: 'some passphrase' });
+        mockGpg.importPrivateKey.mockResolvedValue('some key');
+        mockGpg.createGpgProgram.mockResolvedValue('some file path');
+        mockFile.search.mockResolvedValue(['some-file']);
+        await run();
+        expect(mockGpg.importPrivateKey).toBeCalledWith(mockGpg.cli, GPG_PRIVATE_KEY.env);
+        expect(mockGpg.createGpgProgram).toBeCalledWith(GPG_PASSPHRASE.env);
+        expect(mockRepository.setupGpg).toBeCalledWith('some key', 'some file path');
+        expect(setFailed).toBeCalledTimes(0);
+    });
+
+    test('setup gpg given gpg private key without passphrase', async () => {
+        setupInput({ gpgPrivateKey: 'some private key' });
+        mockGpg.importPrivateKey.mockResolvedValue('some key');
+        mockGpg.createGpgProgram.mockResolvedValue('some file path');
+        mockFile.search.mockResolvedValue(['some-file']);
+        await run();
+        expect(mockGpg.importPrivateKey).toBeCalledWith(mockGpg.cli, GPG_PRIVATE_KEY.env);
+        expect(mockGpg.createGpgProgram).toBeCalledWith(GPG_PASSPHRASE.env);
+        expect(mockRepository.setupGpg).toBeCalledWith('some key', 'some file path');
         expect(setFailed).toBeCalledTimes(0);
     });
 
@@ -426,6 +460,8 @@ describe('action should', () => {
  * @property {string} [commitBody]
  * @property {string} [commitAuthorName]
  * @property {string} [commitAuthorEmail]
+ * @property {string} [gpgPrivateKey]
+ * @property {string} [gpgPassphrase]
  * @property {string} [pullRequestTitle]
  * @property {string} [pullRequestBody]
  * @property {string[]} [assignees]
@@ -441,6 +477,8 @@ const setupInput = (config) => {
         commitBody: config.commitBody || COMMIT_BODY.defaultValue,
         commitAuthorName: config.commitAuthorName || COMMIT_AUTHOR_NAME.defaultValue,
         commitAuthorEmail: config.commitAuthorEmail || COMMIT_AUTHOR_EMAIL.defaultValue,
+        gpgPrivateKey: config.gpgPrivateKey || GPG_PRIVATE_KEY.defaultValue,
+        gpgPassphrase: config.gpgPassphrase || GPG_PASSPHRASE.defaultValue,
         pullRequestTitle: config.pullRequestTitle || PR_TITLE.defaultValue,
         pullRequestBody: config.pullRequestBody || PR_BODY.defaultValue,
         assignees: config.assignees || [],
