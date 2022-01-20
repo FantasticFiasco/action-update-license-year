@@ -66,10 +66,12 @@ inputs:
     required: false
 
   gpgPrivateKey:
+    description: The GPG private key, used in combination with gpgPassphrase when signing commits.
     default: ""
     required: false
 
   gpgPassphrase:
+    description: The GPG passphrase, used in combination with gpgPrivateKey when signing commits.
     default: ""
     required: false
 
