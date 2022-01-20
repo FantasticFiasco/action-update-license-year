@@ -15,7 +15,7 @@ const INPUTS = {
     LABELS: inputs.LABELS,
 };
 
-describe('#parseInput should', () => {
+describe('#parse should', () => {
     beforeEach(() => {
         // Let's make sure that all inputs are cleared before each test
         for (const key of Object.keys(INPUTS)) {
