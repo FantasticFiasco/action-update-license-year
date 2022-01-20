@@ -1,21 +1,23 @@
 // @actions/core
+const mockCore = {
+    info: jest.fn(),
+    setFailed: jest.fn(),
+};
 jest.mock('@actions/core', () => {
-    return {
-        info: jest.fn(),
-        setFailed: jest.fn(),
-    };
+    return mockCore;
 });
 
 // @actions/github
-jest.mock('@actions/github', () => {
-    return {
-        context: {
-            repo: {
-                owner: 'FantasticFiasco',
-                repo: 'action-update-license-year',
-            },
+const mockGithub = {
+    context: {
+        repo: {
+            owner: 'FantasticFiasco',
+            repo: 'action-update-license-year',
         },
-    };
+    },
+};
+jest.mock('@actions/github', () => {
+    return mockGithub;
 });
 
 // ../src/inputs
