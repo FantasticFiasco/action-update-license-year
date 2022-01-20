@@ -69,6 +69,19 @@ describe('#authenticate should', () => {
     });
 });
 
+describe('#setupGpg should', () => {
+    test('configure git', async () => {
+        const repo = new Repository('some owner', 'some name', 'some token');
+        await repo.setupGpg('some-key-id', 'some-gpg-program');
+        const { stdout: commitGpgSign } = await processes.exec('git config commit.gpgsign');
+        expect(commitGpgSign).toBe('true');
+        const { stdout: userSigningKey } = await processes.exec('git config user.signingkey');
+        expect(userSigningKey).toBe('some-key-id');
+        const { stdout: gpgProgram } = await processes.exec('git config gpg.program');
+        expect(gpgProgram).toBe('some-gpg-program');
+    });
+});
+
 describe('#branchExists should', () => {
     beforeEach(() => {
         // These tests depend on the current repo
