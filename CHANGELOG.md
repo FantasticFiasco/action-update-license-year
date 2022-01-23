@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ## [Unreleased]
 
+### :dizzy: Changed
+
+- Migrate into running on Node.js v16
+
 ## [2.2.0] - 2022-01-20
 
 ### :zap: Added

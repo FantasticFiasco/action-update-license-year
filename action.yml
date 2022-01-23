@@ -2,6 +2,14 @@ name: Update license copyright year(s)
 description: Updates the copyright year(s) in your license file and creates a pull request.
 author: Mattias Kindborg <mattias.kindborg@gmail.com> (https://twitter.com/FantasticFiasco)
 
+runs:
+  using: node16
+  main: ./dist/index.js
+
+branding:
+  icon: sunrise
+  color: orange
+
 inputs:
   token:
     description: >
@@ -98,11 +106,3 @@ inputs:
     description: Comma-separated list of labels to add when pull request is created.
     default: ""
     required: false
-
-runs:
-  using: node12
-  main: ./dist/index.js
-
-branding:
-  icon: sunrise
-  color: orange
