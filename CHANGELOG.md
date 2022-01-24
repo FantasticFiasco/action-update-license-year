@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ## [Unreleased]
 
+## [2.2.1] - 2022-01-24
+
 ### :dizzy: Changed
 
 - Migrate into running on Node.js v16
