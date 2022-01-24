@@ -10,6 +10,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 - Migrate into running on Node.js v16
 
+### :policeman: Security
+
+- Security vulnerability in transient dependency `node-fetch`
+
 ## [2.2.0] - 2022-01-20
 
 ### :zap: Added
