@@ -10,7 +10,7 @@ jobs:
         run: echo -e "$(curl --silent https://raw.githubusercontent.com/FantasticFiasco/logo/master/logo.ansi)"
       - uses: actions/checkout@v2
       - name: Use Node.js lts/*
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: lts/*
           check-latest: true
