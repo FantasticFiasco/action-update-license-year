@@ -49,7 +49,6 @@
     "kind-of": ">=6.0.3",
     "lodash": ">=4.17.19",
     "minimist": ">=1.2.6",
-    "node-fetch": ">=2.6.7",
     "node-notifier": ">=8.0.1",
     "path-parse": ">=1.0.7",
     "tmpl": ">=1.0.5"
