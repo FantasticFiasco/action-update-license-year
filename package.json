@@ -45,8 +45,6 @@
     "typescript": "4.6.4"
   },
   "resolutions": {
-    "@actions/http-client": ">=1.0.8",
-    "acorn": ">=7.1.1",
     "hosted-git-info": ">=2.8.9",
     "kind-of": ">=6.0.3",
     "lodash": ">=4.17.19",
@@ -54,7 +52,6 @@
     "node-fetch": ">=2.6.7",
     "node-notifier": ">=8.0.1",
     "path-parse": ">=1.0.7",
-    "tmpl": ">=1.0.5",
-    "y18n": ">=4.0.1"
+    "tmpl": ">=1.0.5"
   }
 }
