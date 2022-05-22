@@ -1,131 +1,131 @@
 // @ts-nocheck
-const fs = require('fs');
-const os = require('os');
-const path = require('path');
-const yaml = require('js-yaml');
+const fs = require('fs')
+const os = require('os')
+const path = require('path')
+const yaml = require('js-yaml')
 
 const getPackageMajorVersion = () => {
-    const version = require(path.join(__dirname, '..', 'package.json')).version;
-    const match = /(\d+)\.\d+\.\d+/.exec(version);
+    const version = require(path.join(__dirname, '..', 'package.json')).version
+    const match = /(\d+)\.\d+\.\d+/.exec(version)
     if (!match) {
-        throw new Error(`Package version '${version}' did not meet expected format`);
+        throw new Error(`Package version '${version}' did not meet expected format`)
     }
-    return match[1];
-};
+    return match[1]
+}
 
 const updateApi = () => {
     // Load the action.yml
-    const actionYaml = yaml.load(fs.readFileSync(METADATA_PATH).toString());
+    const actionYaml = yaml.load(fs.readFileSync(METADATA_PATH).toString())
 
     // Load the README
-    const originalReadme = fs.readFileSync(README_PATH).toString();
+    const originalReadme = fs.readFileSync(README_PATH).toString()
 
     // Find the start token
-    const startTokenIndex = originalReadme.indexOf(API_START_TOKEN);
+    const startTokenIndex = originalReadme.indexOf(API_START_TOKEN)
     if (startTokenIndex < 0) {
-        throw new Error(`Start token '${API_START_TOKEN}' not found`);
+        throw new Error(`Start token '${API_START_TOKEN}' not found`)
     }
 
     // Find the end token
-    const endTokenIndex = originalReadme.indexOf(API_END_TOKEN);
+    const endTokenIndex = originalReadme.indexOf(API_END_TOKEN)
     if (endTokenIndex < 0) {
-        throw new Error(`End token '${API_END_TOKEN}' not found`);
+        throw new Error(`End token '${API_END_TOKEN}' not found`)
     } else if (endTokenIndex < startTokenIndex) {
-        throw new Error('Start token must appear before end token');
+        throw new Error('Start token must appear before end token')
     }
 
     // Build the new README
-    const newReadme = [];
+    const newReadme = []
 
     // Append the beginning
-    newReadme.push(originalReadme.substr(0, startTokenIndex + API_START_TOKEN.length));
+    newReadme.push(originalReadme.substr(0, startTokenIndex + API_START_TOKEN.length))
 
     // Build the new API section
-    newReadme.push('```yaml');
-    newReadme.push(`- uses: ${ACTION_NAME}`);
-    newReadme.push('  with:');
+    newReadme.push('```yaml')
+    newReadme.push(`- uses: ${ACTION_NAME}`)
+    newReadme.push('  with:')
 
-    const inputs = actionYaml.inputs;
-    let firstInput = true;
+    const inputs = actionYaml.inputs
+    let firstInput = true
     for (const key of Object.keys(inputs)) {
-        const input = inputs[key];
+        const input = inputs[key]
 
         // Line break between inputs
         if (!firstInput) {
-            newReadme.push('');
+            newReadme.push('')
         }
 
         // Constrain the width of the description
-        const maxWidth = 80;
+        const maxWidth = 80
 
-        let description = input.description.replace(/ +/g, ' ').trim();
+        let description = input.description.replace(/ +/g, ' ').trim()
 
         while (description) {
             // Longer than width? Find a space to break apart
-            let segment = description;
+            let segment = description
             if (description.length > maxWidth) {
-                segment = description.substr(0, maxWidth + 1);
+                segment = description.substr(0, maxWidth + 1)
                 while (!segment.endsWith(' ') && !segment.endsWith('\n') && segment) {
-                    segment = segment.substr(0, segment.length - 1);
+                    segment = segment.substr(0, segment.length - 1)
                 }
 
                 // Trimmed too much?
                 if (segment.length < maxWidth * 0.67) {
-                    segment = description;
+                    segment = description
                 }
             } else {
-                segment = description;
+                segment = description
             }
 
             // Check for newline
-            const newlineIndex = segment.indexOf('\n');
+            const newlineIndex = segment.indexOf('\n')
             if (newlineIndex >= 0) {
-                segment = segment.substr(0, newlineIndex + 1);
+                segment = segment.substr(0, newlineIndex + 1)
             }
 
             // Append segment
-            newReadme.push(`    # ${segment}`.trimRight());
+            newReadme.push(`    # ${segment}`.trimRight())
 
             // Remaining
-            description = description.substr(segment.length);
+            description = description.substr(segment.length)
         }
 
         // Append blank line
-        newReadme.push(`    #`);
+        newReadme.push(`    #`)
 
         // Required
         if (input.required !== undefined) {
-            newReadme.push(`    # Required: ${input.required}`);
+            newReadme.push(`    # Required: ${input.required}`)
         }
 
         // Default
         if (input.default !== undefined) {
-            let defaultLine = '    # Default:';
+            let defaultLine = '    # Default:'
             if (input.default !== '') {
-                defaultLine += ` ${input.default}`;
+                defaultLine += ` ${input.default}`
             }
-            newReadme.push(defaultLine);
+            newReadme.push(defaultLine)
         }
 
         // Input name
-        newReadme.push(`    ${key}: ''`);
+        newReadme.push(`    ${key}: ''`)
 
-        firstInput = false;
+        firstInput = false
     }
 
-    newReadme.push('```');
+    newReadme.push('```')
 
     // Append the end
-    newReadme.push(originalReadme.substr(endTokenIndex));
+    newReadme.push(originalReadme.substr(endTokenIndex))
 
     // Write the new README
-    fs.writeFileSync(README_PATH, newReadme.join(os.EOL));
-};
+    fs.writeFileSync(README_PATH, newReadme.join(os.EOL))
+}
 
-const ACTION_NAME = `FantasticFiasco/action-update-license-year@v${getPackageMajorVersion()}`;
-const METADATA_PATH = path.join(__dirname, '..', 'action.yml');
-const README_PATH = path.join(__dirname, '..', 'README.md');
-const API_START_TOKEN = '<!-- start api -->';
-const API_END_TOKEN = '<!-- end api -->';
+const ACTION_NAME = `FantasticFiasco/action-update-license-year@v${getPackageMajorVersion()}`
+const METADATA_PATH = path.join(__dirname, '..', 'action.yml')
+const README_PATH = path.join(__dirname, '..', 'README.md')
+const API_START_TOKEN = '<!-- start api -->'
+const API_END_TOKEN = '<!-- end api -->'
 
-updateApi();
+updateApi()

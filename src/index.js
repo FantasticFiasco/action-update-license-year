@@ -1,5 +1,5 @@
-const main = require('./main');
+const main = require('./main')
 
-(async () => {
-    await main.run();
-})();
+;(async () => {
+    await main.run()
+})()
