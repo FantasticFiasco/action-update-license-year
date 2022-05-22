@@ -1,27 +1,42 @@
-const success = {
-    title: () => "# We've got some work to do",
-    body: {
-        /**
-         * @param {number} pr
-         */
-        single: (pr) =>
-            `License was found in 1 file and it had to be updated. Pull request #${pr} contains the changes.`,
-        /**
-         *
-         * @param {number} total
-         * @param {number} updated
-         * @param {number} pr
-         * @returns
-         */
-        multiple: (total, updated, pr) =>
-            `Licenses where found in ${total} files and ${updated} had to be updated. Pull request #${pr} contains the changes.`,
-    },
+const core = require('@actions/core')
+
+/**
+ * @param {number} nbrOfFiles
+ * @param {number} nbrOfUpdatedFiles
+ * @param {number} pr
+ */
+const write = async (nbrOfFiles, nbrOfUpdatedFiles, pr) => {
+    const summary = core.summary.addHeading("We've got some work to do")
+
+    if (nbrOfFiles === 1) {
+        summary.addRaw(
+            `License was found in 1 file and it had to be updated. Pull request #${pr} contains the changes.`
+        )
+    } else {
+        summary.addRaw(
+            `Licenses where found in ${nbrOfFiles} files and ${nbrOfUpdatedFiles} had to be updated. Pull request #${pr} contains the changes.`
+        )
+    }
+
+    await summary.write()
 }
 
-const skip = {
-    title: () => "# Everything's up to date",
-    body: {
-        single: () => "License was found in 1 file but it didn't need any update.",
-        multiple: () => 'Licenses where found in {0} files but none had to be updated.',
-    },
+/**
+ * @param {number} nbrOfFiles
+ */
+const writeNoAction = async (nbrOfFiles) => {
+    const summary = core.summary.addHeading("Everything's up to date")
+
+    if (nbrOfFiles === 1) {
+        summary.addRaw("License was found in 1 file but it didn't need any update.")
+    } else {
+        summary.addRaw('Licenses where found in {0} files but none had to be updated.')
+    }
+
+    await summary.write()
+}
+
+module.exports = {
+    write,
+    writeNoAction,
 }
