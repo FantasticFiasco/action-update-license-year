@@ -223,7 +223,7 @@ describe('#getPullRequest should', () => {
         })
         const repo = new Repository('some owner', 'some name', 'some token')
         const promise = repo.getPullRequest('some-branch')
-        await expect(promise).resolves.toBe(1)
+        await expect(promise).resolves.toBe(42)
     })
 
     test("return false given pull request doesn't exist", async () => {
