@@ -44,6 +44,8 @@ beforeEach(async () => {
     await processes.exec('git config user.name "John Doe"')
     await processes.exec('git config user.email "john.doe@mail.com"')
     await processes.exec('echo "# Test repo" > README.md')
+    await processes.exec('echo "# Contributing" > CONTRIBUTING.md')
+    await processes.exec('echo "# Code of conduct" > CODE_OF_CONDUCT.md')
     await processes.exec('git add README.md')
     await processes.exec('git commit -m "docs(readme): add"')
 
@@ -172,8 +174,8 @@ describe('#nbrOfChanges should', () => {
     test('return 3 given three changes', async () => {
         const repo = new Repository('some owner', 'some name', 'some token')
         await repo.writeFile('README.md', '# New title\n')
-        await repo.writeFile('README2.md', '# New title\n')
-        await repo.writeFile('README3.md', '# New title\n')
+        await repo.writeFile('CONTRIBUTING.md', '# New title\n')
+        await repo.writeFile('CODE_OF_CONDUCT.md', '# New title\n')
         const got = repo.nbrOfChanges()
         expect(got).toBe(3)
     })
