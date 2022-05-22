@@ -3,18 +3,18 @@ const core = require('@actions/core')
 /**
  * @param {number} nbrOfFiles
  * @param {number} nbrOfUpdatedFiles
- * @param {number} pr
+ * @param {number} pullRequest
  */
-const write = async (nbrOfFiles, nbrOfUpdatedFiles, pr) => {
+const write = async (nbrOfFiles, nbrOfUpdatedFiles, pullRequest) => {
     const summary = core.summary.addHeading("We've got some work to do")
 
     if (nbrOfFiles === 1) {
         summary.addRaw(
-            `License was found in 1 file and it had to be updated. Pull request #${pr} contains the changes.`
+            `License was found in 1 file and it had to be updated. Pull request #${pullRequest} contains the changes.`
         )
     } else {
         summary.addRaw(
-            `Licenses where found in ${nbrOfFiles} files and ${nbrOfUpdatedFiles} had to be updated. Pull request #${pr} contains the changes.`
+            `Licenses where found in ${nbrOfFiles} files and ${nbrOfUpdatedFiles} had to be updated. Pull request #${pullRequest} contains the changes.`
         )
     }
 

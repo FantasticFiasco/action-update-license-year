@@ -73,7 +73,7 @@ const mockRepository = {
     stageWrittenFiles: jest.fn(),
     commit: jest.fn(),
     push: jest.fn(),
-    hasPullRequest: jest.fn(),
+    getPullRequest: jest.fn(),
     createPullRequest: jest.fn(),
     addAssignees: jest.fn(),
     addLabels: jest.fn(),
@@ -436,7 +436,7 @@ describe('action should', () => {
         test('skip creating pull request', async () => {
             mockFile.search.mockResolvedValue(['some-file'])
             mockRepository.nbrOfChanges.mockReturnValue(1)
-            mockRepository.hasPullRequest.mockResolvedValue(true)
+            mockRepository.getPullRequest.mockResolvedValue(1)
             await run()
             expect(mockRepository.createPullRequest).toBeCalledTimes(0)
             expect(setFailed).toBeCalledTimes(0)

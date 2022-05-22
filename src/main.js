@@ -5,6 +5,7 @@ const file = require('./file')
 const gpg = require('./gpg')
 const inputs = require('./inputs')
 const Repository = require('./repository')
+const summary = require('./summary')
 const transforms = require('./transforms')
 
 const run = async () => {
@@ -73,8 +74,11 @@ const run = async () => {
             }
         }
 
-        if (repo.nbrOfChanges() === 0) {
+        const nbrOfUpdatedFiles = repo.nbrOfChanges()
+
+        if (nbrOfUpdatedFiles === 0) {
             info(`No licenses were updated, let's abort`)
+            await summary.writeNoAction(files.length)
             return
         }
 
@@ -84,25 +88,25 @@ const run = async () => {
         await repo.commit(commitMessage)
         await repo.push()
 
-        const hasPullRequest = await repo.hasPullRequest(branchName)
-        if (!hasPullRequest) {
+        let pullRequest = await repo.getPullRequest(branchName)
+        if (pullRequest === null) {
             info(`Create new pull request with title "${pullRequestTitle}"`)
-            const createPullRequestResponse = await repo.createPullRequest(
-                branchName,
-                pullRequestTitle,
-                pullRequestBody
-            )
+            const { data } = await repo.createPullRequest(branchName, pullRequestTitle, pullRequestBody)
+
+            pullRequest = data.number
 
             if (assignees.length > 0) {
                 info(`Add assignees to pull request: ${JSON.stringify(assignees)}`)
-                await repo.addAssignees(createPullRequestResponse.data.number, assignees)
+                await repo.addAssignees(pullRequest, assignees)
             }
 
             if (labels.length > 0) {
                 info(`Add labels to pull request: ${JSON.stringify(labels)}`)
-                await repo.addLabels(createPullRequestResponse.data.number, labels)
+                await repo.addLabels(pullRequest, labels)
             }
         }
+
+        await summary.write(files.length, nbrOfUpdatedFiles, pullRequest)
     } catch (err) {
         // @ts-ignore
         setFailed(err.message)

@@ -170,8 +170,9 @@ class Repository {
 
     /**
      * @param {string} sourceBranchName The name of the branch where your changes are implemented
+     * @returns {Promise<number | null>}
      */
-    async hasPullRequest(sourceBranchName) {
+    async getPullRequest(sourceBranchName) {
         try {
             const res = await this._octokit.rest.pulls.list({
                 owner: this._owner,
@@ -179,10 +180,14 @@ class Repository {
                 head: `${this._owner}:${sourceBranchName}`,
             })
 
-            return res.data.length === 1
+            if (res.data.length !== 1) {
+                return null
+            }
+
+            return res.data[0].number
         } catch (err) {
             // @ts-ignore
-            err.message = `Error when checking whether pull request from ${sourceBranchName} exists: ${err.message}`
+            err.message = `Error when checking pull request from ${sourceBranchName}: ${err.message}`
             throw err
         }
     }
