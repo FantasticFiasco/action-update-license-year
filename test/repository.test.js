@@ -155,18 +155,27 @@ describe('#writeFile should', () => {
     })
 })
 
-describe('#hasChanges should', () => {
-    test('return false given no changes', () => {
+describe('#nbrOfChanges should', () => {
+    test('return 0 given no changes', () => {
         const repo = new Repository('some owner', 'some name', 'some token')
-        const got = repo.hasChanges()
-        expect(got).toBe(false)
+        const got = repo.nbrOfChanges()
+        expect(got).toBe(0)
     })
 
-    test('return true given changes', async () => {
+    test('return 1 given one change', async () => {
         const repo = new Repository('some owner', 'some name', 'some token')
         await repo.writeFile('README.md', '# New title\n')
-        const got = repo.hasChanges()
-        expect(got).toBe(true)
+        const got = repo.nbrOfChanges()
+        expect(got).toBe(1)
+    })
+
+    test('return 3 given three changes', async () => {
+        const repo = new Repository('some owner', 'some name', 'some token')
+        await repo.writeFile('README.md', '# New title\n')
+        await repo.writeFile('README2.md', '# New title\n')
+        await repo.writeFile('README3.md', '# New title\n')
+        const got = repo.nbrOfChanges()
+        expect(got).toBe(3)
     })
 })
 

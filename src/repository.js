@@ -119,8 +119,8 @@ class Repository {
         }
     }
 
-    hasChanges() {
-        return this._writtenFiles.length > 0
+    nbrOfChanges() {
+        return this._writtenFiles.length
     }
 
     async stageWrittenFiles() {
