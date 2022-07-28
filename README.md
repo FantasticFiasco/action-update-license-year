@@ -174,7 +174,7 @@ The following chapter will showcase some common scenarios and their GitHub Actio
 - [I want to GPG sign my commits](#i-want-to-gpg-sign-my-commits)
 - [I want my pull requests to follow a convention](#i-want-my-pull-requests-to-follow-a-convention)
 - [I want my pull requests to be automatically merged](#i-want-my-pull-requests-to-be-automatically-merged)
-- [I want my pull requests to trigger my CI checks](#i-want-my-pull-requests-to-trigger-my-CI-checks)
+- [I want my pull requests to trigger new GitHub Actions workflows](#i-want-my-pull-requests-to-trigger-new-github-actions-workflows)
 
 ### I'm new to GitHub Actions and don't know where to start
 
@@ -404,11 +404,14 @@ steps:
       gh pr merge --merge --delete-branch
 ```
 
-### I want my pull requests to trigger my CI checks
+### I want my pull requests to trigger new GitHub Actions workflows
 
-Your pull requests can trigger other action's workflows, such as CI checks, if you use your personal access token(PAT) [instead of GITHUB_TOKEN](https://docs.github.com/en/actions/using-workflows/triggering-a-workflow#triggering-a-workflow-from-a-workflow).
-To do this, you need [create a personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token) with minimum required scope `public_repo` and [create a secret out of this token](https://docs.github.com/en/actions/security-guides/encrypted-secrets#creating-encrypted-secrets-for-a-repository) (e.g. `LICENSE_SECRET`).
+Your pull requests can trigger other GitHub Actions workflows, such as CI checks, if you use your personal access token (PAT) [instead of `GITHUB_TOKEN`](https://docs.github.com/actions/using-workflows/triggering-a-workflow#triggering-a-workflow-from-a-workflow).
+
+To do this, you need [create a personal access token](https://docs.github.com/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token) with minimum required scope `public_repo` and [create a secret out of this token](https://docs.github.com/actions/security-guides/encrypted-secrets#creating-encrypted-secrets-for-a-repository) (e.g. `LICENSE_SECRET`).
+
 Put the name of your secret in the `token` property:
+
 ```yaml
 steps:
   - uses: actions/checkout@v3
