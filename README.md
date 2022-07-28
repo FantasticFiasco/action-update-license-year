@@ -174,6 +174,7 @@ The following chapter will showcase some common scenarios and their GitHub Actio
 - [I want to GPG sign my commits](#i-want-to-gpg-sign-my-commits)
 - [I want my pull requests to follow a convention](#i-want-my-pull-requests-to-follow-a-convention)
 - [I want my pull requests to be automatically merged](#i-want-my-pull-requests-to-be-automatically-merged)
+- [I want my pull requests to trigger my CI checks](#i-want-my-pull-requests-to-trigger-my-CI-checks)
 
 ### I'm new to GitHub Actions and don't know where to start
 
@@ -403,6 +404,21 @@ steps:
       gh pr merge --merge --delete-branch
 ```
 
+### I want my pull requests to trigger my CI checks
+
+Your pull requests can trigger other action's workflows, such as CI checks, if you use your personal access token(PAT) [instead of GITHUB_TOKEN](https://docs.github.com/en/actions/using-workflows/triggering-a-workflow#triggering-a-workflow-from-a-workflow).
+To do this, you need [create a personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token) with minimum required scope `public_repo` and [create a secret out of this token](https://docs.github.com/en/actions/security-guides/encrypted-secrets#creating-encrypted-secrets-for-a-repository) (e.g. `LICENSE_SECRET`).
+Put the name of your secret in the `token` property:
+```yaml
+steps:
+  - uses: actions/checkout@v3
+    with:
+      fetch-depth: 0
+  - uses: FantasticFiasco/action-update-license-year@v2
+    with:
+      token: ${{ secrets.LICENSE_SECRET }}
+```
+
 ## Contributors
 
 The following users have made significant contributions to this project. Thank you so much!
@@ -416,6 +432,7 @@ The following users have made significant contributions to this project. Thank y
     <td align="center"><a href="https://gerome.dev/"><img src="https://avatars.githubusercontent.com/u/32737308?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Gérôme Grignon</b></sub></a><br /><a href="https://github.com/FantasticFiasco/action-update-license-year/issues?q=author%3Ageromegrignon" title="Bug reports">🐛</a> <a href="https://github.com/FantasticFiasco/action-update-license-year/commits?author=geromegrignon" title="Code">💻</a></td>
     <td align="center"><a href="https://www.linkedin.com/in/utkarshsethi/"><img src="https://avatars.githubusercontent.com/u/2989912?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Utkarsh Sethi</b></sub></a><br /><a href="https://github.com/FantasticFiasco/action-update-license-year/commits?author=utkarshsethi" title="Documentation">📖</a></td>
     <td align="center"><a href="https://github.com/C0D3-M4513R"><img src="https://avatars.githubusercontent.com/u/28912031?v=4?s=100" width="100px;" alt=""/><br /><sub><b>C0D3 M4513R</b></sub></a><br /><a href="#ideas-C0D3-M4513R" title="Ideas, Planning, & Feedback">🤔</a></td>
+    <td align="center"><a href="https://github.com/Swizbiz"><img src="https://avatars.githubusercontent.com/u/45274464?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Aleksei Borodin</b></sub></a><br /><a href="#i-want-my-pull-requests-to-trigger-my-CI-checks" title="Scenarios">📜</a></td>
   </tr>
 </table>
 

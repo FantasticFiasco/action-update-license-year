@@ -48,6 +48,15 @@
       "contributions": [
         "ideas"
       ]
+    },
+    {
+      "login": "Swizbiz",
+      "name": "Aleksei Borodin",
+      "avatar_url": "https://avatars.githubusercontent.com/u/45274464?v=4",
+      "profile": "https://github.com/Swizbiz",
+      "contributions": [
+        "example"
+      ]
     }
   ],
   "contributorsPerLine": 7
