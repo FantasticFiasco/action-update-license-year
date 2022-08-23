@@ -165,7 +165,7 @@ The following chapter will showcase some common scenarios and their GitHub Actio
 - [I'm new to GitHub Actions and don't know where to start](#Im-new-to-github-actions-and-dont-know-where-to-start)
 - [I want to update my license annually at 03:00 AM on January 1](#i-want-to-update-my-license-annually-at-0300-am-on-january-1)
 - [I want to update my license using a manual trigger](#i-want-to-update-my-license-using-a-manual-trigger)
-- [I want to update my license on first commit each year](#i-want-to-update-my-license-on-first-commit-each-year)
+- [I want to update my license on first commit each year, and I want it merged](#i-want-to-update-my-license-on-first-commit-each-year-and-i-want-it-merged)
 - [I want to update my license, but it isn't called `LICENSE`](#i-want-to-update-my-license-but-it-isnt-called-license)
 - [I want to update my license, but it isn't supported by this action](#i-want-to-update-my-license-but-it-isnt-supported-by-this-action)
 - [I want to update all my licenses, I have more than one](#i-want-to-update-all-my-licenses-i-have-more-than-one)
@@ -227,9 +227,9 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 ```
 
-### I want to update my license on first commit each year
+### I want to update my license on first commit each year, and I want it merged
 
-Maybe you don't want to be disturbed during the new year festivities, and you know for a fact that you will forget to manually trigger the workflow. Another alternative is to update your license at first commit each year? For those situations we can use the following workflow.
+Maybe you don't want to be disturbed during the new year festivities, and you know for a fact that you'll forget to manually trigger the workflow. Another alternative is to update your license at first commit each year? With the addition of automatically merging it? For those situations we can use the following workflow.
 
 ```yaml
 name: Update copyright year(s) in license file
