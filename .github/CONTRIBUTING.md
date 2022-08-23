@@ -14,7 +14,7 @@ Please note we have a [code of conduct](./CODE_OF_CONDUCT.md), please follow it 
 
 The following commands will go from nothing to a successful run of the test suite.
 
-```bash
+```sh
 git clone https://github.com/FantasticFiasco/action-update-license-year.git
 cd action-update-license-year
 yarn
@@ -30,7 +30,7 @@ yarn test
 
 Format of the commit message:
 
-```
+```text
 <type>(<scope>): <subject>
 
 <body>
@@ -42,7 +42,7 @@ Format of the commit message:
 
 The first line cannot be longer than 70 characters, the second line is always blank and other lines should be wrapped at 80 characters. The type and scope should always be lowercase as shown below.
 
-#### Allowed `<type>` values:
+#### Allowed `<type>` values
 
 - __feat__ - new feature for the user, not a new feature for build script
 - __fix__ - bug fix for the user, not a fix to a build script
@@ -52,7 +52,7 @@ The first line cannot be longer than 70 characters, the second line is always bl
 - __test__ - adding missing tests, refactoring tests; no production code change
 - __chore__ - updating grunt tasks etc; no production code change
 
-#### Example `<scope>` values:
+#### Example `<scope>` values
 
 - init
 - runner
@@ -80,13 +80,13 @@ For more info about message body, see:
 
 Closed issues should be listed on a separate line in the footer prefixed with "Closes" keyword like this:
 
-```
+```text
 Closes #234
 ```
 
 or in the case of multiple issues:
 
-```
+```text
 Closes #123
 Closes #245
 Closes #992
