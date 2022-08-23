@@ -33,7 +33,7 @@ name: Update copyright year(s) in license file
 
 on:
   schedule:
-    - cron: "0 3 1 1 *" # 03:00 AM on January 1
+    - cron: '0 3 1 1 *' # 03:00 AM on January 1
 
 jobs:
   update-license-year:
@@ -165,6 +165,7 @@ The following chapter will showcase some common scenarios and their GitHub Actio
 - [I'm new to GitHub Actions and don't know where to start](#Im-new-to-github-actions-and-dont-know-where-to-start)
 - [I want to update my license annually at 03:00 AM on January 1](#i-want-to-update-my-license-annually-at-0300-am-on-january-1)
 - [I want to update my license using a manual trigger](#i-want-to-update-my-license-using-a-manual-trigger)
+- [I want to update my license on first commit each year](#i-want-to-update-my-license-on-first-commit-each-year)
 - [I want to update my license, but it isn't called `LICENSE`](#i-want-to-update-my-license-but-it-isnt-called-license)
 - [I want to update my license, but it isn't supported by this action](#i-want-to-update-my-license-but-it-isnt-supported-by-this-action)
 - [I want to update all my licenses, I have more than one](#i-want-to-update-all-my-licenses-i-have-more-than-one)
@@ -191,7 +192,7 @@ name: Update copyright year(s) in license file
 
 on:
   schedule:
-    - cron: "0 3 1 1 *"
+    - cron: '0 3 1 1 *'
 
 jobs:
   run:
@@ -224,6 +225,39 @@ jobs:
       - uses: FantasticFiasco/action-update-license-year@v2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+```
+
+### I want to update my license on first commit each year
+
+Maybe you don't want to be disturbed during the new year festivities, and you know for a fact that you will forget to manually trigger the workflow. Another alternative is to update your license at first commit each year? For those situations we can use the following workflow.
+
+```yaml
+name: Update copyright year(s) in license file
+
+on:
+  push:
+    branches:
+      - 'main' # Or 'master' depending on your default branch
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: FantasticFiasco/action-update-license-year@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Merge PR
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        # Replace '--merge' with '--rebase' to rebase the commits onto the base
+        # branch, or with '--squash' to squash the commits into one commit and
+        # merge it into the base branch.
+        # For more information regarding the merge command, please see
+        # https://cli.github.com/manual/gh_pr_merge.
+        run: gh pr merge --merge --delete-branch
 ```
 
 ### I want to update my license, but it isn't called `LICENSE`
@@ -336,7 +370,7 @@ jobs:
       - uses: FantasticFiasco/action-update-license-year@v2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          path: "*.js"
+          path: '*.js'
           transform: (?<=my own copyright )(?<from>\d{4})?-?(\d{4})?
 ```
 
@@ -435,7 +469,8 @@ The following users have made significant contributions to this project. Thank y
     <td align="center"><a href="https://gerome.dev/"><img src="https://avatars.githubusercontent.com/u/32737308?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Gérôme Grignon</b></sub></a><br /><a href="https://github.com/FantasticFiasco/action-update-license-year/issues?q=author%3Ageromegrignon" title="Bug reports">🐛</a> <a href="https://github.com/FantasticFiasco/action-update-license-year/commits?author=geromegrignon" title="Code">💻</a></td>
     <td align="center"><a href="https://www.linkedin.com/in/utkarshsethi/"><img src="https://avatars.githubusercontent.com/u/2989912?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Utkarsh Sethi</b></sub></a><br /><a href="https://github.com/FantasticFiasco/action-update-license-year/commits?author=utkarshsethi" title="Documentation">📖</a></td>
     <td align="center"><a href="https://github.com/C0D3-M4513R"><img src="https://avatars.githubusercontent.com/u/28912031?v=4?s=100" width="100px;" alt=""/><br /><sub><b>C0D3 M4513R</b></sub></a><br /><a href="#ideas-C0D3-M4513R" title="Ideas, Planning, & Feedback">🤔</a></td>
-    <td align="center"><a href="https://github.com/Swizbiz"><img src="https://avatars.githubusercontent.com/u/45274464?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Aleksei Borodin</b></sub></a><br /><a href="#i-want-my-pull-requests-to-trigger-my-CI-checks" title="Scenarios">📜</a></td>
+    <td align="center"><a href="https://github.com/Swizbiz"><img src="https://avatars.githubusercontent.com/u/45274464?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Aleksei Borodin</b></sub></a><br /><a href="#example-Swizbiz" title="Examples">💡</a></td>
+    <td align="center"><a href="https://github.com/jerone"><img src="https://avatars.githubusercontent.com/u/55841?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Jeroen van Warmerdam</b></sub></a><br /><a href="#ideas-jerone" title="Ideas, Planning, & Feedback">🤔</a></td>
   </tr>
 </table>
 
