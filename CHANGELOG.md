@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ## [Unreleased]
 
+## [2.2.2] - 2022-08-23
+
 ### :policeman: Security
 
 - Security vulnerability in transient dependency `@actions/core`
