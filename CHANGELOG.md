@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ## [Unreleased]
 
+### :policeman: Security
+
+- Security vulnerability in transient dependency `@actions/core`
+
 ## [2.2.1] - 2022-01-24
 
 ### :dizzy: Changed
