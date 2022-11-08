@@ -35,7 +35,7 @@
     "@actions/glob": "0.3.0"
   },
   "devDependencies": {
-    "@types/jest": "29.2.0",
+    "@types/jest": "29.2.1",
     "@types/js-yaml": "4.0.5",
     "@vercel/ncc": "0.34.0",
     "eslint": "8.26.0",
