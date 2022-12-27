@@ -73,35 +73,34 @@ const run = async () => {
             }
         }
 
-        if (!repo.hasChanges()) {
+        if (repo.hasChanges()) {
+            await repo.stageWrittenFiles()
+
+            const commitMessage = commitBody ? `${commitTitle}\n\n${commitBody}` : commitTitle
+            await repo.commit(commitMessage)
+            await repo.push()
+
+            const hasPullRequest = await repo.hasPullRequest(branchName)
+            if (!hasPullRequest) {
+                info(`Create new pull request with title "${pullRequestTitle}"`)
+                const createPullRequestResponse = await repo.createPullRequest(
+                    branchName,
+                    pullRequestTitle,
+                    pullRequestBody
+                )
+
+                if (assignees.length > 0) {
+                    info(`Add assignees to pull request: ${JSON.stringify(assignees)}`)
+                    await repo.addAssignees(createPullRequestResponse.data.number, assignees)
+                }
+
+                if (labels.length > 0) {
+                    info(`Add labels to pull request: ${JSON.stringify(labels)}`)
+                    await repo.addLabels(createPullRequestResponse.data.number, labels)
+                }
+            }
+        } else {
             info(`No licenses were updated, let's abort`)
-            return
-        }
-
-        await repo.stageWrittenFiles()
-
-        const commitMessage = commitBody ? `${commitTitle}\n\n${commitBody}` : commitTitle
-        await repo.commit(commitMessage)
-        await repo.push()
-
-        const hasPullRequest = await repo.hasPullRequest(branchName)
-        if (!hasPullRequest) {
-            info(`Create new pull request with title "${pullRequestTitle}"`)
-            const createPullRequestResponse = await repo.createPullRequest(
-                branchName,
-                pullRequestTitle,
-                pullRequestBody
-            )
-
-            if (assignees.length > 0) {
-                info(`Add assignees to pull request: ${JSON.stringify(assignees)}`)
-                await repo.addAssignees(createPullRequestResponse.data.number, assignees)
-            }
-
-            if (labels.length > 0) {
-                info(`Add labels to pull request: ${JSON.stringify(labels)}`)
-                await repo.addLabels(createPullRequestResponse.data.number, labels)
-            }
         }
     } catch (err) {
         // @ts-ignore
