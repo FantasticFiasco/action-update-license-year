@@ -4,6 +4,7 @@ const { context } = require('@actions/github')
 const file = require('./file')
 const gpg = require('./gpg')
 const inputs = require('./inputs')
+const outputs = require('./outputs')
 const Repository = require('./repository')
 const transforms = require('./transforms')
 
@@ -47,6 +48,10 @@ const run = async () => {
             await repo.setupGpg(keyId, gpgProgramFilePath)
         }
 
+        const currentYear = new Date().getFullYear()
+        outputs.setCurrentYear(currentYear)
+        info(`Current year is "${currentYear}"`)
+
         const branchExists = await repo.branchExists(branchName)
         info(`Checkout ${branchExists ? 'existing' : 'new'} branch named "${branchName}"`)
         await repo.checkoutBranch(branchName, !branchExists)
@@ -57,9 +62,6 @@ const run = async () => {
         }
 
         info(`Found ${files.length} file(s) matching the path "${singleLine(path)}"`)
-
-        const currentYear = new Date().getFullYear()
-        info(`Current year is "${currentYear}"`)
 
         for (const file of files) {
             const relativeFile = file.replace(cwd, '.')
@@ -80,14 +82,27 @@ const run = async () => {
             await repo.commit(commitMessage)
             await repo.push()
 
-            const hasPullRequest = await repo.hasPullRequest(branchName)
-            if (!hasPullRequest) {
+            outputs.setBranchName(branchName)
+
+            let pullRequest = await repo.getPullRequest(branchName)
+            if (pullRequest) {
+                info(`Pull request ${pullRequest.number} with title "${pullRequest.title}" already exists`)
+                outputs.setPullRequestNumber(pullRequest.number)
+                outputs.setPullRequestUrl(pullRequest.html_url)
+            } else {
                 info(`Create new pull request with title "${pullRequestTitle}"`)
                 const createPullRequestResponse = await repo.createPullRequest(
                     branchName,
                     pullRequestTitle,
                     pullRequestBody
                 )
+
+                if (createPullRequestResponse.status !== 201) {
+                    throw new Error(`Failed to create pull request: ${createPullRequestResponse.status}`)
+                }
+
+                outputs.setPullRequestNumber(createPullRequestResponse.data.number)
+                outputs.setPullRequestUrl(createPullRequestResponse.data.html_url)
 
                 if (assignees.length > 0) {
                     info(`Add assignees to pull request: ${JSON.stringify(assignees)}`)

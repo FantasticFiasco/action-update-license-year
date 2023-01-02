@@ -2,6 +2,7 @@
 const mockCore = {
     info: jest.fn(),
     setFailed: jest.fn(),
+    setOutput: jest.fn(),
 }
 jest.mock('@actions/core', () => {
     return mockCore
@@ -73,7 +74,7 @@ const mockRepository = {
     stageWrittenFiles: jest.fn(),
     commit: jest.fn(),
     push: jest.fn(),
-    hasPullRequest: jest.fn(),
+    getPullRequest: jest.fn(),
     createPullRequest: jest.fn(),
     addAssignees: jest.fn(),
     addLabels: jest.fn(),
@@ -269,19 +270,21 @@ describe('action should', () => {
         expect(setFailed).toBeCalledTimes(0)
     })
 
-    test('aborts if no files where changed', async () => {
+    test('does nothing if no files where changed', async () => {
         mockFile.search.mockResolvedValue(['some-file'])
         mockRepository.hasChanges.mockReturnValue(false)
         await run()
         expect(mockRepository.stageWrittenFiles).toBeCalledTimes(0)
         expect(mockRepository.commit).toBeCalledTimes(0)
         expect(mockRepository.push).toBeCalledTimes(0)
+        expect(mockRepository.createPullRequest).toBeCalledTimes(0)
         expect(setFailed).toBeCalledTimes(0)
     })
 
     test('stages, commits and pushes if files where changed', async () => {
         mockFile.search.mockResolvedValue(['some-file'])
         mockRepository.hasChanges.mockReturnValue(true)
+        mockRepository.createPullRequest.mockResolvedValue(CREATE_PULL_REQUEST_SUCCESS)
         await run()
         expect(mockRepository.stageWrittenFiles).toBeCalledTimes(1)
         expect(mockRepository.commit).toBeCalledTimes(1)
@@ -292,6 +295,7 @@ describe('action should', () => {
     test('commits with default commit title and body', async () => {
         mockFile.search.mockResolvedValue(['some-file'])
         mockRepository.hasChanges.mockReturnValue(true)
+        mockRepository.createPullRequest.mockResolvedValue(CREATE_PULL_REQUEST_SUCCESS)
         await run()
         expect(mockRepository.commit).toBeCalledWith(COMMIT_TITLE.defaultValue)
         expect(setFailed).toBeCalledTimes(0)
@@ -301,6 +305,7 @@ describe('action should', () => {
         setupInput({ commitTitle: 'some commit title' })
         mockFile.search.mockResolvedValue(['some-file'])
         mockRepository.hasChanges.mockReturnValue(true)
+        mockRepository.createPullRequest.mockResolvedValue(CREATE_PULL_REQUEST_SUCCESS)
         await run()
         expect(mockRepository.commit).toBeCalledWith('some commit title')
         expect(setFailed).toBeCalledTimes(0)
@@ -310,6 +315,7 @@ describe('action should', () => {
         setupInput({ commitBody: 'some commit body' })
         mockFile.search.mockResolvedValue(['some-file'])
         mockRepository.hasChanges.mockReturnValue(true)
+        mockRepository.createPullRequest.mockResolvedValue(CREATE_PULL_REQUEST_SUCCESS)
         await run()
         expect(mockRepository.commit).toBeCalledWith(`${COMMIT_TITLE.defaultValue}\n\nsome commit body`)
         expect(setFailed).toBeCalledTimes(0)
@@ -319,6 +325,7 @@ describe('action should', () => {
         setupInput({ commitTitle: 'some commit title', commitBody: 'some commit body' })
         mockFile.search.mockResolvedValue(['some-file'])
         mockRepository.hasChanges.mockReturnValue(true)
+        mockRepository.createPullRequest.mockResolvedValue(CREATE_PULL_REQUEST_SUCCESS)
         await run()
         expect(mockRepository.commit).toBeCalledWith('some commit title\n\nsome commit body')
         expect(setFailed).toBeCalledTimes(0)
@@ -337,6 +344,7 @@ describe('action should', () => {
             setupInput({ pullRequestTitle: PR_TITLE.defaultValue, pullRequestBody: PR_BODY.defaultValue })
             mockFile.search.mockResolvedValue(['some-file'])
             mockRepository.hasChanges.mockReturnValue(true)
+            mockRepository.createPullRequest.mockResolvedValue(CREATE_PULL_REQUEST_SUCCESS)
             await run()
             expect(mockRepository.createPullRequest).toBeCalledWith(
                 BRANCH_NAME.defaultValue,
@@ -350,6 +358,7 @@ describe('action should', () => {
             setupInput({ pullRequestTitle: PR_TITLE.defaultValue, pullRequestBody: 'some pr body' })
             mockFile.search.mockResolvedValue(['some-file'])
             mockRepository.hasChanges.mockReturnValue(true)
+            mockRepository.createPullRequest.mockResolvedValue(CREATE_PULL_REQUEST_SUCCESS)
             await run()
             expect(mockRepository.createPullRequest).toBeCalledWith(
                 BRANCH_NAME.defaultValue,
@@ -363,6 +372,7 @@ describe('action should', () => {
             setupInput({ pullRequestTitle: 'some pr title', pullRequestBody: PR_BODY.defaultValue })
             mockFile.search.mockResolvedValue(['some-file'])
             mockRepository.hasChanges.mockReturnValue(true)
+            mockRepository.createPullRequest.mockResolvedValue(CREATE_PULL_REQUEST_SUCCESS)
             await run()
             expect(mockRepository.createPullRequest).toBeCalledWith(
                 BRANCH_NAME.defaultValue,
@@ -376,6 +386,7 @@ describe('action should', () => {
             setupInput({ pullRequestTitle: 'some pr title', pullRequestBody: 'some pr body' })
             mockFile.search.mockResolvedValue(['some-file'])
             mockRepository.hasChanges.mockReturnValue(true)
+            mockRepository.createPullRequest.mockResolvedValue(CREATE_PULL_REQUEST_SUCCESS)
             await run()
             expect(setFailed).toBeCalledTimes(0)
             expect(mockRepository.createPullRequest).toBeCalledTimes(1)
@@ -390,7 +401,7 @@ describe('action should', () => {
             setupInput({ assignees: ['assignee1', 'assignee2', 'assignee3'] })
             mockFile.search.mockResolvedValue(['some-file'])
             mockRepository.hasChanges.mockReturnValue(true)
-            mockRepository.createPullRequest.mockResolvedValue({ data: { number: 42 } })
+            mockRepository.createPullRequest.mockResolvedValue(CREATE_PULL_REQUEST_SUCCESS)
             await run()
             expect(mockRepository.addAssignees).toBeCalledWith(42, ['assignee1', 'assignee2', 'assignee3'])
             expect(setFailed).toBeCalledTimes(0)
@@ -399,6 +410,7 @@ describe('action should', () => {
         test('create pull request and skip adding assignees given no configuration', async () => {
             mockFile.search.mockResolvedValue(['some-file'])
             mockRepository.hasChanges.mockReturnValue(true)
+            mockRepository.createPullRequest.mockResolvedValue(CREATE_PULL_REQUEST_SUCCESS)
             await run()
             expect(mockRepository.addAssignees).toBeCalledTimes(0)
             expect(setFailed).toBeCalledTimes(0)
@@ -408,7 +420,7 @@ describe('action should', () => {
             setupInput({ labels: ['some label 1', 'some label 2', 'some label 3'] })
             mockFile.search.mockResolvedValue(['some-file'])
             mockRepository.hasChanges.mockReturnValue(true)
-            mockRepository.createPullRequest.mockResolvedValue({ data: { number: 42 } })
+            mockRepository.createPullRequest.mockResolvedValue(CREATE_PULL_REQUEST_SUCCESS)
             await run()
             expect(mockRepository.addLabels).toBeCalledWith(42, ['some label 1', 'some label 2', 'some label 3'])
             expect(setFailed).toBeCalledTimes(0)
@@ -417,15 +429,25 @@ describe('action should', () => {
         test('create pull request and skip adding labels given no configuration', async () => {
             mockFile.search.mockResolvedValue(['some-file'])
             mockRepository.hasChanges.mockReturnValue(true)
+            mockRepository.createPullRequest.mockResolvedValue(CREATE_PULL_REQUEST_SUCCESS)
             await run()
             expect(mockRepository.addLabels).toBeCalledTimes(0)
             expect(setFailed).toBeCalledTimes(0)
         })
 
-        test('set failed given creating pull request fails', async () => {
+        test('set failed given creating pull request fails due to forbidden', async () => {
             mockFile.search.mockResolvedValue(['some-file'])
             mockRepository.hasChanges.mockReturnValue(true)
-            mockRepository.createPullRequest.mockRejectedValue({})
+            mockRepository.createPullRequest.mockRejectedValue(CREATE_PULL_REQUEST_FAILURE_FORBIDDEN)
+            await run()
+            expect(mockRepository.createPullRequest).toBeCalledTimes(1)
+            expect(setFailed).toBeCalledTimes(1)
+        })
+
+        test('set failed given creating pull request fails due to validation failure', async () => {
+            mockFile.search.mockResolvedValue(['some-file'])
+            mockRepository.hasChanges.mockReturnValue(true)
+            mockRepository.createPullRequest.mockRejectedValue(CREATE_PULL_REQUEST_FAILURE_VALIDATION_FAILED)
             await run()
             expect(mockRepository.createPullRequest).toBeCalledTimes(1)
             expect(setFailed).toBeCalledTimes(1)
@@ -436,7 +458,10 @@ describe('action should', () => {
         test('skip creating pull request', async () => {
             mockFile.search.mockResolvedValue(['some-file'])
             mockRepository.hasChanges.mockReturnValue(true)
-            mockRepository.hasPullRequest.mockResolvedValue(true)
+            mockRepository.getPullRequest.mockResolvedValue({
+                number: 42,
+                html_url: 'https://github.com/some-user/some-repo/pull/42',
+            })
             await run()
             expect(mockRepository.createPullRequest).toBeCalledTimes(0)
             expect(setFailed).toBeCalledTimes(0)
@@ -479,4 +504,20 @@ const setupInput = (config) => {
         assignees: config.assignees || [],
         labels: config.labels || [],
     })
+}
+
+const CREATE_PULL_REQUEST_SUCCESS = {
+    status: 201,
+    data: {
+        number: 42,
+        html_url: 'https://github.com/some-user/some-repo/pull/42',
+    },
+}
+
+const CREATE_PULL_REQUEST_FAILURE_FORBIDDEN = {
+    status: 403,
+}
+
+const CREATE_PULL_REQUEST_FAILURE_VALIDATION_FAILED = {
+    status: 422,
 }
