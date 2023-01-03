@@ -115,15 +115,15 @@ outputs:
 
   branchName:
     description: >
-      The name of the git branch created for the purpose of updating the license file(s). This
-      output will exist if action ran successfully and licenses where updated.
+      The name of the git branch created for the purpose of updating the licenses. This output will
+      exist if action ran successfully and licenses where updated.
 
   pullRequestNumber:
     description: >
-      The number of the GitHub pull request created for the purpose of updating the license file(s).
-      This output will exist if action ran successfully and licenses where updated.
+      The number of the GitHub pull request created for the purpose of updating the licenses. This
+      output will exist if action ran successfully and licenses where updated.
 
   pullRequestUrl:
     description: >
-      The URL of the GitHub pull request created for the purpose of updating the license file(s).
-      This output will exist if action ran successfully and licenses where updated.
+      The URL of the GitHub pull request created for the purpose of updating the licenses. This
+      output will exist if action ran successfully and licenses where updated.
