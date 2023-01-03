@@ -126,40 +126,41 @@ describe('action should', () => {
         delete process.env.GITHUB_WORKSPACE
         await run()
         expect(setFailed).toBeCalledTimes(1)
+        expect(mockCore.setOutput).toBeCalledTimes(0)
     })
 
     test('authenticate git user given default commit author name and e-mail', async () => {
         mockFile.search.mockResolvedValue(['some-file'])
         await run()
+        expect(setFailed).toBeCalledTimes(0)
         expect(mockRepository.authenticate).toBeCalledWith(
             COMMIT_AUTHOR_NAME.defaultValue,
             COMMIT_AUTHOR_EMAIL.defaultValue
         )
-        expect(setFailed).toBeCalledTimes(0)
     })
 
     test('authenticate git user given custom commit author name', async () => {
         setupInput({ commitAuthorName: 'some-author-name' })
         mockFile.search.mockResolvedValue(['some-file'])
         await run()
-        expect(mockRepository.authenticate).toBeCalledWith('some-author-name', COMMIT_AUTHOR_EMAIL.defaultValue)
         expect(setFailed).toBeCalledTimes(0)
+        expect(mockRepository.authenticate).toBeCalledWith('some-author-name', COMMIT_AUTHOR_EMAIL.defaultValue)
     })
 
     test('authenticate git user given custom commit author e-mail', async () => {
         setupInput({ commitAuthorEmail: 'some-author@mail.com' })
         mockFile.search.mockResolvedValue(['some-file'])
         await run()
-        expect(mockRepository.authenticate).toBeCalledWith(COMMIT_AUTHOR_NAME.defaultValue, 'some-author@mail.com')
         expect(setFailed).toBeCalledTimes(0)
+        expect(mockRepository.authenticate).toBeCalledWith(COMMIT_AUTHOR_NAME.defaultValue, 'some-author@mail.com')
     })
 
     test('authenticate git user given custom commit author name and e-mail', async () => {
         setupInput({ commitAuthorName: 'some-author-name', commitAuthorEmail: 'some-author@mail.com' })
         mockFile.search.mockResolvedValue(['some-file'])
         await run()
-        expect(mockRepository.authenticate).toBeCalledWith('some-author-name', 'some-author@mail.com')
         expect(setFailed).toBeCalledTimes(0)
+        expect(mockRepository.authenticate).toBeCalledWith('some-author-name', 'some-author@mail.com')
     })
 
     test('setup gpg given gpg private key with passphrase', async () => {
@@ -168,10 +169,10 @@ describe('action should', () => {
         mockGpg.createGpgProgram.mockResolvedValue('some file path')
         mockFile.search.mockResolvedValue(['some-file'])
         await run()
+        expect(setFailed).toBeCalledTimes(0)
         expect(mockGpg.importPrivateKey).toBeCalledWith(mockGpg.cli, GPG_PRIVATE_KEY.env)
         expect(mockGpg.createGpgProgram).toBeCalledWith(GPG_PASSPHRASE.env)
         expect(mockRepository.setupGpg).toBeCalledWith('some key', 'some file path')
-        expect(setFailed).toBeCalledTimes(0)
     })
 
     test('set failed given gpg private key without passphrase', async () => {
@@ -184,46 +185,72 @@ describe('action should', () => {
     test('checkout existing branch with default name given it exists', async () => {
         mockRepository.branchExists.mockResolvedValue(true)
         mockFile.search.mockResolvedValue(['some-file'])
+        mockRepository.hasChanges.mockReturnValue(true)
+        mockRepository.getPullRequest.mockResolvedValue(CREATE_PULL_REQUEST_SUCCESS.data)
         await run()
-        expect(mockRepository.checkoutBranch).toBeCalledWith(BRANCH_NAME.defaultValue, false)
         expect(setFailed).toBeCalledTimes(0)
+        expect(mockRepository.checkoutBranch).toBeCalledWith(BRANCH_NAME.defaultValue, false)
+        expect(mockCore.setOutput).toBeCalledWith('currentYear', CURRENT_YEAR)
+        expect(mockCore.setOutput).toBeCalledWith('branchName', BRANCH_NAME.defaultValue)
+        expect(mockCore.setOutput).toBeCalledWith('pullRequestNumber', CREATE_PULL_REQUEST_SUCCESS.data.number)
+        expect(mockCore.setOutput).toBeCalledWith('pullRequestUrl', CREATE_PULL_REQUEST_SUCCESS.data.html_url)
     })
 
     test('checkout existing branch with custom name given it exists', async () => {
         setupInput({ branchName: 'some-branch-name' })
         mockRepository.branchExists.mockResolvedValue(true)
         mockFile.search.mockResolvedValue(['some-file'])
+        mockRepository.hasChanges.mockReturnValue(true)
+        mockRepository.getPullRequest.mockResolvedValue(CREATE_PULL_REQUEST_SUCCESS.data)
         await run()
-        expect(mockRepository.checkoutBranch).toBeCalledWith('some-branch-name', false)
         expect(setFailed).toBeCalledTimes(0)
+        expect(mockRepository.checkoutBranch).toBeCalledWith('some-branch-name', false)
+        expect(mockCore.setOutput).toBeCalledWith('currentYear', CURRENT_YEAR)
+        expect(mockCore.setOutput).toBeCalledWith('branchName', 'some-branch-name')
+        expect(mockCore.setOutput).toBeCalledWith('pullRequestNumber', CREATE_PULL_REQUEST_SUCCESS.data.number)
+        expect(mockCore.setOutput).toBeCalledWith('pullRequestUrl', CREATE_PULL_REQUEST_SUCCESS.data.html_url)
     })
 
     test("create new branch with default name given it doesn't exist", async () => {
         mockRepository.branchExists.mockResolvedValue(false)
         mockFile.search.mockResolvedValue(['some-file'])
+        mockRepository.hasChanges.mockReturnValue(true)
+        mockRepository.getPullRequest.mockResolvedValue(CREATE_PULL_REQUEST_SUCCESS.data)
         await run()
-        expect(mockRepository.checkoutBranch).toBeCalledWith(BRANCH_NAME.defaultValue, true)
         expect(setFailed).toBeCalledTimes(0)
+        expect(mockRepository.checkoutBranch).toBeCalledWith(BRANCH_NAME.defaultValue, true)
+        expect(mockCore.setOutput).toBeCalledWith('currentYear', CURRENT_YEAR)
+        expect(mockCore.setOutput).toBeCalledWith('branchName', BRANCH_NAME.defaultValue)
+        expect(mockCore.setOutput).toBeCalledWith('pullRequestNumber', CREATE_PULL_REQUEST_SUCCESS.data.number)
+        expect(mockCore.setOutput).toBeCalledWith('pullRequestUrl', CREATE_PULL_REQUEST_SUCCESS.data.html_url)
     })
 
     test("create new branch with custom name given it doesn't exist", async () => {
         setupInput({ branchName: 'some-branch-name' })
         mockRepository.branchExists.mockResolvedValue(false)
         mockFile.search.mockResolvedValue(['some-file'])
+        mockRepository.hasChanges.mockReturnValue(true)
+        mockRepository.getPullRequest.mockResolvedValue(CREATE_PULL_REQUEST_SUCCESS.data)
         await run()
-        expect(mockRepository.checkoutBranch).toBeCalledWith('some-branch-name', true)
         expect(setFailed).toBeCalledTimes(0)
+        expect(mockRepository.checkoutBranch).toBeCalledWith('some-branch-name', true)
+        expect(mockCore.setOutput).toBeCalledWith('currentYear', CURRENT_YEAR)
+        expect(mockCore.setOutput).toBeCalledWith('branchName', 'some-branch-name')
+        expect(mockCore.setOutput).toBeCalledWith('pullRequestNumber', CREATE_PULL_REQUEST_SUCCESS.data.number)
+        expect(mockCore.setOutput).toBeCalledWith('pullRequestUrl', CREATE_PULL_REQUEST_SUCCESS.data.html_url)
     })
 
     test('set failed given no files matching the path', async () => {
         mockFile.search.mockResolvedValue([])
         await run()
         expect(setFailed).toBeCalledTimes(1)
+        expect(mockCore.setOutput).toBeCalledTimes(0)
     })
 
     test('applies default transform on all files matching the path', async () => {
         mockFile.search.mockResolvedValue(['some-file-1', 'some-file-2'])
         await run()
+        expect(setFailed).toBeCalledTimes(0)
         expect(mockTransforms.applyTransform).nthCalledWith(
             1,
             TRANSFORM.defaultValue,
@@ -238,13 +265,13 @@ describe('action should', () => {
             CURRENT_YEAR,
             'some-file-2'
         )
-        expect(setFailed).toBeCalledTimes(0)
     })
 
     test('applies custom transform on all files matching the path', async () => {
         setupInput({ transform: 'custom transform' })
         mockFile.search.mockResolvedValue(['some-file-1', 'some-file-2'])
         await run()
+        expect(setFailed).toBeCalledTimes(0)
         expect(mockTransforms.applyTransform).nthCalledWith(
             1,
             'custom transform',
@@ -259,26 +286,26 @@ describe('action should', () => {
             CURRENT_YEAR,
             'some-file-2'
         )
-        expect(setFailed).toBeCalledTimes(0)
     })
 
     test('writes file given transform updates it', async () => {
         mockFile.search.mockResolvedValue(['some-file'])
         mockTransforms.applyTransform.mockReturnValue('updated content')
         await run()
-        expect(mockRepository.writeFile).toBeCalledWith('some-file', 'updated content')
         expect(setFailed).toBeCalledTimes(0)
+        expect(mockRepository.writeFile).toBeCalledWith('some-file', 'updated content')
     })
 
     test('does nothing if no files where changed', async () => {
         mockFile.search.mockResolvedValue(['some-file'])
         mockRepository.hasChanges.mockReturnValue(false)
         await run()
+        expect(setFailed).toBeCalledTimes(0)
         expect(mockRepository.stageWrittenFiles).toBeCalledTimes(0)
         expect(mockRepository.commit).toBeCalledTimes(0)
         expect(mockRepository.push).toBeCalledTimes(0)
         expect(mockRepository.createPullRequest).toBeCalledTimes(0)
-        expect(setFailed).toBeCalledTimes(0)
+        expect(mockCore.setOutput).toBeCalledTimes(0)
     })
 
     test('stages, commits and pushes if files where changed', async () => {
@@ -286,10 +313,14 @@ describe('action should', () => {
         mockRepository.hasChanges.mockReturnValue(true)
         mockRepository.createPullRequest.mockResolvedValue(CREATE_PULL_REQUEST_SUCCESS)
         await run()
+        expect(setFailed).toBeCalledTimes(0)
         expect(mockRepository.stageWrittenFiles).toBeCalledTimes(1)
         expect(mockRepository.commit).toBeCalledTimes(1)
         expect(mockRepository.push).toBeCalledTimes(1)
-        expect(setFailed).toBeCalledTimes(0)
+        expect(mockCore.setOutput).toBeCalledWith('currentYear', CURRENT_YEAR)
+        expect(mockCore.setOutput).toBeCalledWith('branchName', BRANCH_NAME.defaultValue)
+        expect(mockCore.setOutput).toBeCalledWith('pullRequestNumber', CREATE_PULL_REQUEST_SUCCESS.data.number)
+        expect(mockCore.setOutput).toBeCalledWith('pullRequestUrl', CREATE_PULL_REQUEST_SUCCESS.data.html_url)
     })
 
     test('commits with default commit title and body', async () => {
@@ -297,8 +328,12 @@ describe('action should', () => {
         mockRepository.hasChanges.mockReturnValue(true)
         mockRepository.createPullRequest.mockResolvedValue(CREATE_PULL_REQUEST_SUCCESS)
         await run()
-        expect(mockRepository.commit).toBeCalledWith(COMMIT_TITLE.defaultValue)
         expect(setFailed).toBeCalledTimes(0)
+        expect(mockRepository.commit).toBeCalledWith(COMMIT_TITLE.defaultValue)
+        expect(mockCore.setOutput).toBeCalledWith('currentYear', CURRENT_YEAR)
+        expect(mockCore.setOutput).toBeCalledWith('branchName', BRANCH_NAME.defaultValue)
+        expect(mockCore.setOutput).toBeCalledWith('pullRequestNumber', CREATE_PULL_REQUEST_SUCCESS.data.number)
+        expect(mockCore.setOutput).toBeCalledWith('pullRequestUrl', CREATE_PULL_REQUEST_SUCCESS.data.html_url)
     })
 
     test('commits with custom commit title and default body', async () => {
@@ -307,8 +342,12 @@ describe('action should', () => {
         mockRepository.hasChanges.mockReturnValue(true)
         mockRepository.createPullRequest.mockResolvedValue(CREATE_PULL_REQUEST_SUCCESS)
         await run()
-        expect(mockRepository.commit).toBeCalledWith('some commit title')
         expect(setFailed).toBeCalledTimes(0)
+        expect(mockRepository.commit).toBeCalledWith('some commit title')
+        expect(mockCore.setOutput).toBeCalledWith('currentYear', CURRENT_YEAR)
+        expect(mockCore.setOutput).toBeCalledWith('branchName', BRANCH_NAME.defaultValue)
+        expect(mockCore.setOutput).toBeCalledWith('pullRequestNumber', CREATE_PULL_REQUEST_SUCCESS.data.number)
+        expect(mockCore.setOutput).toBeCalledWith('pullRequestUrl', CREATE_PULL_REQUEST_SUCCESS.data.html_url)
     })
 
     test('commits with default commit title and custom body', async () => {
@@ -317,8 +356,12 @@ describe('action should', () => {
         mockRepository.hasChanges.mockReturnValue(true)
         mockRepository.createPullRequest.mockResolvedValue(CREATE_PULL_REQUEST_SUCCESS)
         await run()
-        expect(mockRepository.commit).toBeCalledWith(`${COMMIT_TITLE.defaultValue}\n\nsome commit body`)
         expect(setFailed).toBeCalledTimes(0)
+        expect(mockRepository.commit).toBeCalledWith(`${COMMIT_TITLE.defaultValue}\n\nsome commit body`)
+        expect(mockCore.setOutput).toBeCalledWith('currentYear', CURRENT_YEAR)
+        expect(mockCore.setOutput).toBeCalledWith('branchName', BRANCH_NAME.defaultValue)
+        expect(mockCore.setOutput).toBeCalledWith('pullRequestNumber', CREATE_PULL_REQUEST_SUCCESS.data.number)
+        expect(mockCore.setOutput).toBeCalledWith('pullRequestUrl', CREATE_PULL_REQUEST_SUCCESS.data.html_url)
     })
 
     test('commits with custom commit title and custom body', async () => {
@@ -327,8 +370,12 @@ describe('action should', () => {
         mockRepository.hasChanges.mockReturnValue(true)
         mockRepository.createPullRequest.mockResolvedValue(CREATE_PULL_REQUEST_SUCCESS)
         await run()
-        expect(mockRepository.commit).toBeCalledWith('some commit title\n\nsome commit body')
         expect(setFailed).toBeCalledTimes(0)
+        expect(mockRepository.commit).toBeCalledWith('some commit title\n\nsome commit body')
+        expect(mockCore.setOutput).toBeCalledWith('currentYear', CURRENT_YEAR)
+        expect(mockCore.setOutput).toBeCalledWith('branchName', BRANCH_NAME.defaultValue)
+        expect(mockCore.setOutput).toBeCalledWith('pullRequestNumber', CREATE_PULL_REQUEST_SUCCESS.data.number)
+        expect(mockCore.setOutput).toBeCalledWith('pullRequestUrl', CREATE_PULL_REQUEST_SUCCESS.data.html_url)
     })
 
     describe("given pull request doesn't exist", () => {
@@ -336,8 +383,9 @@ describe('action should', () => {
             mockFile.search.mockResolvedValue(['some-file'])
             mockRepository.hasChanges.mockReturnValue(false)
             await run()
-            expect(mockRepository.createPullRequest).toBeCalledTimes(0)
             expect(setFailed).toBeCalledTimes(0)
+            expect(mockRepository.createPullRequest).toBeCalledTimes(0)
+            expect(mockCore.setOutput).toBeCalledTimes(0)
         })
 
         test('create pull request with default title and body', async () => {
@@ -346,12 +394,16 @@ describe('action should', () => {
             mockRepository.hasChanges.mockReturnValue(true)
             mockRepository.createPullRequest.mockResolvedValue(CREATE_PULL_REQUEST_SUCCESS)
             await run()
+            expect(setFailed).toBeCalledTimes(0)
             expect(mockRepository.createPullRequest).toBeCalledWith(
                 BRANCH_NAME.defaultValue,
                 PR_TITLE.defaultValue,
                 PR_BODY.defaultValue
             )
-            expect(setFailed).toBeCalledTimes(0)
+            expect(mockCore.setOutput).toBeCalledWith('currentYear', CURRENT_YEAR)
+            expect(mockCore.setOutput).toBeCalledWith('branchName', BRANCH_NAME.defaultValue)
+            expect(mockCore.setOutput).toBeCalledWith('pullRequestNumber', CREATE_PULL_REQUEST_SUCCESS.data.number)
+            expect(mockCore.setOutput).toBeCalledWith('pullRequestUrl', CREATE_PULL_REQUEST_SUCCESS.data.html_url)
         })
 
         test('create pull request with default title and custom body', async () => {
@@ -360,12 +412,16 @@ describe('action should', () => {
             mockRepository.hasChanges.mockReturnValue(true)
             mockRepository.createPullRequest.mockResolvedValue(CREATE_PULL_REQUEST_SUCCESS)
             await run()
+            expect(setFailed).toBeCalledTimes(0)
             expect(mockRepository.createPullRequest).toBeCalledWith(
                 BRANCH_NAME.defaultValue,
                 PR_TITLE.defaultValue,
                 'some pr body'
             )
-            expect(setFailed).toBeCalledTimes(0)
+            expect(mockCore.setOutput).toBeCalledWith('currentYear', CURRENT_YEAR)
+            expect(mockCore.setOutput).toBeCalledWith('branchName', BRANCH_NAME.defaultValue)
+            expect(mockCore.setOutput).toBeCalledWith('pullRequestNumber', CREATE_PULL_REQUEST_SUCCESS.data.number)
+            expect(mockCore.setOutput).toBeCalledWith('pullRequestUrl', CREATE_PULL_REQUEST_SUCCESS.data.html_url)
         })
 
         test('create pull request with custom title and default body', async () => {
@@ -374,12 +430,16 @@ describe('action should', () => {
             mockRepository.hasChanges.mockReturnValue(true)
             mockRepository.createPullRequest.mockResolvedValue(CREATE_PULL_REQUEST_SUCCESS)
             await run()
+            expect(setFailed).toBeCalledTimes(0)
             expect(mockRepository.createPullRequest).toBeCalledWith(
                 BRANCH_NAME.defaultValue,
                 'some pr title',
                 PR_BODY.defaultValue
             )
-            expect(setFailed).toBeCalledTimes(0)
+            expect(mockCore.setOutput).toBeCalledWith('currentYear', CURRENT_YEAR)
+            expect(mockCore.setOutput).toBeCalledWith('branchName', BRANCH_NAME.defaultValue)
+            expect(mockCore.setOutput).toBeCalledWith('pullRequestNumber', CREATE_PULL_REQUEST_SUCCESS.data.number)
+            expect(mockCore.setOutput).toBeCalledWith('pullRequestUrl', CREATE_PULL_REQUEST_SUCCESS.data.html_url)
         })
 
         test('create pull request with custom title and body', async () => {
@@ -395,6 +455,10 @@ describe('action should', () => {
                 'some pr title',
                 'some pr body'
             )
+            expect(mockCore.setOutput).toBeCalledWith('currentYear', CURRENT_YEAR)
+            expect(mockCore.setOutput).toBeCalledWith('branchName', BRANCH_NAME.defaultValue)
+            expect(mockCore.setOutput).toBeCalledWith('pullRequestNumber', CREATE_PULL_REQUEST_SUCCESS.data.number)
+            expect(mockCore.setOutput).toBeCalledWith('pullRequestUrl', CREATE_PULL_REQUEST_SUCCESS.data.html_url)
         })
 
         test('create pull request and add assignees given configuration', async () => {
@@ -403,8 +467,12 @@ describe('action should', () => {
             mockRepository.hasChanges.mockReturnValue(true)
             mockRepository.createPullRequest.mockResolvedValue(CREATE_PULL_REQUEST_SUCCESS)
             await run()
-            expect(mockRepository.addAssignees).toBeCalledWith(42, ['assignee1', 'assignee2', 'assignee3'])
             expect(setFailed).toBeCalledTimes(0)
+            expect(mockRepository.addAssignees).toBeCalledWith(42, ['assignee1', 'assignee2', 'assignee3'])
+            expect(mockCore.setOutput).toBeCalledWith('currentYear', CURRENT_YEAR)
+            expect(mockCore.setOutput).toBeCalledWith('branchName', BRANCH_NAME.defaultValue)
+            expect(mockCore.setOutput).toBeCalledWith('pullRequestNumber', CREATE_PULL_REQUEST_SUCCESS.data.number)
+            expect(mockCore.setOutput).toBeCalledWith('pullRequestUrl', CREATE_PULL_REQUEST_SUCCESS.data.html_url)
         })
 
         test('create pull request and skip adding assignees given no configuration', async () => {
@@ -412,8 +480,12 @@ describe('action should', () => {
             mockRepository.hasChanges.mockReturnValue(true)
             mockRepository.createPullRequest.mockResolvedValue(CREATE_PULL_REQUEST_SUCCESS)
             await run()
-            expect(mockRepository.addAssignees).toBeCalledTimes(0)
             expect(setFailed).toBeCalledTimes(0)
+            expect(mockRepository.addAssignees).toBeCalledTimes(0)
+            expect(mockCore.setOutput).toBeCalledWith('currentYear', CURRENT_YEAR)
+            expect(mockCore.setOutput).toBeCalledWith('branchName', BRANCH_NAME.defaultValue)
+            expect(mockCore.setOutput).toBeCalledWith('pullRequestNumber', CREATE_PULL_REQUEST_SUCCESS.data.number)
+            expect(mockCore.setOutput).toBeCalledWith('pullRequestUrl', CREATE_PULL_REQUEST_SUCCESS.data.html_url)
         })
 
         test('create pull request and add labels given configuration', async () => {
@@ -422,8 +494,12 @@ describe('action should', () => {
             mockRepository.hasChanges.mockReturnValue(true)
             mockRepository.createPullRequest.mockResolvedValue(CREATE_PULL_REQUEST_SUCCESS)
             await run()
-            expect(mockRepository.addLabels).toBeCalledWith(42, ['some label 1', 'some label 2', 'some label 3'])
             expect(setFailed).toBeCalledTimes(0)
+            expect(mockRepository.addLabels).toBeCalledWith(42, ['some label 1', 'some label 2', 'some label 3'])
+            expect(mockCore.setOutput).toBeCalledWith('currentYear', CURRENT_YEAR)
+            expect(mockCore.setOutput).toBeCalledWith('branchName', BRANCH_NAME.defaultValue)
+            expect(mockCore.setOutput).toBeCalledWith('pullRequestNumber', CREATE_PULL_REQUEST_SUCCESS.data.number)
+            expect(mockCore.setOutput).toBeCalledWith('pullRequestUrl', CREATE_PULL_REQUEST_SUCCESS.data.html_url)
         })
 
         test('create pull request and skip adding labels given no configuration', async () => {
@@ -431,8 +507,12 @@ describe('action should', () => {
             mockRepository.hasChanges.mockReturnValue(true)
             mockRepository.createPullRequest.mockResolvedValue(CREATE_PULL_REQUEST_SUCCESS)
             await run()
-            expect(mockRepository.addLabels).toBeCalledTimes(0)
             expect(setFailed).toBeCalledTimes(0)
+            expect(mockRepository.addLabels).toBeCalledTimes(0)
+            expect(mockCore.setOutput).toBeCalledWith('currentYear', CURRENT_YEAR)
+            expect(mockCore.setOutput).toBeCalledWith('branchName', BRANCH_NAME.defaultValue)
+            expect(mockCore.setOutput).toBeCalledWith('pullRequestNumber', CREATE_PULL_REQUEST_SUCCESS.data.number)
+            expect(mockCore.setOutput).toBeCalledWith('pullRequestUrl', CREATE_PULL_REQUEST_SUCCESS.data.html_url)
         })
 
         test('set failed given creating pull request fails due to forbidden', async () => {
@@ -440,8 +520,9 @@ describe('action should', () => {
             mockRepository.hasChanges.mockReturnValue(true)
             mockRepository.createPullRequest.mockRejectedValue(CREATE_PULL_REQUEST_FAILURE_FORBIDDEN)
             await run()
-            expect(mockRepository.createPullRequest).toBeCalledTimes(1)
             expect(setFailed).toBeCalledTimes(1)
+            expect(mockRepository.createPullRequest).toBeCalledTimes(1)
+            expect(mockCore.setOutput).toBeCalledTimes(0)
         })
 
         test('set failed given creating pull request fails due to validation failure', async () => {
@@ -449,8 +530,9 @@ describe('action should', () => {
             mockRepository.hasChanges.mockReturnValue(true)
             mockRepository.createPullRequest.mockRejectedValue(CREATE_PULL_REQUEST_FAILURE_VALIDATION_FAILED)
             await run()
-            expect(mockRepository.createPullRequest).toBeCalledTimes(1)
             expect(setFailed).toBeCalledTimes(1)
+            expect(mockRepository.createPullRequest).toBeCalledTimes(1)
+            expect(mockCore.setOutput).toBeCalledTimes(0)
         })
     })
 
@@ -458,13 +540,14 @@ describe('action should', () => {
         test('skip creating pull request', async () => {
             mockFile.search.mockResolvedValue(['some-file'])
             mockRepository.hasChanges.mockReturnValue(true)
-            mockRepository.getPullRequest.mockResolvedValue({
-                number: 42,
-                html_url: 'https://github.com/some-user/some-repo/pull/42',
-            })
+            mockRepository.getPullRequest.mockResolvedValue(CREATE_PULL_REQUEST_SUCCESS.data)
             await run()
-            expect(mockRepository.createPullRequest).toBeCalledTimes(0)
             expect(setFailed).toBeCalledTimes(0)
+            expect(mockRepository.createPullRequest).toBeCalledTimes(0)
+            expect(mockCore.setOutput).toBeCalledWith('currentYear', CURRENT_YEAR)
+            expect(mockCore.setOutput).toBeCalledWith('branchName', BRANCH_NAME.defaultValue)
+            expect(mockCore.setOutput).toBeCalledWith('pullRequestNumber', CREATE_PULL_REQUEST_SUCCESS.data.number)
+            expect(mockCore.setOutput).toBeCalledWith('pullRequestUrl', CREATE_PULL_REQUEST_SUCCESS.data.html_url)
         })
     })
 })

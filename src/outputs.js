@@ -2,35 +2,17 @@ const { setOutput } = require('@actions/core')
 
 /**
  * @param {number} currentYear
+ * @param {string} branchName
+ * @param {number} pullRequestNumber
+ * @param {string} pullRequestUrl
  */
-const setCurrentYear = (currentYear) => {
+const set = (currentYear, branchName, pullRequestNumber, pullRequestUrl) => {
     setOutput('currentYear', currentYear)
-}
-
-/**
- * @param {string | null} branchName
- */
-const setBranchName = (branchName) => {
     setOutput('branchName', branchName)
-}
-
-/**
- * @param {number | null} pullRequestNumber
- */
-const setPullRequestNumber = (pullRequestNumber) => {
     setOutput('pullRequestNumber', pullRequestNumber)
-}
-
-/**
- * @param {string | null} pullRequestUrl
- */
-const setPullRequestUrl = (pullRequestUrl) => {
     setOutput('pullRequestUrl', pullRequestUrl)
 }
 
 module.exports = {
-    setCurrentYear,
-    setBranchName,
-    setPullRequestNumber,
-    setPullRequestUrl,
+    set,
 }
