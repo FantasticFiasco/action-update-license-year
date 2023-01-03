@@ -140,7 +140,6 @@ const file_command_1 = __nccwpck_require__(717);
 const utils_1 = __nccwpck_require__(5278);
 const os = __importStar(__nccwpck_require__(2037));
 const path = __importStar(__nccwpck_require__(1017));
-const uuid_1 = __nccwpck_require__(5840);
 const oidc_utils_1 = __nccwpck_require__(8041);
 /**
  * The code to exit an action
@@ -170,20 +169,9 @@ function exportVariable(name, val) {
     process.env[name] = convertedVal;
     const filePath = process.env['GITHUB_ENV'] || '';
     if (filePath) {
-        const delimiter = `ghadelimiter_${uuid_1.v4()}`;
-        // These should realistically never happen, but just in case someone finds a way to exploit uuid generation let's not allow keys or values that contain the delimiter.
-        if (name.includes(delimiter)) {
-            throw new Error(`Unexpected input: name should not contain the delimiter "${delimiter}"`);
-        }
-        if (convertedVal.includes(delimiter)) {
-            throw new Error(`Unexpected input: value should not contain the delimiter "${delimiter}"`);
-        }
-        const commandValue = `${name}<<${delimiter}${os.EOL}${convertedVal}${os.EOL}${delimiter}`;
-        file_command_1.issueCommand('ENV', commandValue);
+        return file_command_1.issueFileCommand('ENV', file_command_1.prepareKeyValueMessage(name, val));
     }
-    else {
-        command_1.issueCommand('set-env', { name }, convertedVal);
-    }
+    command_1.issueCommand('set-env', { name }, convertedVal);
 }
 exports.exportVariable = exportVariable;
 /**
@@ -201,7 +189,7 @@ exports.setSecret = setSecret;
 function addPath(inputPath) {
     const filePath = process.env['GITHUB_PATH'] || '';
     if (filePath) {
-        file_command_1.issueCommand('PATH', inputPath);
+        file_command_1.issueFileCommand('PATH', inputPath);
     }
     else {
         command_1.issueCommand('add-path', {}, inputPath);
@@ -241,7 +229,10 @@ function getMultilineInput(name, options) {
     const inputs = getInput(name, options)
         .split('\n')
         .filter(x => x !== '');
-    return inputs;
+    if (options && options.trimWhitespace === false) {
+        return inputs;
+    }
+    return inputs.map(input => input.trim());
 }
 exports.getMultilineInput = getMultilineInput;
 /**
@@ -274,8 +265,12 @@ exports.getBooleanInput = getBooleanInput;
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function setOutput(name, value) {
+    const filePath = process.env['GITHUB_OUTPUT'] || '';
+    if (filePath) {
+        return file_command_1.issueFileCommand('OUTPUT', file_command_1.prepareKeyValueMessage(name, value));
+    }
     process.stdout.write(os.EOL);
-    command_1.issueCommand('set-output', { name }, value);
+    command_1.issueCommand('set-output', { name }, utils_1.toCommandValue(value));
 }
 exports.setOutput = setOutput;
 /**
@@ -404,7 +399,11 @@ exports.group = group;
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function saveState(name, value) {
-    command_1.issueCommand('save-state', { name }, value);
+    const filePath = process.env['GITHUB_STATE'] || '';
+    if (filePath) {
+        return file_command_1.issueFileCommand('STATE', file_command_1.prepareKeyValueMessage(name, value));
+    }
+    command_1.issueCommand('save-state', { name }, utils_1.toCommandValue(value));
 }
 exports.saveState = saveState;
 /**
@@ -470,13 +469,14 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.issueCommand = void 0;
+exports.prepareKeyValueMessage = exports.issueFileCommand = void 0;
 // We use any as a valid input type
 /* eslint-disable @typescript-eslint/no-explicit-any */
 const fs = __importStar(__nccwpck_require__(7147));
 const os = __importStar(__nccwpck_require__(2037));
+const uuid_1 = __nccwpck_require__(5840);
 const utils_1 = __nccwpck_require__(5278);
-function issueCommand(command, message) {
+function issueFileCommand(command, message) {
     const filePath = process.env[`GITHUB_${command}`];
     if (!filePath) {
         throw new Error(`Unable to find environment variable for file command ${command}`);
@@ -488,7 +488,22 @@ function issueCommand(command, message) {
         encoding: 'utf8'
     });
 }
-exports.issueCommand = issueCommand;
+exports.issueFileCommand = issueFileCommand;
+function prepareKeyValueMessage(key, value) {
+    const delimiter = `ghadelimiter_${uuid_1.v4()}`;
+    const convertedValue = utils_1.toCommandValue(value);
+    // These should realistically never happen, but just in case someone finds a
+    // way to exploit uuid generation let's not allow keys or values that contain
+    // the delimiter.
+    if (key.includes(delimiter)) {
+        throw new Error(`Unexpected input: name should not contain the delimiter "${delimiter}"`);
+    }
+    if (convertedValue.includes(delimiter)) {
+        throw new Error(`Unexpected input: value should not contain the delimiter "${delimiter}"`);
+    }
+    return `${key}<<${delimiter}${os.EOL}${convertedValue}${os.EOL}${delimiter}`;
+}
+exports.prepareKeyValueMessage = prepareKeyValueMessage;
 //# sourceMappingURL=file-command.js.map
 
 /***/ }),
@@ -1075,8 +1090,9 @@ exports.context = new Context.Context();
  * @param     token    the repo PAT or GITHUB_TOKEN
  * @param     options  other options to set
  */
-function getOctokit(token, options) {
-    return new utils_1.GitHub(utils_1.getOctokitOptions(token, options));
+function getOctokit(token, options, ...additionalPlugins) {
+    const GitHubWithPlugins = utils_1.GitHub.plugin(...additionalPlugins);
+    return new GitHubWithPlugins(utils_1.getOctokitOptions(token, options));
 }
 exports.getOctokit = getOctokit;
 //# sourceMappingURL=github.js.map
@@ -1158,7 +1174,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.getOctokitOptions = exports.GitHub = exports.context = void 0;
+exports.getOctokitOptions = exports.GitHub = exports.defaults = exports.context = void 0;
 const Context = __importStar(__nccwpck_require__(4087));
 const Utils = __importStar(__nccwpck_require__(7914));
 // octokit + plugins
@@ -1167,13 +1183,13 @@ const plugin_rest_endpoint_methods_1 = __nccwpck_require__(3044);
 const plugin_paginate_rest_1 = __nccwpck_require__(4193);
 exports.context = new Context.Context();
 const baseUrl = Utils.getApiBaseUrl();
-const defaults = {
+exports.defaults = {
     baseUrl,
     request: {
         agent: Utils.getProxyAgent(baseUrl)
     }
 };
-exports.GitHub = core_1.Octokit.plugin(plugin_rest_endpoint_methods_1.restEndpointMethods, plugin_paginate_rest_1.paginateRest).defaults(defaults);
+exports.GitHub = core_1.Octokit.plugin(plugin_rest_endpoint_methods_1.restEndpointMethods, plugin_paginate_rest_1.paginateRest).defaults(exports.defaults);
 /**
  * Convience function to correctly format Octokit Options to pass into the constructor.
  *
@@ -16407,6 +16423,7 @@ const { context } = __nccwpck_require__(5438)
 const file = __nccwpck_require__(9394)
 const gpg = __nccwpck_require__(2136)
 const inputs = __nccwpck_require__(7229)
+const outputs = __nccwpck_require__(4368)
 const Repository = __nccwpck_require__(3463)
 const transforms = __nccwpck_require__(1420)
 
@@ -16418,6 +16435,7 @@ const run = async () => {
         }
         info(`Working directory: ${cwd}`)
 
+        // Inputs
         const { owner, repo: repoName } = context.repo
         const {
             token,
@@ -16436,9 +16454,11 @@ const run = async () => {
             labels,
         } = inputs.parse()
 
+        // Authenticate
         const repo = new Repository(owner, repoName, token)
         await repo.authenticate(commitAuthorName, commitAuthorEmail)
 
+        // Setup GPG
         if (gpgPrivateKey) {
             if (!gpgPassphrase) {
                 throw new Error('No GPG passphrase specified')
@@ -16450,20 +16470,27 @@ const run = async () => {
             await repo.setupGpg(keyId, gpgProgramFilePath)
         }
 
+        // Define outputs that hasn't been defined yet
+        const currentYear = new Date().getFullYear()
+        let pullRequestNumber = null
+        let pullRequestUrl = null
+
+        // Print current year
+        info(`Current year is "${currentYear}"`)
+
+        // Checkout branch
         const branchExists = await repo.branchExists(branchName)
         info(`Checkout ${branchExists ? 'existing' : 'new'} branch named "${branchName}"`)
         await repo.checkoutBranch(branchName, !branchExists)
 
+        // Search for files to update
         const files = await file.search(path)
         if (files.length === 0) {
             throw new Error(`Found no files matching the path "${singleLine(path)}"`)
         }
-
         info(`Found ${files.length} file(s) matching the path "${singleLine(path)}"`)
 
-        const currentYear = new Date().getFullYear()
-        info(`Current year is "${currentYear}"`)
-
+        // Update files
         for (const file of files) {
             const relativeFile = file.replace(cwd, '.')
             const content = await repo.readFile(file)
@@ -16481,14 +16508,21 @@ const run = async () => {
             return
         }
 
+        // Stage and commit changes
         await repo.stageWrittenFiles()
 
         const commitMessage = commitBody ? `${commitTitle}\n\n${commitBody}` : commitTitle
         await repo.commit(commitMessage)
         await repo.push()
 
-        const hasPullRequest = await repo.hasPullRequest(branchName)
-        if (!hasPullRequest) {
+        // Create pull request if it hasn't already been created
+        let pullRequest = await repo.getPullRequest(branchName)
+        if (pullRequest) {
+            info(`Pull request ${pullRequest.number} with title "${pullRequest.title}" has already been created`)
+            pullRequestNumber = pullRequest.number
+            pullRequestUrl = pullRequest.html_url
+        } else {
+            // Create pull request
             info(`Create new pull request with title "${pullRequestTitle}"`)
             const createPullRequestResponse = await repo.createPullRequest(
                 branchName,
@@ -16496,16 +16530,28 @@ const run = async () => {
                 pullRequestBody
             )
 
+            if (createPullRequestResponse.status !== 201) {
+                throw new Error(`Failed to create pull request: ${createPullRequestResponse.status}`)
+            }
+
+            pullRequestNumber = createPullRequestResponse.data.number
+            pullRequestUrl = createPullRequestResponse.data.html_url
+
+            // Add assignees
             if (assignees.length > 0) {
                 info(`Add assignees to pull request: ${JSON.stringify(assignees)}`)
                 await repo.addAssignees(createPullRequestResponse.data.number, assignees)
             }
 
+            // Add labels
             if (labels.length > 0) {
                 info(`Add labels to pull request: ${JSON.stringify(labels)}`)
                 await repo.addLabels(createPullRequestResponse.data.number, labels)
             }
         }
+
+        // Set outputs
+        outputs.set(currentYear, branchName, pullRequestNumber, pullRequestUrl)
     } catch (err) {
         // @ts-ignore
         setFailed(err.message)
@@ -16576,6 +16622,31 @@ const file = (fileName) => {
 module.exports = {
     dir,
     file,
+}
+
+
+/***/ }),
+
+/***/ 4368:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+const { setOutput } = __nccwpck_require__(2186)
+
+/**
+ * @param {number} currentYear
+ * @param {string} branchName
+ * @param {number} pullRequestNumber
+ * @param {string} pullRequestUrl
+ */
+const set = (currentYear, branchName, pullRequestNumber, pullRequestUrl) => {
+    setOutput('currentYear', currentYear)
+    setOutput('branchName', branchName)
+    setOutput('pullRequestNumber', pullRequestNumber)
+    setOutput('pullRequestUrl', pullRequestUrl)
+}
+
+module.exports = {
+    set,
 }
 
 
@@ -16757,7 +16828,7 @@ class Repository {
     /**
      * @param {string} sourceBranchName The name of the branch where your changes are implemented
      */
-    async hasPullRequest(sourceBranchName) {
+    async getPullRequest(sourceBranchName) {
         try {
             const res = await this._octokit.rest.pulls.list({
                 owner: this._owner,
@@ -16765,7 +16836,15 @@ class Repository {
                 head: `${this._owner}:${sourceBranchName}`,
             })
 
-            return res.data.length === 1
+            if (res.data.length === 0) {
+                return null
+            }
+
+            if (res.data.length > 1) {
+                throw new Error(`More than one pull request from ${sourceBranchName} exists`)
+            }
+
+            return res.data[0]
         } catch (err) {
             // @ts-ignore
             err.message = `Error when checking whether pull request from ${sourceBranchName} exists: ${err.message}`
