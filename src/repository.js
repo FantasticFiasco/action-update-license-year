@@ -171,7 +171,7 @@ class Repository {
     /**
      * @param {string} sourceBranchName The name of the branch where your changes are implemented
      */
-    async hasPullRequest(sourceBranchName) {
+    async getPullRequest(sourceBranchName) {
         try {
             const res = await this._octokit.rest.pulls.list({
                 owner: this._owner,
@@ -179,7 +179,15 @@ class Repository {
                 head: `${this._owner}:${sourceBranchName}`,
             })
 
-            return res.data.length === 1
+            if (res.data.length === 0) {
+                return null
+            }
+
+            if (res.data.length > 1) {
+                throw new Error(`More than one pull request from ${sourceBranchName} exists`)
+            }
+
+            return res.data[0]
         } catch (err) {
             // @ts-ignore
             err.message = `Error when checking whether pull request from ${sourceBranchName} exists: ${err.message}`

@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ## [Unreleased]
 
+### :zap: Added
+
+- Support for the outputs `currentYear`, `branchName`, `pullRequestNumber` and `pullRequestUrl`. See [`action.yml`](./action.yml) for more information.
+
 ## [2.2.2] - 2022-08-23
 
 ### :policeman: Security

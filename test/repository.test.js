@@ -205,29 +205,50 @@ describe('#commit should', () => {
     })
 })
 
-describe('#hasPullRequest should', () => {
-    test('return true given pull request exists', async () => {
+describe('#getPullRequest should', () => {
+    test('return pull request given that it exists', async () => {
+        const pr = {
+            number: 42,
+            html_url: 'https://github.com/some-user/some-repo/pull/42',
+        }
         mockOctokit.rest.pulls.list.mockResolvedValue({
-            data: ['some pull request'],
+            data: [pr],
         })
         const repo = new Repository('some owner', 'some name', 'some token')
-        const promise = repo.hasPullRequest('some-branch')
-        await expect(promise).resolves.toBe(true)
+        const promise = repo.getPullRequest('some-branch')
+        await expect(promise).resolves.toBe(pr)
     })
 
-    test("return false given pull request doesn't exist", async () => {
+    test("return null given that pull request doesn't exist", async () => {
         mockOctokit.rest.pulls.list.mockResolvedValue({
             data: [],
         })
         const repo = new Repository('some owner', 'some name', 'some token')
-        const promise = repo.hasPullRequest('some-branch')
-        await expect(promise).resolves.toBe(false)
+        const promise = repo.getPullRequest('some-branch')
+        await expect(promise).resolves.toBe(null)
+    })
+
+    test('throw error given that multiple pull requests exist', async () => {
+        const pr1 = {
+            number: 42,
+            html_url: 'https://github.com/some-user/some-repo/pull/42',
+        }
+        const pr2 = {
+            number: 43,
+            html_url: 'https://github.com/some-user/some-repo/pull/43',
+        }
+        mockOctokit.rest.pulls.list.mockResolvedValue({
+            data: [pr1, pr2],
+        })
+        const repo = new Repository('some owner', 'some name', 'some token')
+        const promise = repo.getPullRequest('some-branch')
+        await expect(promise).rejects.toBeDefined()
     })
 
     test('throw error given unexpected Octokit error', async () => {
         mockOctokit.rest.pulls.list.mockRejectedValue({})
         const repo = new Repository('some owner', 'some name', 'some token')
-        const promise = repo.hasPullRequest('some-branch')
+        const promise = repo.getPullRequest('some-branch')
         await expect(promise).rejects.toBeDefined()
     })
 })

@@ -106,3 +106,24 @@ inputs:
     description: Comma-separated list of labels to add when pull request is created.
     default: ""
     required: false
+
+outputs:
+  currentYear:
+    description: >
+      The current year. This output will exist if action ran successfully and licenses where
+      updated.
+
+  branchName:
+    description: >
+      The name of the git branch created for the purpose of updating the licenses. This output will
+      exist if action ran successfully and licenses where updated.
+
+  pullRequestNumber:
+    description: >
+      The number of the GitHub pull request created for the purpose of updating the licenses. This
+      output will exist if action ran successfully and licenses where updated.
+
+  pullRequestUrl:
+    description: >
+      The URL of the GitHub pull request created for the purpose of updating the licenses. This
+      output will exist if action ran successfully and licenses where updated.
