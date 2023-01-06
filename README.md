@@ -249,7 +249,9 @@ jobs:
       - uses: FantasticFiasco/action-update-license-year@v2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+        id: license
       - name: Merge PR
+        if: steps.license.outputs.pullRequestNumber != ''
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         # Replace '--merge' with '--rebase' to rebase the commits onto the base
@@ -257,7 +259,7 @@ jobs:
         # merge it into the base branch.
         # For more information regarding the merge command, please see
         # https://cli.github.com/manual/gh_pr_merge.
-        run: gh pr merge --merge --delete-branch
+        run: gh pr merge --merge --delete-branch ${{ steps.license.outputs.pullRequestNumber }}
 ```
 
 ### I want to update my license, but it isn't called `LICENSE`
