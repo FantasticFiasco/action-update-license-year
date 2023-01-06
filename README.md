@@ -49,7 +49,9 @@ jobs:
 
 ## API
 
-<!-- start api -->
+The action has support for the following inputs:
+
+<!-- start inputs -->
 ```yaml
 - uses: FantasticFiasco/action-update-license-year@v2
   with:
@@ -156,7 +158,18 @@ jobs:
     # Default:
     labels: ''
 ```
-<!-- end api -->
+<!-- end inputs -->
+
+The action is setting the following outputs:
+
+<!-- start outputs -->
+- `currentYear`: The current year. This output will exist if action ran successfully and licenses where updated.
+- `branchName`: The name of the git branch created for the purpose of updating the licenses. This output will exist if action ran successfully and licenses where updated.
+- `pullRequestNumber`: The number of the GitHub pull request created for the purpose of updating the licenses. This output will exist if action ran successfully and licenses where updated.
+- `pullRequestUrl`: The URL of the GitHub pull request created for the purpose of updating the licenses. This output will exist if action ran successfully and licenses where updated.
+<!-- end outputs -->
+
+For more information on outputs and their usage, please see [GitHub Actions by Example: Outputs](https://www.actionsbyexample.com/outputs.html) or the scenario named [I want to update my license on first commit each year, and I want it merged](#i-want-to-update-my-license-on-first-commit-each-year-and-i-want-it-merged).
 
 ## Scenarios
 

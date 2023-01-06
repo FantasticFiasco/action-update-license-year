@@ -1,11 +1,11 @@
 // @ts-nocheck
-const fs = require('fs')
-const os = require('os')
-const path = require('path')
-const yaml = require('js-yaml')
+const { readFileSync, writeFileSync } = require('fs')
+const { EOL } = require('os')
+const { join } = require('path')
+const { load } = require('js-yaml')
 
 const getPackageMajorVersion = () => {
-    const version = require(path.join(__dirname, '..', 'package.json')).version
+    const version = require(join(__dirname, '..', 'package.json')).version
     const match = /(\d+)\.\d+\.\d+/.exec(version)
     if (!match) {
         throw new Error(`Package version '${version}' did not meet expected format`)
@@ -13,39 +13,53 @@ const getPackageMajorVersion = () => {
     return match[1]
 }
 
-const updateApi = () => {
-    // Load the action.yml
-    const actionYaml = yaml.load(fs.readFileSync(METADATA_PATH).toString())
+const ACTION_NAME = `FantasticFiasco/action-update-license-year@v${getPackageMajorVersion()}`
+const METADATA_PATH = join(__dirname, '..', 'action.yml')
+const README_PATH = join(__dirname, '..', 'README.md')
+const INPUTS_START_TOKEN = '<!-- start inputs -->'
+const INPUTS_END_TOKEN = '<!-- end inputs -->'
+const OUTPUTS_START_TOKEN = '<!-- start outputs -->'
+const OUTPUTS_END_TOKEN = '<!-- end outputs -->'
 
-    // Load the README
-    const originalReadme = fs.readFileSync(README_PATH).toString()
-
+const findTokenSpan = (text, startToken, endToken) => {
     // Find the start token
-    const startTokenIndex = originalReadme.indexOf(API_START_TOKEN)
-    if (startTokenIndex < 0) {
-        throw new Error(`Start token '${API_START_TOKEN}' not found`)
+    const startIndex = text.indexOf(startToken)
+    if (startIndex < 0) {
+        throw new Error(`Start token '${startToken}' not found`)
     }
 
     // Find the end token
-    const endTokenIndex = originalReadme.indexOf(API_END_TOKEN)
-    if (endTokenIndex < 0) {
-        throw new Error(`End token '${API_END_TOKEN}' not found`)
-    } else if (endTokenIndex < startTokenIndex) {
+    const endIndex = text.indexOf(endToken)
+    if (endIndex < 0) {
+        throw new Error(`End token '${endToken}' not found`)
+    } else if (endIndex < startIndex) {
         throw new Error('Start token must appear before end token')
     }
+
+    return { startIndex, endIndex }
+}
+
+const updateInputs = () => {
+    // Load the action.yml
+    const yaml = load(readFileSync(METADATA_PATH).toString())
+
+    // Load the README
+    const originalReadme = readFileSync(README_PATH).toString()
+
+    const { startIndex, endIndex } = findTokenSpan(originalReadme, INPUTS_START_TOKEN, INPUTS_END_TOKEN)
 
     // Build the new README
     const newReadme = []
 
     // Append the beginning
-    newReadme.push(originalReadme.substr(0, startTokenIndex + API_START_TOKEN.length))
+    newReadme.push(originalReadme.slice(0, startIndex + INPUTS_START_TOKEN.length))
 
-    // Build the new API section
+    // Build the new inputs section
     newReadme.push('```yaml')
     newReadme.push(`- uses: ${ACTION_NAME}`)
     newReadme.push('  with:')
 
-    const inputs = actionYaml.inputs
+    const inputs = yaml.inputs
     let firstInput = true
     for (const key of Object.keys(inputs)) {
         const input = inputs[key]
@@ -64,9 +78,9 @@ const updateApi = () => {
             // Longer than width? Find a space to break apart
             let segment = description
             if (description.length > maxWidth) {
-                segment = description.substr(0, maxWidth + 1)
+                segment = description.slice(0, maxWidth + 1)
                 while (!segment.endsWith(' ') && !segment.endsWith('\n') && segment) {
-                    segment = segment.substr(0, segment.length - 1)
+                    segment = segment.slice(0, segment.length - 1)
                 }
 
                 // Trimmed too much?
@@ -80,14 +94,14 @@ const updateApi = () => {
             // Check for newline
             const newlineIndex = segment.indexOf('\n')
             if (newlineIndex >= 0) {
-                segment = segment.substr(0, newlineIndex + 1)
+                segment = segment.slice(0, newlineIndex + 1)
             }
 
             // Append segment
             newReadme.push(`    # ${segment}`.trimRight())
 
             // Remaining
-            description = description.substr(segment.length)
+            description = description.slice(segment.length)
         }
 
         // Append blank line
@@ -116,16 +130,40 @@ const updateApi = () => {
     newReadme.push('```')
 
     // Append the end
-    newReadme.push(originalReadme.substr(endTokenIndex))
+    newReadme.push(originalReadme.slice(endIndex))
 
     // Write the new README
-    fs.writeFileSync(README_PATH, newReadme.join(os.EOL))
+    writeFileSync(README_PATH, newReadme.join(EOL))
 }
 
-const ACTION_NAME = `FantasticFiasco/action-update-license-year@v${getPackageMajorVersion()}`
-const METADATA_PATH = path.join(__dirname, '..', 'action.yml')
-const README_PATH = path.join(__dirname, '..', 'README.md')
-const API_START_TOKEN = '<!-- start api -->'
-const API_END_TOKEN = '<!-- end api -->'
+const updateOutputs = () => {
+    // Load the action.yml
+    const yaml = load(readFileSync(METADATA_PATH).toString())
 
-updateApi()
+    // Load the README
+    const originalReadme = readFileSync(README_PATH).toString()
+
+    const { startIndex, endIndex } = findTokenSpan(originalReadme, OUTPUTS_START_TOKEN, OUTPUTS_END_TOKEN)
+
+    // Build the new README
+    const newReadme = []
+
+    // Append the beginning
+    newReadme.push(originalReadme.slice(0, startIndex + OUTPUTS_START_TOKEN.length))
+
+    const outputs = yaml.outputs
+    for (const key of Object.keys(outputs)) {
+        const output = outputs[key]
+
+        newReadme.push(`- \`${key}\`: ${output.description.trim()}`)
+    }
+
+    // Append the end
+    newReadme.push(originalReadme.slice(endIndex))
+
+    // Write the new README
+    writeFileSync(README_PATH, newReadme.join(EOL))
+}
+
+updateInputs()
+updateOutputs()
