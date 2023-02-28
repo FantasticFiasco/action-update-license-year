@@ -4,6 +4,13 @@
 [![Coverage Status](https://coveralls.io/repos/github/FantasticFiasco/action-update-license-year/badge.svg?branch=master)](https://coveralls.io/github/FantasticFiasco/action-update-license-year?branch=master)
 [![SemVer compatible](https://img.shields.io/badge/%E2%9C%85-SemVer%20compatible-blue)](https://semver.org/)
 
+> **Note**
+>
+> Before updating your copyright with the current year, please assert that there is a value for you in doing so. I'm not trained, nor certified, in any legal matter, and based on empiric data it seems that specifying the year, or range of years, in a license or copyright header isn't a requirement.
+>
+> The enormously popular [microsoft/vscode](https://github.com/microsoft/vscode) repository has not updated [their license](https://github.com/microsoft/vscode/blob/main/LICENSE.txt) since initial publication, nor is the year specified in source file copyright headers.
+> Another repository that deliberately removed years from their copyright notice in 2023 is [curl](https://github.com/curl/curl) ([commit](https://github.com/curl/curl/commit/2bc1d775f510196154283374284f98d3eae03544)).
+
 So this seems to have happened. Instead of manually updating the license copyright years in my GitHub repositories I created this GitHub Action.
 
 > Oh, the loath I have for manual processes...
