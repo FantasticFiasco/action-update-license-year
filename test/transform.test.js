@@ -229,7 +229,7 @@ describe('#applyTransform should', () => {
             const got = transforms.applyTransform(
                 defaultTransform,
                 readTestFile('MIT/RANGE_OF_YEARS'),
-                2000,
+                2001,
                 defaultFileName
             )
             const want = readTestFile('MIT/RANGE_OF_YEARS')
@@ -249,6 +249,17 @@ describe('#applyTransform should', () => {
             expect(got).toBe(want)
         })
 
+        test('transform license from a multiple single years into multiple ranges of years', () => {
+            const got = transforms.applyTransform(
+                '(?<=some copyright )(?<from>\\d{4})(-\\d{4})?',
+                'some copyright 2000 aaa\nsome copyright 2000 bbb',
+                2002,
+                defaultFileName
+            )
+            const want = 'some copyright 2000-2002 aaa\nsome copyright 2000-2002 bbb'
+            expect(got).toBe(want)
+        })
+
         test('transform license from a range of years into a new range of years', () => {
             const got = transforms.applyTransform(
                 '(?<=some copyright )(?<from>\\d{4})(-\\d{4})?',
@@ -260,6 +271,17 @@ describe('#applyTransform should', () => {
             expect(got).toBe(want)
         })
 
+        test('transform license from multiple ranges of years into multiple new ranges of years', () => {
+            const got = transforms.applyTransform(
+                '(?<=some copyright )(?<from>\\d{4})(-\\d{4})?',
+                'some copyright 2000-2001 aaa\nsome copyright 2000-2001 bbb',
+                2002,
+                defaultFileName
+            )
+            const want = 'some copyright 2000-2002 aaa\nsome copyright 2000-2002 bbb'
+            expect(got).toBe(want)
+        })
+
         test('not transform license from a single year given year is unchanged', () => {
             const got = transforms.applyTransform(
                 '(?<=some copyright )(?<from>\\d{4})(-\\d{4})?',
@@ -268,6 +290,17 @@ describe('#applyTransform should', () => {
                 defaultFileName
             )
             const want = 'some copyright 2000'
+            expect(got).toBe(want)
+        })
+
+        test('not transform license from a range of years given year is unchanged', () => {
+            const got = transforms.applyTransform(
+                '(?<=some copyright )(?<from>\\d{4})(-\\d{4})?',
+                'some copyright 2000-2001',
+                2001,
+                defaultFileName
+            )
+            const want = 'some copyright 2000-2001'
             expect(got).toBe(want)
         })
     })
