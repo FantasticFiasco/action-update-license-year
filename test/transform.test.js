@@ -183,14 +183,36 @@ describe('#applyTransform should', () => {
     })
 
     describe('given custom transform', () => {
-        test('transform license', () => {
+        test('transform license from a single year into a range of years', () => {
             const got = transforms.applyTransform(
-                '(?<=some copyright )(?<from>\\d{4})-\\d{4}',
+                '(?<=some copyright )(?<from>\\d{4})(-\\d{4})?',
+                'some copyright 2000',
+                2002,
+                defaultFileName
+            )
+            const want = 'some copyright 2000-2002'
+            expect(got).toBe(want)
+        })
+
+        test('transform license from a range of years into a new range of years', () => {
+            const got = transforms.applyTransform(
+                '(?<=some copyright )(?<from>\\d{4})(-\\d{4})?',
                 'some copyright 2000-2001',
                 2002,
                 defaultFileName
             )
             const want = 'some copyright 2000-2002'
+            expect(got).toBe(want)
+        })
+
+        test('not transform license from a single year given year is unchanged', () => {
+            const got = transforms.applyTransform(
+                '(?<=some copyright )(?<from>\\d{4})(-\\d{4})?',
+                'some copyright 2000',
+                2000,
+                defaultFileName
+            )
+            const want = 'some copyright 2000'
             expect(got).toBe(want)
         })
     })
