@@ -40,6 +40,17 @@ describe('#applyTransform should', () => {
             const want = readTestFile('AGPL-3.0-only/SINGLE_YEAR')
             expect(got).toBe(want)
         })
+
+        test('not transform license from a range of years given year is unchanged', () => {
+            const got = transforms.applyTransform(
+                defaultTransform,
+                readTestFile('AGPL-3.0-only/RANGE_OF_YEARS'),
+                2001,
+                defaultFileName
+            )
+            const want = readTestFile('AGPL-3.0-only/RANGE_OF_YEARS')
+            expect(got).toBe(want)
+        })
     })
 
     describe('given Apache-2.0', () => {
@@ -73,6 +84,17 @@ describe('#applyTransform should', () => {
                 defaultFileName
             )
             const want = readTestFile('Apache-2.0/SINGLE_YEAR')
+            expect(got).toBe(want)
+        })
+
+        test('not transform license from a range of years given year is unchanged', () => {
+            const got = transforms.applyTransform(
+                defaultTransform,
+                readTestFile('Apache-2.0/RANGE_OF_YEARS'),
+                2001,
+                defaultFileName
+            )
+            const want = readTestFile('Apache-2.0/RANGE_OF_YEARS')
             expect(got).toBe(want)
         })
     })
@@ -110,6 +132,17 @@ describe('#applyTransform should', () => {
             const want = readTestFile('BSD-2-Clause/SINGLE_YEAR')
             expect(got).toBe(want)
         })
+
+        test('not transform license from a range of years given year is unchanged', () => {
+            const got = transforms.applyTransform(
+                defaultTransform,
+                readTestFile('BSD-2-Clause/RANGE_OF_YEARS'),
+                2001,
+                defaultFileName
+            )
+            const want = readTestFile('BSD-2-Clause/RANGE_OF_YEARS')
+            expect(got).toBe(want)
+        })
     })
 
     describe('given BSD-3-Clause', () => {
@@ -145,6 +178,17 @@ describe('#applyTransform should', () => {
             const want = readTestFile('BSD-3-Clause/SINGLE_YEAR')
             expect(got).toBe(want)
         })
+
+        test('not transform license from a range of years given year is unchanged', () => {
+            const got = transforms.applyTransform(
+                defaultTransform,
+                readTestFile('BSD-3-Clause/RANGE_OF_YEARS'),
+                2001,
+                defaultFileName
+            )
+            const want = readTestFile('BSD-3-Clause/RANGE_OF_YEARS')
+            expect(got).toBe(want)
+        })
     })
 
     describe('given MIT', () => {
@@ -178,6 +222,17 @@ describe('#applyTransform should', () => {
                 defaultFileName
             )
             const want = readTestFile('MIT/SINGLE_YEAR')
+            expect(got).toBe(want)
+        })
+
+        test('not transform license from a range of years given year is unchanged', () => {
+            const got = transforms.applyTransform(
+                defaultTransform,
+                readTestFile('MIT/RANGE_OF_YEARS'),
+                2000,
+                defaultFileName
+            )
+            const want = readTestFile('MIT/RANGE_OF_YEARS')
             expect(got).toBe(want)
         })
     })
