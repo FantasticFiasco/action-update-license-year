@@ -6,14 +6,14 @@ const AGPL_3_ONLY_YEAR_RANGE = new RegExp(
     '(?<from>\\d{4})'                         +  // 'YYYY'                       group named 'from'
     '-\\d{4}'                                 +  // '-YYYY'
     '(?!\\s+free\\s+software\\s+foundation)',    // ' Free Software Foundation'  negative lookahead
-    'im'                                         // Multi-line/Insensitive
+    'gmi'                                        // Global/Multi-line/Insensitive
 );
 // prettier-ignore
 const AGPL_3_ONLY_SINGLE_YEAR = new RegExp(
     '(?<=copyright\\s+\\(c\\)\\s+)'           +  // 'Copyright (C) '             positive lookbehind
     '(?<from>\\d{4})'                         +  // 'YYYY'                       group named 'from'
     '(?!\\s+free software foundation)',          // ' Free Software Foundation'  negative lookahead
-    'im'                                         // Multi-line/Insensitive
+    'gmi'                                        // Global/Multi-line/Insensitive
 );
 
 // Regular expressions capable of transforming the following license files:
@@ -24,13 +24,13 @@ const APACHE_2_MIT_YEAR_RANGE = new RegExp(
     '(?<=copyright\\s+)'                      +  // 'Copyright '                 positive lookbehind
     '(?<from>\\d{4})'                         +  // 'YYYY'                       group named 'from'
     '-\\d{4}',                                   // '-YYYY'
-    'im'                                         // Multi-line/Insensitive
+    'gmi'                                        // Global/Multi-line/Insensitive
 );
 // prettier-ignore
 const APACHE_2_MIT_SINGLE_YEAR = new RegExp(
     '(?<=copyright\\s+)'                      +  // 'Copyright '                 positive lookbehind
     '(?<from>\\d{4})',                           // 'YYYY'                       group named 'from'
-    'im'                                         // Multi-line/Insensitive
+    'gmi'                                        // Global/Multi-line/Insensitive
 );
 
 // Regular expressions capable of transforming the following license files:
@@ -42,14 +42,14 @@ const BSD_YEAR_RANGE = new RegExp(
     '(?<from>\\d{4})'                         +  // 'YYYY'                       group named 'from'
     '-\\d{4}'                                 +  // '-YYYY'
     '(?=,)',                                     // ','                          positive lookahead
-    'im'                                         // Multi-line/Insensitive
+    'gmi'                                        // Global/Multi-line/Insensitive
 )
 // prettier-ignore
 const BSD_SINGLE_YEAR = new RegExp(
     '(?<=copyright\\s+\\(c\\)\\s+)'           +  // 'Copyright (c) '             positive lookbehind
     '(?<from>\\d{4})'                         +  // 'YYYY'                       group named 'from'
     '(?=,)',                                     // ','                          positive lookahead
-    'im'                                         // Multi-line/Insensitive
+    'gmi'                                        // Global/Multi-line/Insensitive
 );
 
 /**
@@ -102,7 +102,7 @@ const applyDefaultTransform = (license, currentYear, fileName) => {
 const applyCustomTransform = (transform, license, currentYear, fileName) => {
     const licenseTransform = {
         name: 'Custom',
-        transform: new RegExp(transform, 'im'),
+        transform: new RegExp(transform, 'gmi'),
     }
 
     if (!canApplyLicenseTransform(licenseTransform, license)) {
@@ -126,16 +126,24 @@ const canApplyLicenseTransform = (licenseTransform, license) => {
  * @param {number} currentYear
  */
 const applyLicenseTransform = (licenseTransform, license, currentYear) => {
-    const match = licenseTransform.transform.exec(license)
-    if (match === null || match.groups === undefined) {
-        throw new Error(`Transforming ${licenseTransform.name} license failed`)
-    }
+    license = license.replace(licenseTransform.transform, (match, ...args) => {
+        // The last argument is the groups object
+        const groups = args[args.length - 1]
 
-    if (Number(match.groups['from']) === currentYear) {
-        return license
-    }
+        if (groups === undefined) {
+            throw new Error(`Transforming ${licenseTransform.name} license failed`)
+        }
 
-    return license.replace(licenseTransform.transform, `$<from>-${currentYear}`)
+        const from = groups['from']
+
+        if (Number(from) === currentYear) {
+            return from
+        }
+
+        return `${from}-${currentYear}`
+    })
+
+    return license
 }
 
 module.exports = {
