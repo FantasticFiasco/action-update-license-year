@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ## [Unreleased]
 
+### :syringe: Fixed
+
+- [#333](https://github.com/FantasticFiasco/action-update-license-year/issues/333) [BREAKING CHANGE] Update all licenses in a file, not only the first found (discovered by [@glimchb](https://github.com/glimchb)).
+
+  **Migration guide**
+
+  Custom RegExp transforms where previously written to execute with the `mi` flags ("multiline" and "ignore case"). With this new major version the transform also needs to respect the `g` flag ("global"). I.e. please verify that your custom transform behaves as expected when used with the `gmi` flags.
+
 ## [2.3.0] - 2023-01-06
 
 ### :zap: Added
