@@ -282,6 +282,17 @@ describe('#applyTransform should', () => {
             expect(got).toBe(want)
         })
 
+        test('transform license from a mix of single years and ranges of years into multiple new ranges of years', () => {
+            const got = transforms.applyTransform(
+                '(?<=some copyright )(?<from>\\d{4})(-\\d{4})?',
+                'some copyright 2000 aaa\nsome copyright 2000-2001 bbb',
+                2002,
+                defaultFileName
+            )
+            const want = 'some copyright 2000-2002 aaa\nsome copyright 2000-2002 bbb'
+            expect(got).toBe(want)
+        })
+
         test('not transform license from a single year given year is unchanged', () => {
             const got = transforms.applyTransform(
                 '(?<=some copyright )(?<from>\\d{4})(-\\d{4})?',
