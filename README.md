@@ -84,7 +84,8 @@ The action has support for the following inputs:
     #
     # - A capturing group named "from", encapsulating the first year of license
     # validity
-    # - Written to support the RegExp flags "im" ("ignore case" and "multiline")
+    # - Written to support the RegExp flags "gmi" ("global", "multiline" and "ignore
+    # case")
     #
     # The expression will be used by String.prototype.replace() to apply the
     # transformation.
@@ -304,7 +305,7 @@ This action has built in support for a couple of common licenses. However, you m
 The transform is declared as a regular expression (JavaScript flavor) and must have the following properties:
 
 - A capturing group named `from`, encapsulating the first year of license validity
-- Written to support the RegExp flags `im` (`ignore case` and `multiline`)
+- Written to support the RegExp flags `gmi` (`global`, `multiline` and `ignore case`)
 
 The expression will be used by `String.prototype.replace()` to apply the transformation.
 

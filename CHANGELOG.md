@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ## [Unreleased]
 
+## [3.0.0] - 2023-03-29
+
 ### :syringe: Fixed
 
 - [#333](https://github.com/FantasticFiasco/action-update-license-year/issues/333) [BREAKING CHANGE] Update all licenses in a file, not only the first found (discovered by [@glimchb](https://github.com/glimchb)).
