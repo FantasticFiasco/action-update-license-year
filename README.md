@@ -49,7 +49,7 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - uses: FantasticFiasco/action-update-license-year@v2
+      - uses: FantasticFiasco/action-update-license-year@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 ```
@@ -60,7 +60,7 @@ The action has support for the following inputs:
 
 <!-- start inputs -->
 ```yaml
-- uses: FantasticFiasco/action-update-license-year@v2
+- uses: FantasticFiasco/action-update-license-year@v3
   with:
     # Personal access token (PAT) used when interacting with Git and GitHub.
     #
@@ -222,7 +222,7 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - uses: FantasticFiasco/action-update-license-year@v2
+      - uses: FantasticFiasco/action-update-license-year@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 ```
@@ -243,7 +243,7 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - uses: FantasticFiasco/action-update-license-year@v2
+      - uses: FantasticFiasco/action-update-license-year@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 ```
@@ -267,7 +267,7 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - uses: FantasticFiasco/action-update-license-year@v2
+      - uses: FantasticFiasco/action-update-license-year@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
         id: license
@@ -292,7 +292,7 @@ steps:
   - uses: actions/checkout@v3
     with:
       fetch-depth: 0
-  - uses: FantasticFiasco/action-update-license-year@v2
+  - uses: FantasticFiasco/action-update-license-year@v3
     with:
       token: ${{ secrets.GITHUB_TOKEN }}
       path: LICENSE.md
@@ -314,7 +314,7 @@ steps:
   - uses: actions/checkout@v3
     with:
       fetch-depth: 0
-  - uses: FantasticFiasco/action-update-license-year@v2
+  - uses: FantasticFiasco/action-update-license-year@v3
     with:
       token: ${{ secrets.GITHUB_TOKEN }}
       transform: (?<=my own copyright )(?<from>\d{4})?-?(\d{4})?
@@ -329,7 +329,7 @@ steps:
   - uses: actions/checkout@v3
     with:
       fetch-depth: 0
-  - uses: FantasticFiasco/action-update-license-year@v2
+  - uses: FantasticFiasco/action-update-license-year@v3
     with:
       token: ${{ secrets.GITHUB_TOKEN }}
       path: |
@@ -346,7 +346,7 @@ steps:
   - uses: actions/checkout@v3
     with:
       fetch-depth: 0
-  - uses: FantasticFiasco/action-update-license-year@v2
+  - uses: FantasticFiasco/action-update-license-year@v3
     with:
       token: ${{ secrets.GITHUB_TOKEN }}
       path: packages/*/LICENSE
@@ -361,7 +361,7 @@ steps:
   - uses: actions/checkout@v3
     with:
       fetch-depth: 0
-  - uses: FantasticFiasco/action-update-license-year@v2
+  - uses: FantasticFiasco/action-update-license-year@v3
     with:
       token: ${{ secrets.GITHUB_TOKEN }}
       path: src/**/*.js
@@ -379,7 +379,7 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - uses: FantasticFiasco/action-update-license-year@v2
+      - uses: FantasticFiasco/action-update-license-year@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -390,7 +390,7 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - uses: FantasticFiasco/action-update-license-year@v2
+      - uses: FantasticFiasco/action-update-license-year@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           path: '*.js'
@@ -425,7 +425,7 @@ steps:
   - uses: actions/checkout@v3
     with:
       fetch-depth: 0
-  - uses: FantasticFiasco/action-update-license-year@v2
+  - uses: FantasticFiasco/action-update-license-year@v3
     with:
       token: ${{ secrets.GITHUB_TOKEN }}
       branchName: license/{{currentYear}}
@@ -446,7 +446,7 @@ steps:
   - uses: actions/checkout@v3
     with:
       fetch-depth: 0
-  - uses: FantasticFiasco/action-update-license-year@v2
+  - uses: FantasticFiasco/action-update-license-year@v3
     with:
       token: ${{ secrets.GITHUB_TOKEN }}
   - name: Merge pull request
@@ -474,7 +474,7 @@ steps:
   - uses: actions/checkout@v3
     with:
       fetch-depth: 0
-  - uses: FantasticFiasco/action-update-license-year@v2
+  - uses: FantasticFiasco/action-update-license-year@v3
     with:
       token: ${{ secrets.LICENSE_SECRET }}
 ```
