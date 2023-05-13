@@ -53,8 +53,8 @@ describe('#search', () => {
         fs.writeFileSync(path.join(tempDir, 'packages', 'c', 'index.js'), 'some content')
     })
 
-    afterAll(() => {
-        fs.rmdirSync(tempDir, {
+    afterAll(async () => {
+        await fs.promises.rm(tempDir, {
             recursive: true,
         })
     })
