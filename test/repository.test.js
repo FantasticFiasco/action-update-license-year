@@ -50,8 +50,8 @@ beforeEach(async () => {
     jest.resetAllMocks()
 })
 
-afterEach(() => {
-    fs.rmdirSync(tempRepoDir, {
+afterEach(async () => {
+    await fs.promises.rm(tempRepoDir, {
         recursive: true,
     })
 
