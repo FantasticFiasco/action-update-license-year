@@ -9,7 +9,11 @@ const retry = async (action) => {
             await action()
             return
         } catch (error) {
-            console.log(index, error)
+            console.log(new Date().toLocaleTimeString(), index, error)
+
+            await new Promise((resolve) => {
+                setTimeout(resolve, 1000)
+            })
         }
     }
 }
