@@ -3,6 +3,7 @@ const os = require('os')
 const path = require('path')
 
 const processes = require('../src/os/processes')
+const { retry } = require('./retry')
 
 const mockOctokit = {
     rest: {
@@ -51,9 +52,11 @@ beforeEach(async () => {
 })
 
 afterEach(async () => {
-    await fs.promises.rm(tempRepoDir, {
-        recursive: true,
-    })
+    await retry(() =>
+        fs.promises.rm(tempRepoDir, {
+            recursive: true,
+        })
+    )
 
     process.chdir(thisRepoDir)
 })
