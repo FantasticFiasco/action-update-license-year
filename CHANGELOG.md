@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ## [Unreleased]
 
+### :policeman: Security
+
+- Security vulnerability in transient dependency `minimatch`
+
 ## [3.0.0] - 2023-03-29
 
 ### :syringe: Fixed
