@@ -2,14 +2,20 @@
  * @param {() => Promise<void>} action
  */
 const retry = async (action) => {
-    for (let index = 0; index < 10; index++) {
+    var times = 10
+    var error
+
+    for (let i = 0; i < times; i++) {
         try {
             await action()
             return
-        } catch (error) {
+        } catch (e) {
+            error = e
             await sleep(1000)
         }
     }
+
+    throw error
 }
 
 /**
