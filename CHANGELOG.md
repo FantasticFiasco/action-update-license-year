@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ## [Unreleased]
 
+### :syringe: Fixed
+
+- [#359](https://github.com/FantasticFiasco/action-update-license-year/pull/359) Unable to import GPG private key
+
 ### :policeman: Security
 
 - Security vulnerability in transient dependency `minimatch`
