@@ -29,7 +29,13 @@ const cli = {
         await fs.writeFile(filePath, data, {
             mode: 0o700,
         })
-        return await processes.exec(filePath)
+
+        return await processes.exec(filePath, {
+            env: {
+                ...process.env,
+                privateKeyEnvName: process.env[privateKeyEnvName],
+            },
+        })
     },
 }
 
