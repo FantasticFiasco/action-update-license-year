@@ -64,7 +64,7 @@ describe('#cli.importPrivateKey should', () => {
  * @param {string} fileName
  */
 const readTestFile = (fileName) => {
-    return fs.readFileSync(path.join(__dirname, `../testdata/gpg/${fileName}`)).toString()
+    return fs.readFileSync(path.join(__dirname, `../test/testdata/gpg/${fileName}`)).toString()
 }
 
 /**
