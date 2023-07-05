@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ## [Unreleased]
 
+## [3.0.2] - 2023-07-05
+
 ### :syringe: Fixed
 
 - [#360](https://github.com/FantasticFiasco/action-update-license-year/pull/359) Unable to import GPG private key
