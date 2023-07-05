@@ -1,7 +1,6 @@
 const fs = require('fs')
 const path = require('path')
 
-const env = require('../src/github-actions-runner/env')
 const gpg = require('../src/gpg')
 
 describe('#importPrivateKey should', () => {
