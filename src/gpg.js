@@ -25,11 +25,17 @@ const cli = {
 
         // Node.js is running processes using sh, but in this case we need support for process
         // substitution. That's the reason for the shebang workaround.
-        const data = `#!/bin/bash\n\ngpg2 --batch --yes --import <(echo "${privateKeyEnvName}")`
+        const data = `#!/bin/bash\n\ngpg2 --batch --yes --import <(echo "$${privateKeyEnvName}")`
         await fs.writeFile(filePath, data, {
             mode: 0o700,
         })
-        return await processes.exec(filePath)
+
+        return await processes.exec(filePath, {
+            env: {
+                ...process.env,
+                privateKeyEnvName: process.env[privateKeyEnvName],
+            },
+        })
     },
 }
 
