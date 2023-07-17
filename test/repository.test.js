@@ -55,7 +55,7 @@ afterEach(async () => {
     await retry(() =>
         fs.promises.rm(tempRepoDir, {
             recursive: true,
-        })
+        }),
     )
 
     process.chdir(thisRepoDir)

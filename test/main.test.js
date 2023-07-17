@@ -135,7 +135,7 @@ describe('action should', () => {
         expect(setFailed).toBeCalledTimes(0)
         expect(mockRepository.authenticate).toBeCalledWith(
             COMMIT_AUTHOR_NAME.defaultValue,
-            COMMIT_AUTHOR_EMAIL.defaultValue
+            COMMIT_AUTHOR_EMAIL.defaultValue,
         )
     })
 
@@ -256,14 +256,14 @@ describe('action should', () => {
             TRANSFORM.defaultValue,
             undefined,
             CURRENT_YEAR,
-            'some-file-1'
+            'some-file-1',
         )
         expect(mockTransforms.applyTransform).nthCalledWith(
             2,
             TRANSFORM.defaultValue,
             undefined,
             CURRENT_YEAR,
-            'some-file-2'
+            'some-file-2',
         )
     })
 
@@ -277,14 +277,14 @@ describe('action should', () => {
             'custom transform',
             undefined,
             CURRENT_YEAR,
-            'some-file-1'
+            'some-file-1',
         )
         expect(mockTransforms.applyTransform).nthCalledWith(
             2,
             'custom transform',
             undefined,
             CURRENT_YEAR,
-            'some-file-2'
+            'some-file-2',
         )
     })
 
@@ -398,7 +398,7 @@ describe('action should', () => {
             expect(mockRepository.createPullRequest).toBeCalledWith(
                 BRANCH_NAME.defaultValue,
                 PR_TITLE.defaultValue,
-                PR_BODY.defaultValue
+                PR_BODY.defaultValue,
             )
             expect(mockCore.setOutput).toBeCalledWith('currentYear', CURRENT_YEAR)
             expect(mockCore.setOutput).toBeCalledWith('branchName', BRANCH_NAME.defaultValue)
@@ -416,7 +416,7 @@ describe('action should', () => {
             expect(mockRepository.createPullRequest).toBeCalledWith(
                 BRANCH_NAME.defaultValue,
                 PR_TITLE.defaultValue,
-                'some pr body'
+                'some pr body',
             )
             expect(mockCore.setOutput).toBeCalledWith('currentYear', CURRENT_YEAR)
             expect(mockCore.setOutput).toBeCalledWith('branchName', BRANCH_NAME.defaultValue)
@@ -434,7 +434,7 @@ describe('action should', () => {
             expect(mockRepository.createPullRequest).toBeCalledWith(
                 BRANCH_NAME.defaultValue,
                 'some pr title',
-                PR_BODY.defaultValue
+                PR_BODY.defaultValue,
             )
             expect(mockCore.setOutput).toBeCalledWith('currentYear', CURRENT_YEAR)
             expect(mockCore.setOutput).toBeCalledWith('branchName', BRANCH_NAME.defaultValue)
@@ -453,7 +453,7 @@ describe('action should', () => {
             expect(mockRepository.createPullRequest).toBeCalledWith(
                 BRANCH_NAME.defaultValue,
                 'some pr title',
-                'some pr body'
+                'some pr body',
             )
             expect(mockCore.setOutput).toBeCalledWith('currentYear', CURRENT_YEAR)
             expect(mockCore.setOutput).toBeCalledWith('branchName', BRANCH_NAME.defaultValue)
