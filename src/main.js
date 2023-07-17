@@ -108,7 +108,7 @@ const run = async () => {
             const createPullRequestResponse = await repo.createPullRequest(
                 branchName,
                 pullRequestTitle,
-                pullRequestBody
+                pullRequestBody,
             )
 
             if (createPullRequestResponse.status !== 201) {

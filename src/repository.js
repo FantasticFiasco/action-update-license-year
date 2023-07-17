@@ -203,7 +203,7 @@ class Repository {
     async createPullRequest(sourceBranchName, title, body) {
         try {
             const { stdout: defaultBranch } = await processes.exec(
-                `git remote show origin | grep 'HEAD branch' | cut -d ' ' -f5`
+                `git remote show origin | grep 'HEAD branch' | cut -d ' ' -f5`,
             )
 
             return await this._octokit.rest.pulls.create({

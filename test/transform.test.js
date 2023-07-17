@@ -13,7 +13,7 @@ describe('#applyTransform should', () => {
                 defaultTransform,
                 readTestFile('AGPL-3.0-only/SINGLE_YEAR'),
                 2002,
-                defaultFileName
+                defaultFileName,
             )
             const want = readTestFile('AGPL-3.0-only/SINGLE_YEAR_EXPECTED')
             expect(got).toBe(want)
@@ -24,7 +24,7 @@ describe('#applyTransform should', () => {
                 defaultTransform,
                 readTestFile('AGPL-3.0-only/RANGE_OF_YEARS'),
                 2002,
-                defaultFileName
+                defaultFileName,
             )
             const want = readTestFile('AGPL-3.0-only/RANGE_OF_YEARS_EXPECTED')
             expect(got).toBe(want)
@@ -35,7 +35,7 @@ describe('#applyTransform should', () => {
                 defaultTransform,
                 readTestFile('AGPL-3.0-only/SINGLE_YEAR'),
                 2000,
-                defaultFileName
+                defaultFileName,
             )
             const want = readTestFile('AGPL-3.0-only/SINGLE_YEAR')
             expect(got).toBe(want)
@@ -46,7 +46,7 @@ describe('#applyTransform should', () => {
                 defaultTransform,
                 readTestFile('AGPL-3.0-only/RANGE_OF_YEARS'),
                 2001,
-                defaultFileName
+                defaultFileName,
             )
             const want = readTestFile('AGPL-3.0-only/RANGE_OF_YEARS')
             expect(got).toBe(want)
@@ -59,7 +59,7 @@ describe('#applyTransform should', () => {
                 defaultTransform,
                 readTestFile('Apache-2.0/SINGLE_YEAR'),
                 2002,
-                defaultFileName
+                defaultFileName,
             )
             const want = readTestFile('Apache-2.0/SINGLE_YEAR_EXPECTED')
             expect(got).toBe(want)
@@ -70,7 +70,7 @@ describe('#applyTransform should', () => {
                 defaultTransform,
                 readTestFile('Apache-2.0/RANGE_OF_YEARS'),
                 2002,
-                defaultFileName
+                defaultFileName,
             )
             const want = readTestFile('Apache-2.0/RANGE_OF_YEARS_EXPECTED')
             expect(got).toBe(want)
@@ -81,7 +81,7 @@ describe('#applyTransform should', () => {
                 defaultTransform,
                 readTestFile('Apache-2.0/SINGLE_YEAR'),
                 2000,
-                defaultFileName
+                defaultFileName,
             )
             const want = readTestFile('Apache-2.0/SINGLE_YEAR')
             expect(got).toBe(want)
@@ -92,7 +92,7 @@ describe('#applyTransform should', () => {
                 defaultTransform,
                 readTestFile('Apache-2.0/RANGE_OF_YEARS'),
                 2001,
-                defaultFileName
+                defaultFileName,
             )
             const want = readTestFile('Apache-2.0/RANGE_OF_YEARS')
             expect(got).toBe(want)
@@ -105,7 +105,7 @@ describe('#applyTransform should', () => {
                 defaultTransform,
                 readTestFile('BSD-2-Clause/SINGLE_YEAR'),
                 2002,
-                defaultFileName
+                defaultFileName,
             )
             const want = readTestFile('BSD-2-Clause/SINGLE_YEAR_EXPECTED')
             expect(got).toBe(want)
@@ -116,7 +116,7 @@ describe('#applyTransform should', () => {
                 defaultTransform,
                 readTestFile('BSD-2-Clause/RANGE_OF_YEARS'),
                 2002,
-                defaultFileName
+                defaultFileName,
             )
             const want = readTestFile('BSD-2-Clause/RANGE_OF_YEARS_EXPECTED')
             expect(got).toBe(want)
@@ -127,7 +127,7 @@ describe('#applyTransform should', () => {
                 defaultTransform,
                 readTestFile('BSD-2-Clause/SINGLE_YEAR'),
                 2000,
-                defaultFileName
+                defaultFileName,
             )
             const want = readTestFile('BSD-2-Clause/SINGLE_YEAR')
             expect(got).toBe(want)
@@ -138,7 +138,7 @@ describe('#applyTransform should', () => {
                 defaultTransform,
                 readTestFile('BSD-2-Clause/RANGE_OF_YEARS'),
                 2001,
-                defaultFileName
+                defaultFileName,
             )
             const want = readTestFile('BSD-2-Clause/RANGE_OF_YEARS')
             expect(got).toBe(want)
@@ -151,7 +151,7 @@ describe('#applyTransform should', () => {
                 defaultTransform,
                 readTestFile('BSD-3-Clause/SINGLE_YEAR'),
                 2002,
-                defaultFileName
+                defaultFileName,
             )
             const want = readTestFile('BSD-3-Clause/SINGLE_YEAR_EXPECTED')
             expect(got).toBe(want)
@@ -162,7 +162,7 @@ describe('#applyTransform should', () => {
                 defaultTransform,
                 readTestFile('BSD-3-Clause/RANGE_OF_YEARS'),
                 2002,
-                defaultFileName
+                defaultFileName,
             )
             const want = readTestFile('BSD-3-Clause/RANGE_OF_YEARS_EXPECTED')
             expect(got).toBe(want)
@@ -173,7 +173,7 @@ describe('#applyTransform should', () => {
                 defaultTransform,
                 readTestFile('BSD-3-Clause/SINGLE_YEAR'),
                 2000,
-                defaultFileName
+                defaultFileName,
             )
             const want = readTestFile('BSD-3-Clause/SINGLE_YEAR')
             expect(got).toBe(want)
@@ -184,7 +184,7 @@ describe('#applyTransform should', () => {
                 defaultTransform,
                 readTestFile('BSD-3-Clause/RANGE_OF_YEARS'),
                 2001,
-                defaultFileName
+                defaultFileName,
             )
             const want = readTestFile('BSD-3-Clause/RANGE_OF_YEARS')
             expect(got).toBe(want)
@@ -197,7 +197,7 @@ describe('#applyTransform should', () => {
                 defaultTransform,
                 readTestFile('MIT/SINGLE_YEAR'),
                 2002,
-                defaultFileName
+                defaultFileName,
             )
             const want = readTestFile('MIT/SINGLE_YEAR_EXPECTED')
             expect(got).toBe(want)
@@ -208,7 +208,7 @@ describe('#applyTransform should', () => {
                 defaultTransform,
                 readTestFile('MIT/RANGE_OF_YEARS'),
                 2002,
-                defaultFileName
+                defaultFileName,
             )
             const want = readTestFile('MIT/RANGE_OF_YEARS_EXPECTED')
             expect(got).toBe(want)
@@ -219,7 +219,7 @@ describe('#applyTransform should', () => {
                 defaultTransform,
                 readTestFile('MIT/SINGLE_YEAR'),
                 2000,
-                defaultFileName
+                defaultFileName,
             )
             const want = readTestFile('MIT/SINGLE_YEAR')
             expect(got).toBe(want)
@@ -230,7 +230,7 @@ describe('#applyTransform should', () => {
                 defaultTransform,
                 readTestFile('MIT/RANGE_OF_YEARS'),
                 2001,
-                defaultFileName
+                defaultFileName,
             )
             const want = readTestFile('MIT/RANGE_OF_YEARS')
             expect(got).toBe(want)
@@ -243,7 +243,7 @@ describe('#applyTransform should', () => {
                 '(?<=some copyright )(?<from>\\d{4})(-\\d{4})?',
                 'some copyright 2000',
                 2002,
-                defaultFileName
+                defaultFileName,
             )
             const want = 'some copyright 2000-2002'
             expect(got).toBe(want)
@@ -254,7 +254,7 @@ describe('#applyTransform should', () => {
                 '(?<=some copyright )(?<from>\\d{4})(-\\d{4})?',
                 'some copyright 2000 aaa\nsome copyright 2000 bbb',
                 2002,
-                defaultFileName
+                defaultFileName,
             )
             const want = 'some copyright 2000-2002 aaa\nsome copyright 2000-2002 bbb'
             expect(got).toBe(want)
@@ -265,7 +265,7 @@ describe('#applyTransform should', () => {
                 '(?<=some copyright )(?<from>\\d{4})(-\\d{4})?',
                 'some copyright 2000-2001',
                 2002,
-                defaultFileName
+                defaultFileName,
             )
             const want = 'some copyright 2000-2002'
             expect(got).toBe(want)
@@ -276,7 +276,7 @@ describe('#applyTransform should', () => {
                 '(?<=some copyright )(?<from>\\d{4})(-\\d{4})?',
                 'some copyright 2000-2001 aaa\nsome copyright 2000-2001 bbb',
                 2002,
-                defaultFileName
+                defaultFileName,
             )
             const want = 'some copyright 2000-2002 aaa\nsome copyright 2000-2002 bbb'
             expect(got).toBe(want)
@@ -287,7 +287,7 @@ describe('#applyTransform should', () => {
                 '(?<=some copyright )(?<from>\\d{4})(-\\d{4})?',
                 'some copyright 2000 aaa\nsome copyright 2000-2001 bbb',
                 2002,
-                defaultFileName
+                defaultFileName,
             )
             const want = 'some copyright 2000-2002 aaa\nsome copyright 2000-2002 bbb'
             expect(got).toBe(want)
@@ -298,7 +298,7 @@ describe('#applyTransform should', () => {
                 '(?<=some copyright )(?<from>\\d{4})(-\\d{4})?',
                 'some copyright 2000',
                 2000,
-                defaultFileName
+                defaultFileName,
             )
             const want = 'some copyright 2000'
             expect(got).toBe(want)
@@ -309,7 +309,7 @@ describe('#applyTransform should', () => {
                 '(?<=some copyright )(?<from>\\d{4})(-\\d{4})?',
                 'some copyright 2000-2001',
                 2001,
-                defaultFileName
+                defaultFileName,
             )
             const want = 'some copyright 2000-2001'
             expect(got).toBe(want)
