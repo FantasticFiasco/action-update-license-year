@@ -36,7 +36,7 @@
   },
   "devDependencies": {
     "@types/jest": "29.5.8",
-    "@types/js-yaml": "4.0.8",
+    "@types/js-yaml": "4.0.9",
     "@types/node": "20.8.10",
     "@vercel/ncc": "0.38.1",
     "eslint": "8.53.0",
