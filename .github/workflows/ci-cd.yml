@@ -23,7 +23,7 @@ jobs:
       - uses: coverallsapp/github-action@master
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-      - run: yarn lint
+      - run: ESLINT_USE_FLAT_CONFIG=false yarn lint
       - run: yarn dist
       - run: node ./scripts/generate-docs.js
 
