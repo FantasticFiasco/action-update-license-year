@@ -163,7 +163,7 @@ class Repository {
             err.message = `Error pushing changes to ${this._isCurrentBranchNew ? 'new' : 'existing'} branch: ${
                 // @ts-ignore
                 err.message
-                }`
+            }`
             throw err
         }
     }
