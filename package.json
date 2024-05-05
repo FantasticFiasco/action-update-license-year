@@ -26,7 +26,7 @@
     "lint:fix": "eslint --fix . && prettier --write .",
     "coverage": "jest --coverage",
     "dist": "ncc build ./src/index.js",
-    "preversion": "yarn dist && git add ./dist && git add ./CHANGELOG.md && node ./scripts/generate-docs.js && git add ./README.md",
+    "preversion": "npm run dist && git add ./dist && git add ./CHANGELOG.md && node ./scripts/generate-docs.js && git add ./README.md",
     "postversion": "git push --follow-tags"
   },
   "dependencies": {

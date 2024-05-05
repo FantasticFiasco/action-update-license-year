@@ -131,7 +131,7 @@ And finally when you are satisfied with your changes, open a new PR.
 ## Creating a release
 
 1. Describe the new release in `CHANGELOG.md`
-1. Run `yarn version`
+1. Run `npm run version`
 1. When build pipeline is complete, update the GitHub release message
 
 [issues]: https://github.com/FantasticFiasco/action-update-license-year/issues
