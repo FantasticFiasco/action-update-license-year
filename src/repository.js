@@ -79,7 +79,7 @@ class Repository {
      */
     async checkoutBranch(name, isNew) {
         try {
-            await processes.exec(`git checkout ${isNew ? '-b' : ''} "${name}"`)
+            await processes.exec(`git switch ${isNew ? '-c' : ''} "${name}"`)
 
             this._currentBranch = name
             this._isCurrentBranchNew = isNew
@@ -163,7 +163,7 @@ class Repository {
             err.message = `Error pushing changes to ${this._isCurrentBranchNew ? 'new' : 'existing'} branch: ${
                 // @ts-ignore
                 err.message
-            }`
+                }`
             throw err
         }
     }
