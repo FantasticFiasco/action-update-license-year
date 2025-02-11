@@ -762,7 +762,7 @@ class Summary {
     /**
      * If the summary buffer is empty
      *
-     * @returns {boolen} true if the buffer is empty
+     * @returns {boolean} true if the buffer is empty
      */
     isEmptyBuffer() {
         return this._buffer.length === 0;
@@ -851,10 +851,10 @@ class Summary {
         return this.addRaw(element).addEOL();
     }
     /**
-     * Adds a collapsable HTML details element to the summary buffer
+     * Adds a collapsible HTML details element to the summary buffer
      *
      * @param {string} label text for the closed state
-     * @param {string} content collapsable content
+     * @param {string} content collapsible content
      *
      * @returns {Summary} summary instance
      */
@@ -1191,7 +1191,7 @@ exports.defaults = {
 };
 exports.GitHub = core_1.Octokit.plugin(plugin_rest_endpoint_methods_1.restEndpointMethods, plugin_paginate_rest_1.paginateRest).defaults(exports.defaults);
 /**
- * Convience function to correctly format Octokit Options to pass into the constructor.
+ * Convenience function to correctly format Octokit Options to pass into the constructor.
  *
  * @param     token    the repo PAT or GITHUB_TOKEN
  * @param     options  other options to set
@@ -4478,7 +4478,7 @@ function fetchWrapper(requestOptions) {
 
     if (status === 204 || status === 205) {
       return;
-    } // GitHub API returns 200 for HEAD requsets
+    } // GitHub API returns 200 for HEAD requests
 
 
     if (requestOptions.method === "HEAD") {
@@ -4690,7 +4690,7 @@ function _defineProperty(obj, key, value) {
  *
  * Octokit normalizes these responses so that paginated results are always returned following
  * the same structure. One challenge is that if the list response has only one page, no Link
- * header is provided, so this header alone is not sufficient to check wether a response is
+ * header is provided, so this header alone is not sufficient to check whether a response is
  * paginated or not.
  *
  * We check if a "total_count" key is present in the response data, but also make sure that
@@ -9535,7 +9535,7 @@ function fetch(url, opts) {
 				} catch (err) {
 					// error here can only be invalid URL in Location: header
 					// do not throw when options.redirect == manual
-					// let the user extract the errorneous redirect URL
+					// let the user extract the erroneous redirect URL
 					if (request.redirect !== 'manual') {
 						reject(new FetchError(`uri requested responds with an invalid redirect URL: ${location}`, 'invalid-redirect'));
 						finalize();
@@ -13919,7 +13919,7 @@ module.exports.shellSync = (cmd, opts) => handleShell(module.exports.sync, cmd, 
 
 "use strict";
 
-// Older verions of Node.js might not have `util.getSystemErrorName()`.
+// Older versions of Node.js might not have `util.getSystemErrorName()`.
 // In that case, fall back to a deprecated internal.
 const util = __nccwpck_require__(3837);
 
@@ -14337,7 +14337,7 @@ var GTLT = R++
 src[GTLT] = '((?:<|>)?=?)'
 
 // Something like "2.*" or "1.2.x".
-// Note that "x.x" is a valid xRange identifer, meaning "any version"
+// Note that "x.x" is a valid xRange identifier, meaning "any version"
 // Only the first item is strictly required.
 var XRANGEIDENTIFIERLOOSE = R++
 src[XRANGEIDENTIFIERLOOSE] = src[NUMERICIDENTIFIERLOOSE] + '|x|X|\\*'
@@ -15374,7 +15374,7 @@ function replaceStars (comp, options) {
 // 1.2.3 - 3.4 => >=1.2.0 <3.5.0 Any 3.4.x will do
 // 1.2 - 3.4 => >=1.2.0 <3.5.0
 function hyphenReplace ($0,
-  from, fM, fm, fp, fpr, fb,
+  from, fM, fm, fp, fpr, fb,  // codespell:ignore
   to, tM, tm, tp, tpr, tb) {
   if (isX(fM)) {
     from = ''
@@ -15611,7 +15611,7 @@ function outside (version, range, hilo, options) {
       throw new TypeError('Must provide a hilo val of "<" or ">"')
   }
 
-  // If it satisifes the range it is not outside
+  // If it satisfies the range it is not outside
   if (satisfies(version, range, options)) {
     return false
   }
