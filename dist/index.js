@@ -15374,7 +15374,7 @@ function replaceStars (comp, options) {
 // 1.2.3 - 3.4 => >=1.2.0 <3.5.0 Any 3.4.x will do
 // 1.2 - 3.4 => >=1.2.0 <3.5.0
 function hyphenReplace ($0,
-  from, fM, fm, fp, fpr, fb,
+  from, fM, fm, fp, fpr, fb,  // codespell:ignore
   to, tM, tm, tp, tpr, tb) {
   if (isX(fM)) {
     from = ''

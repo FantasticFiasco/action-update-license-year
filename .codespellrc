@@ -1,0 +1,6 @@
+[codespell]
+# Ref: https://github.com/codespell-project/codespell#using-a-config-file
+skip = .git*,package-lock.json,.codespellrc,testdata
+check-hidden = true
+ignore-regex = \b(afterAll|compRe)\b
+ignore-words-list = abd
