@@ -8,11 +8,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ### :policeman: Security
 
-- [#513](https://github.com/FantasticFiasco/action-update-license-year/pull/513) Security vulnerability in transient dependency `@babel/traverse`
-- [#514](https://github.com/FantasticFiasco/action-update-license-year/pull/514) Security vulnerability in transient dependency `semver`
-- [#515](https://github.com/FantasticFiasco/action-update-license-year/pull/515) Security vulnerability in transient dependency `undici`
-- [#516](https://github.com/FantasticFiasco/action-update-license-year/pull/516) Security vulnerability in transient dependency `debug`
-- [#529](https://github.com/FantasticFiasco/action-update-license-year/pull/529) Security vulnerability in transient dependency `braces`
+- Fixed security vulnerabilities in direct and transient dependencies
 
 ## [3.0.2] - 2023-07-05
 
