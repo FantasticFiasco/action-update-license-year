@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ## [Unreleased]
 
+## [3.0.3] - 2025-03-02
+
 ### :policeman: Security
 
 - Fixed security vulnerabilities in direct and transient dependencies

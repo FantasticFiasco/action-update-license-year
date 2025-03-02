@@ -1,6 +1,6 @@
 {
   "name": "action-update-license-year",
-  "version": "3.0.2",
+  "version": "3.0.3",
   "description": "GitHub Action that in a pull request updates the copyright year(s) in your license file.",
   "keywords": [
     "github",
@@ -26,8 +26,7 @@
     "lint:fix": "eslint --fix . && prettier --write .",
     "coverage": "jest --coverage",
     "dist": "ncc build ./src/index.js",
-    "preversion": "npm run dist && git add ./dist && git add ./CHANGELOG.md && node ./scripts/generate-docs.js && git add ./README.md",
-    "postversion": "git push --follow-tags"
+    "release": "npm run dist && node ./scripts/generate-docs.js"
   },
   "dependencies": {
     "@actions/core": "1.11.1",

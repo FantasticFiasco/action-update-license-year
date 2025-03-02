@@ -131,8 +131,11 @@ And finally when you are satisfied with your changes, open a new PR.
 ## Creating a release
 
 1. Describe the new release in `CHANGELOG.md`
-1. Run `npm run version`
-1. When build pipeline is complete, update the GitHub release message
+2. Update version in `package.json`
+3. Run `npm run release`
+4. Commit the changes
+5. Run `git push --follow-tags`
+6. When build pipeline is complete, update the GitHub release message
 
 [issues]: https://github.com/FantasticFiasco/action-update-license-year/issues
 [issues_new]: https://github.com/FantasticFiasco/action-update-license-year/issues/new
