@@ -25,7 +25,7 @@
     "lint": "eslint --max-warnings=0 . && prettier --check .",
     "lint:fix": "eslint --fix . && prettier --write .",
     "coverage": "jest --coverage",
-    "dist": "ncc build ./src/index.js",
+    "dist": "rm -rf ./dist && ncc build ./src/index.js",
     "release": "npm run dist && node ./scripts/generate-docs.js"
   },
   "dependencies": {
