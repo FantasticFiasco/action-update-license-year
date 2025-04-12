@@ -42,7 +42,7 @@
     "jest": "29.7.0",
     "js-yaml": "4.1.0",
     "prettier": "3.5.3",
-    "typescript": "5.8.2"
+    "typescript": "5.8.3"
   },
   "resolutions": {
     "@actions/core": "1.11.1",
