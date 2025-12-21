@@ -1,62 +1,62 @@
 {
-    "projectName": "action-update-license-year",
-    "projectOwner": "FantasticFiasco",
-    "repoType": "github",
-    "repoHost": "https://github.com",
-    "files": ["README.md"],
-    "imageSize": 100,
-    "commit": false,
-    "commitConvention": "none",
-    "contributors": [
-        {
-            "login": "mondeja",
-            "name": "Álvaro Mondéjar",
-            "avatar_url": "https://avatars.githubusercontent.com/u/23049315?v=4",
-            "profile": "https://github.com/mondeja",
-            "contributions": ["code", "doc", "example"]
-        },
-        {
-            "login": "geromegrignon",
-            "name": "Gérôme Grignon",
-            "avatar_url": "https://avatars.githubusercontent.com/u/32737308?v=4",
-            "profile": "https://gerome.dev/",
-            "contributions": ["bug", "code"]
-        },
-        {
-            "login": "utkarshsethi",
-            "name": "Utkarsh Sethi",
-            "avatar_url": "https://avatars.githubusercontent.com/u/2989912?v=4",
-            "profile": "https://www.linkedin.com/in/utkarshsethi/",
-            "contributions": ["doc"]
-        },
-        {
-            "login": "C0D3-M4513R",
-            "name": "C0D3 M4513R",
-            "avatar_url": "https://avatars.githubusercontent.com/u/28912031?v=4",
-            "profile": "https://github.com/C0D3-M4513R",
-            "contributions": ["ideas"]
-        },
-        {
-            "login": "Swizbiz",
-            "name": "Aleksei Borodin",
-            "avatar_url": "https://avatars.githubusercontent.com/u/45274464?v=4",
-            "profile": "https://github.com/Swizbiz",
-            "contributions": ["example"]
-        },
-        {
-            "login": "jerone",
-            "name": "Jeroen van Warmerdam",
-            "avatar_url": "https://avatars.githubusercontent.com/u/55841?v=4",
-            "profile": "https://github.com/jerone",
-            "contributions": ["ideas", "bug"]
-        },
-        {
-            "login": "tenshiAMD",
-            "name": "Angel Aviel Domaoan",
-            "avatar_url": "https://avatars.githubusercontent.com/u/13580338?v=4",
-            "profile": "https://tenshiamd.com/",
-            "contributions": ["bug"]
-        }
-    ],
-    "contributorsPerLine": 7
+  "projectName": "action-update-license-year",
+  "projectOwner": "FantasticFiasco",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "files": ["README.md"],
+  "imageSize": 100,
+  "commit": false,
+  "commitConvention": "none",
+  "contributors": [
+    {
+      "login": "mondeja",
+      "name": "Álvaro Mondéjar",
+      "avatar_url": "https://avatars.githubusercontent.com/u/23049315?v=4",
+      "profile": "https://github.com/mondeja",
+      "contributions": ["code", "doc", "example"]
+    },
+    {
+      "login": "geromegrignon",
+      "name": "Gérôme Grignon",
+      "avatar_url": "https://avatars.githubusercontent.com/u/32737308?v=4",
+      "profile": "https://gerome.dev/",
+      "contributions": ["bug", "code"]
+    },
+    {
+      "login": "utkarshsethi",
+      "name": "Utkarsh Sethi",
+      "avatar_url": "https://avatars.githubusercontent.com/u/2989912?v=4",
+      "profile": "https://www.linkedin.com/in/utkarshsethi/",
+      "contributions": ["doc"]
+    },
+    {
+      "login": "C0D3-M4513R",
+      "name": "C0D3 M4513R",
+      "avatar_url": "https://avatars.githubusercontent.com/u/28912031?v=4",
+      "profile": "https://github.com/C0D3-M4513R",
+      "contributions": ["ideas"]
+    },
+    {
+      "login": "Swizbiz",
+      "name": "Aleksei Borodin",
+      "avatar_url": "https://avatars.githubusercontent.com/u/45274464?v=4",
+      "profile": "https://github.com/Swizbiz",
+      "contributions": ["example"]
+    },
+    {
+      "login": "jerone",
+      "name": "Jeroen van Warmerdam",
+      "avatar_url": "https://avatars.githubusercontent.com/u/55841?v=4",
+      "profile": "https://github.com/jerone",
+      "contributions": ["ideas", "bug"]
+    },
+    {
+      "login": "tenshiAMD",
+      "name": "Angel Aviel Domaoan",
+      "avatar_url": "https://avatars.githubusercontent.com/u/13580338?v=4",
+      "profile": "https://tenshiamd.com/",
+      "contributions": ["bug"]
+    }
+  ],
+  "contributorsPerLine": 7
 }
