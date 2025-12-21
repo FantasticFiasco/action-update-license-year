@@ -11,15 +11,10 @@
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     /************************** LANGUAGE & ENVIRONMENT ***************************/
-    "lib": [
-      "ES2021"
-    ],
+    "lib": ["ES2021"],
     "target": "ES2021",
     /******************************** COMPLETENESS *******************************/
-    "skipLibCheck": true,
+    "skipLibCheck": true
   },
-  "exclude": [
-    "./coverage/*",
-    "./dist/*"
-  ]
+  "exclude": ["./coverage/*", "./dist/*"]
 }
