@@ -93,7 +93,7 @@ describe('#branchExists should', () => {
 
     test('return true given local branch exists', async () => {
         const repo = new Repository('some owner', 'some name', 'some token')
-        const got = await repo.branchExists('master')
+        const got = await repo.branchExists('main')
         expect(got).toBe(true)
     })
 
@@ -113,7 +113,7 @@ describe('#branchExists should', () => {
 describe('#checkoutBranch should', () => {
     test('successfully checkout existing branch', async () => {
         const repo = new Repository('some owner', 'some name', 'some token')
-        await repo.checkoutBranch('master', false)
+        await repo.checkoutBranch('main', false)
     })
 
     test('successfully checkout new branch', async () => {
