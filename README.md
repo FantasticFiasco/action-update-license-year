@@ -1,7 +1,7 @@
 # GitHub Action - Update copyright years in license file
 
 ![Build Status](https://github.com/FantasticFiasco/action-update-license-year/workflows/CI/CD/badge.svg)
-[![Coverage Status](https://coveralls.io/repos/github/FantasticFiasco/action-update-license-year/badge.svg?branch=master)](https://coveralls.io/github/FantasticFiasco/action-update-license-year?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/FantasticFiasco/action-update-license-year/badge.svg?branch=main)](https://coveralls.io/github/FantasticFiasco/action-update-license-year?branch=main)
 [![SemVer compatible](https://img.shields.io/badge/%E2%9C%85-SemVer%20compatible-blue)](https://semver.org/)
 
 > **Note**
@@ -408,7 +408,7 @@ steps:
   - uses: actions/checkout@v3
     with:
       fetch-depth: 0
-  - uses: FantasticFiasco/action-update-license-year@master
+  - uses: FantasticFiasco/action-update-license-year@v3
     with:
       token: ${{ secrets.GITHUB_TOKEN }}
       commitAuthorEmail: <your github email>
