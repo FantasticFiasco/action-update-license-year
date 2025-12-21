@@ -43,15 +43,5 @@
     "js-yaml": "4.1.0",
     "prettier": "3.6.2",
     "typescript": "5.9.2"
-  },
-  "resolutions": {
-    "@actions/core": "1.11.1",
-    "hosted-git-info": ">=2.8.9",
-    "kind-of": ">=6.0.3",
-    "lodash": ">=4.17.19",
-    "minimist": ">=1.2.6",
-    "node-notifier": ">=8.0.1",
-    "path-parse": ">=1.0.7",
-    "tmpl": ">=1.0.5"
   }
 }

@@ -1,13 +1,1 @@
-{
-  "extends": ["github>FantasticFiasco/renovate-config"],
-  "ignoreDeps": [
-    "@actions/http-client",
-    "acorn",
-    "kind-of",
-    "lodash",
-    "minimist",
-    "node-fetch",
-    "node-notifier",
-    "y18n"
-  ]
-}
+{ "extends": ["github>FantasticFiasco/renovate-config"] }
