@@ -32,7 +32,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ### :syringe: Fixed {#3_0_0-fixed}
 
-- [#333](https://github.com/FantasticFiasco/action-update-license-year/issues/333) [BREAKING CHANGE] Update all licenses in a file, not only the first found (discovered by [@glimchb](https://github.com/glimchb)).
+- [#333](https://github.com/FantasticFiasco/action-update-license-year/issues/333) **BREAKING CHANGE** Update all licenses in a file, not only the first found (discovered by [@glimchb](https://github.com/glimchb)).
 
     **Migration guide**
 
@@ -84,7 +84,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ### :zap: Added {#2_0_0-added}
 
-- [#43](https://github.com/FantasticFiasco/action-update-license-year/issues/43) [BREAKING CHANGE] Support for updating one or more arbitrary files. This is a breaking change since [actions/checkout](https://github.com/actions/checkout) now has to precede this action. Please see `README.md` for more information. (proposed by [@spl](https://github.com/spl))
+- [#43](https://github.com/FantasticFiasco/action-update-license-year/issues/43) **BREAKING CHANGE** Support for updating one or more arbitrary files. This is a breaking change since [actions/checkout](https://github.com/actions/checkout) now has to precede this action. Please see `README.md` for more information. (proposed by [@spl](https://github.com/spl))
 
 ## 1.4.2 - 2020-11-24
 
