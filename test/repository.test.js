@@ -41,7 +41,7 @@ beforeEach(async () => {
 
     // Let's make the temp repo the working directory
     process.chdir(tempRepoDir)
-    await processes.exec('git init')
+    await processes.exec('git init --initial-branch main')
     await processes.exec('git config user.name "John Doe"')
     await processes.exec('git config user.email "john.doe@mail.com"')
     await processes.exec('echo "# Test repo" > README.md')
