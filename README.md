@@ -46,7 +46,7 @@ jobs:
     update-license-year:
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@v3
+            - uses: actions/checkout@v6
               with:
                   fetch-depth: 0
             - uses: FantasticFiasco/action-update-license-year@v3
@@ -223,7 +223,7 @@ jobs:
     run:
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@v3
+            - uses: actions/checkout@v6
               with:
                   fetch-depth: 0
             - uses: FantasticFiasco/action-update-license-year@v3
@@ -244,7 +244,7 @@ jobs:
     run:
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@v3
+            - uses: actions/checkout@v6
               with:
                   fetch-depth: 0
             - uses: FantasticFiasco/action-update-license-year@v3
@@ -268,7 +268,7 @@ jobs:
     run:
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@v3
+            - uses: actions/checkout@v6
               with:
                   fetch-depth: 0
             - uses: FantasticFiasco/action-update-license-year@v3
@@ -293,7 +293,7 @@ You have a license in your repository, but perhaps it isn't called `LICENSE`. Ma
 
 ```yaml
 steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v6
       with:
           fetch-depth: 0
     - uses: FantasticFiasco/action-update-license-year@v3
@@ -315,7 +315,7 @@ The expression will be used by `String.prototype.replace()` to apply the transfo
 
 ```yaml
 steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v6
       with:
           fetch-depth: 0
     - uses: FantasticFiasco/action-update-license-year@v3
@@ -330,7 +330,7 @@ Your repository might contain more than one license. Perhaps you have one for op
 
 ```yaml
 steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v6
       with:
           fetch-depth: 0
     - uses: FantasticFiasco/action-update-license-year@v3
@@ -347,7 +347,7 @@ Your repository is perhaps a monorepo and you have a lot of licenses. You would 
 
 ```yaml
 steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v6
       with:
           fetch-depth: 0
     - uses: FantasticFiasco/action-update-license-year@v3
@@ -362,7 +362,7 @@ You have a header in each and every source file specifying your license. That's 
 
 ```yaml
 steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v6
       with:
           fetch-depth: 0
     - uses: FantasticFiasco/action-update-license-year@v3
@@ -380,7 +380,7 @@ jobs:
     license:
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@v3
+            - uses: actions/checkout@v6
               with:
                   fetch-depth: 0
             - uses: FantasticFiasco/action-update-license-year@v3
@@ -391,7 +391,7 @@ jobs:
         needs: license
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@v3
+            - uses: actions/checkout@v6
               with:
                   fetch-depth: 0
             - uses: FantasticFiasco/action-update-license-year@v3
@@ -409,7 +409,7 @@ Just remember that the GPG key must be registered to a valid GitHub user, and th
 
 ```yaml
 steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v6
       with:
           fetch-depth: 0
     - uses: FantasticFiasco/action-update-license-year@v3
@@ -426,7 +426,7 @@ Your pull requests might follow some convention. It might require some specific 
 
 ```yaml
 steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v6
       with:
           fetch-depth: 0
     - uses: FantasticFiasco/action-update-license-year@v3
@@ -447,7 +447,7 @@ Your pull requests can be merged and the branch deleted by utilizing [GitHub CLI
 
 ```yaml
 steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v6
       with:
           fetch-depth: 0
     - uses: FantasticFiasco/action-update-license-year@v3
@@ -475,7 +475,7 @@ Put the name of your secret in the `token` property:
 
 ```yaml
 steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v6
       with:
           fetch-depth: 0
     - uses: FantasticFiasco/action-update-license-year@v3
