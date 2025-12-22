@@ -38,7 +38,7 @@
     "@eslint/markdown": "7.5.1",
     "@types/jest": "29.5.14",
     "@types/js-yaml": "4.0.9",
-    "@types/node": "22.19.3",
+    "@types/node": "24.10.4",
     "@vercel/ncc": "0.38.4",
     "eslint": "9.39.2",
     "eslint-config-prettier": "10.1.8",
