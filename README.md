@@ -15,13 +15,13 @@ So this seems to have happened. Instead of manually updating the license copyrig
 
 > Oh, the loath I have for manual processes...
 >
-> __- Definitely not a Shakespeare quote__
+> **- Definitely not a Shakespeare quote**
 
-__Was it a success in terms of productivity?__ - I _could_ lie to you and say that it was.
+**Was it a success in terms of productivity?** - I _could_ lie to you and say that it was.
 
-__Was it interesting to create?__ - Well certainly, it activated the few brains cells I have.
+**Was it interesting to create?** - Well certainly, it activated the few brains cells I have.
 
-__Can I use it?__ - Yes you can. It automatically supports the licenses listed below, but also support custom RegExp transformations where you specify your own license format.
+**Can I use it?** - Yes you can. It automatically supports the licenses listed below, but also support custom RegExp transformations where you specify your own license format.
 
 - Apache 2.0 (Apache-2.0)
 - BSD 2-clause "Simplified" (BSD-2-Clause)
@@ -29,7 +29,7 @@ __Can I use it?__ - Yes you can. It automatically supports the licenses listed b
 - GNU Affero General Public License v3.0 only (AGPL-3.0-only)
 - MIT (MIT)
 
-__Will this action commit anything on the default branch?__ - No. The action will create a new pull request, merging it will be your responsibility.
+**Will this action commit anything on the default branch?** - No. The action will create a new pull request, merging it will be your responsibility.
 
 ## Super simple to use
 
@@ -39,19 +39,19 @@ For the majority of repositories on GitHub the following workflow file will do t
 name: Update copyright year(s) in license file
 
 on:
-  schedule:
-    - cron: '0 3 1 1 *' # 03:00 AM on January 1
+    schedule:
+        - cron: '0 3 1 1 *' # 03:00 AM on January 1
 
 jobs:
-  update-license-year:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      - uses: FantasticFiasco/action-update-license-year@v3
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+    update-license-year:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+              with:
+                  fetch-depth: 0
+            - uses: FantasticFiasco/action-update-license-year@v3
+              with:
+                  token: ${{ secrets.GITHUB_TOKEN }}
 ```
 
 ## API
@@ -59,122 +59,126 @@ jobs:
 The action has support for the following inputs:
 
 <!-- start inputs -->
+
 ```yaml
 - uses: FantasticFiasco/action-update-license-year@v3
   with:
-    # Personal access token (PAT) used when interacting with Git and GitHub.
-    #
-    # We recommend using a service account with the least permissions necessary. Also
-    # when generating a new PAT, select the least scopes necessary.
-    #
-    # [Learn more about creating and using encrypted secrets](https://help.github.com/actions/automating-your-workflow-with-github-actions/creating-and-using-encrypted-secrets)
-    #
-    # Required: true
-    token: ''
+      # Personal access token (PAT) used when interacting with Git and GitHub.
+      #
+      # We recommend using a service account with the least permissions necessary. Also
+      # when generating a new PAT, select the least scopes necessary.
+      #
+      # [Learn more about creating and using encrypted secrets](https://help.github.com/actions/automating-your-workflow-with-github-actions/creating-and-using-encrypted-secrets)
+      #
+      # Required: true
+      token: ''
 
-    # A path or wildcard pattern specifying files to transform. Multiple paths can be
-    # specified using literal styled YAML.
-    #
-    # Required: false
-    # Default: LICENSE
-    path: ''
+      # A path or wildcard pattern specifying files to transform. Multiple paths can be
+      # specified using literal styled YAML.
+      #
+      # Required: false
+      # Default: LICENSE
+      path: ''
 
-    # A regular expression (JavaScript flavor) describing the license transform. The
-    # expression must have the following properties:
-    #
-    # - A capturing group named "from", encapsulating the first year of license
-    # validity
-    # - Written to support the RegExp flags "gmi" ("global", "multiline" and "ignore
-    # case")
-    #
-    # The expression will be used by String.prototype.replace() to apply the
-    # transformation.
-    #
-    # Required: false
-    # Default: null
-    transform: ''
+      # A regular expression (JavaScript flavor) describing the license transform. The
+      # expression must have the following properties:
+      #
+      # - A capturing group named "from", encapsulating the first year of license
+      # validity
+      # - Written to support the RegExp flags "gmi" ("global", "multiline" and "ignore
+      # case")
+      #
+      # The expression will be used by String.prototype.replace() to apply the
+      # transformation.
+      #
+      # Required: false
+      # Default: null
+      transform: ''
 
-    # The branch name. Supports substituting variable {{currentYear}}.
-    #
-    # Required: false
-    # Default: license/copyright-to-{{currentYear}}
-    branchName: ''
+      # The branch name. Supports substituting variable {{currentYear}}.
+      #
+      # Required: false
+      # Default: license/copyright-to-{{currentYear}}
+      branchName: ''
 
-    # The git commit title. Supports substituting variable {{currentYear}}.
-    #
-    # Required: false
-    # Default: docs(license): update copyright year(s)
-    commitTitle: ''
+      # The git commit title. Supports substituting variable {{currentYear}}.
+      #
+      # Required: false
+      # Default: docs(license): update copyright year(s)
+      commitTitle: ''
 
-    # The git commit body that will be appended to commit title, separated by two line
-    # returns. Supports substituting variable {{currentYear}}.
-    #
-    # Required: false
-    # Default:
-    commitBody: ''
+      # The git commit body that will be appended to commit title, separated by two line
+      # returns. Supports substituting variable {{currentYear}}.
+      #
+      # Required: false
+      # Default:
+      commitBody: ''
 
-    # The git author name, used when committing changes to the repository.
-    #
-    # Required: false
-    # Default: github-actions
-    commitAuthorName: ''
+      # The git author name, used when committing changes to the repository.
+      #
+      # Required: false
+      # Default: github-actions
+      commitAuthorName: ''
 
-    # The git author e-mail, used when committing changes to the repository.
-    #
-    # Required: false
-    # Default: github-actions@github.com
-    commitAuthorEmail: ''
+      # The git author e-mail, used when committing changes to the repository.
+      #
+      # Required: false
+      # Default: github-actions@github.com
+      commitAuthorEmail: ''
 
-    # The GPG private key, used in combination with gpgPassphrase when signing
-    # commits. Private keys protected by a passphrase are supported while private keys
-    # without a passphrase are unsupported.
-    #
-    # Required: false
-    # Default:
-    gpgPrivateKey: ''
+      # The GPG private key, used in combination with gpgPassphrase when signing
+      # commits. Private keys protected by a passphrase are supported while private keys
+      # without a passphrase are unsupported.
+      #
+      # Required: false
+      # Default:
+      gpgPrivateKey: ''
 
-    # The GPG passphrase, used in combination with gpgPrivateKey when signing commits.
-    #
-    # Required: false
-    # Default:
-    gpgPassphrase: ''
+      # The GPG passphrase, used in combination with gpgPrivateKey when signing commits.
+      #
+      # Required: false
+      # Default:
+      gpgPassphrase: ''
 
-    # The title of the new pull request. Supports substituting variable
-    # {{currentYear}}.
-    #
-    # Required: false
-    # Default: Update license copyright year(s)
-    prTitle: ''
+      # The title of the new pull request. Supports substituting variable
+      # {{currentYear}}.
+      #
+      # Required: false
+      # Default: Update license copyright year(s)
+      prTitle: ''
 
-    # The contents of the pull request. Supports substituting variable
-    # {{currentYear}}.
-    #
-    # Required: false
-    # Default:
-    prBody: ''
+      # The contents of the pull request. Supports substituting variable
+      # {{currentYear}}.
+      #
+      # Required: false
+      # Default:
+      prBody: ''
 
-    # Comma-separated list with usernames of people to assign when pull request is
-    # created.
-    #
-    # Required: false
-    # Default:
-    assignees: ''
+      # Comma-separated list with usernames of people to assign when pull request is
+      # created.
+      #
+      # Required: false
+      # Default:
+      assignees: ''
 
-    # Comma-separated list of labels to add when pull request is created.
-    #
-    # Required: false
-    # Default:
-    labels: ''
+      # Comma-separated list of labels to add when pull request is created.
+      #
+      # Required: false
+      # Default:
+      labels: ''
 ```
+
 <!-- end inputs -->
 
 The action is setting the following outputs:
 
 <!-- start outputs -->
+
 - `currentYear`: The current year. This output will exist if action ran successfully and licenses where updated.
 - `branchName`: The name of the git branch created for the purpose of updating the licenses. This output will exist if action ran successfully and licenses where updated.
 - `pullRequestNumber`: The number of the GitHub pull request created for the purpose of updating the licenses. This output will exist if action ran successfully and licenses where updated.
 - `pullRequestUrl`: The URL of the GitHub pull request created for the purpose of updating the licenses. This output will exist if action ran successfully and licenses where updated.
+
 <!-- end outputs -->
 
 For more information on outputs and their usage, please see [GitHub Actions by Example: Outputs](https://www.actionsbyexample.com/outputs.html) or the scenario named [I want to update my license on first commit each year, and I want it merged](#i-want-to-update-my-license-on-first-commit-each-year-and-i-want-it-merged).
@@ -190,7 +194,7 @@ The following chapter will showcase some common scenarios and their GitHub Actio
 - [I want to update my license, but it isn't called `LICENSE`](#i-want-to-update-my-license-but-it-isnt-called-license)
 - [I want to update my license, but it isn't supported by this action](#i-want-to-update-my-license-but-it-isnt-supported-by-this-action)
 - [I want to update all my licenses, I have more than one](#i-want-to-update-all-my-licenses-i-have-more-than-one)
-- [I want to update all my license in my monorepo](#i-want-to-update-all-my-license-in-my-monorepo)
+- [I want to update all my licenses in my monorepo](#i-want-to-update-all-my-licenses-in-my-monorepo)
 - [I want to update the license in my source files](#i-want-to-update-the-license-in-my-source-files)
 - [I want to update my license and a custom source in the same PR](#i-want-to-update-my-license-and-a-custom-source-in-the-same-pr)
 - [I want to GPG sign my commits](#i-want-to-gpg-sign-my-commits)
@@ -212,19 +216,19 @@ This would be the most common usage of the action, given that you can put up wit
 name: Update copyright year(s) in license file
 
 on:
-  schedule:
-    - cron: '0 3 1 1 *'
+    schedule:
+        - cron: '0 3 1 1 *'
 
 jobs:
-  run:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      - uses: FantasticFiasco/action-update-license-year@v3
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+    run:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+              with:
+                  fetch-depth: 0
+            - uses: FantasticFiasco/action-update-license-year@v3
+              with:
+                  token: ${{ secrets.GITHUB_TOKEN }}
 ```
 
 ### I want to update my license using a manual trigger
@@ -237,15 +241,15 @@ name: Update copyright year(s) in license file
 on: workflow_dispatch
 
 jobs:
-  run:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      - uses: FantasticFiasco/action-update-license-year@v3
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+    run:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+              with:
+                  fetch-depth: 0
+            - uses: FantasticFiasco/action-update-license-year@v3
+              with:
+                  token: ${{ secrets.GITHUB_TOKEN }}
 ```
 
 ### I want to update my license on first commit each year, and I want it merged
@@ -256,31 +260,31 @@ Maybe you don't want to be disturbed during the new year festivities, and you kn
 name: Update copyright year(s) in license file
 
 on:
-  push:
-    branches:
-      - 'main' # Or 'master' depending on your default branch
+    push:
+        branches:
+            - 'main' # Or 'master' depending on your default branch
 
 jobs:
-  run:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      - uses: FantasticFiasco/action-update-license-year@v3
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-        id: license
-      - name: Merge PR
-        if: steps.license.outputs.pullRequestNumber != ''
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        # Replace '--merge' with '--rebase' to rebase the commits onto the base
-        # branch, or with '--squash' to squash the commits into one commit and
-        # merge it into the base branch.
-        # For more information regarding the merge command, please see
-        # https://cli.github.com/manual/gh_pr_merge.
-        run: gh pr merge --merge --delete-branch ${{ steps.license.outputs.pullRequestNumber }}
+    run:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+              with:
+                  fetch-depth: 0
+            - uses: FantasticFiasco/action-update-license-year@v3
+              with:
+                  token: ${{ secrets.GITHUB_TOKEN }}
+              id: license
+            - name: Merge PR
+              if: steps.license.outputs.pullRequestNumber != ''
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              # Replace '--merge' with '--rebase' to rebase the commits onto the base
+              # branch, or with '--squash' to squash the commits into one commit and
+              # merge it into the base branch.
+              # For more information regarding the merge command, please see
+              # https://cli.github.com/manual/gh_pr_merge.
+              run: gh pr merge --merge --delete-branch ${{ steps.license.outputs.pullRequestNumber }}
 ```
 
 ### I want to update my license, but it isn't called `LICENSE`
@@ -289,13 +293,13 @@ You have a license in your repository, but perhaps it isn't called `LICENSE`. Ma
 
 ```yaml
 steps:
-  - uses: actions/checkout@v3
-    with:
-      fetch-depth: 0
-  - uses: FantasticFiasco/action-update-license-year@v3
-    with:
-      token: ${{ secrets.GITHUB_TOKEN }}
-      path: LICENSE.md
+    - uses: actions/checkout@v3
+      with:
+          fetch-depth: 0
+    - uses: FantasticFiasco/action-update-license-year@v3
+      with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          path: LICENSE.md
 ```
 
 ### I want to update my license, but it isn't supported by this action
@@ -311,13 +315,13 @@ The expression will be used by `String.prototype.replace()` to apply the transfo
 
 ```yaml
 steps:
-  - uses: actions/checkout@v3
-    with:
-      fetch-depth: 0
-  - uses: FantasticFiasco/action-update-license-year@v3
-    with:
-      token: ${{ secrets.GITHUB_TOKEN }}
-      transform: (?<=my own copyright )(?<from>\d{4})?-?(\d{4})?
+    - uses: actions/checkout@v3
+      with:
+          fetch-depth: 0
+    - uses: FantasticFiasco/action-update-license-year@v3
+      with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          transform: (?<=my own copyright )(?<from>\d{4})?-?(\d{4})?
 ```
 
 ### I want to update all my licenses, I have more than one
@@ -326,15 +330,15 @@ Your repository might contain more than one license. Perhaps you have one for op
 
 ```yaml
 steps:
-  - uses: actions/checkout@v3
-    with:
-      fetch-depth: 0
-  - uses: FantasticFiasco/action-update-license-year@v3
-    with:
-      token: ${{ secrets.GITHUB_TOKEN }}
-      path: |
-        LICENSE-OPEN-SOURCE
-        LICENSE-COMMERCIAL
+    - uses: actions/checkout@v3
+      with:
+          fetch-depth: 0
+    - uses: FantasticFiasco/action-update-license-year@v3
+      with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          path: |
+              LICENSE-OPEN-SOURCE
+              LICENSE-COMMERCIAL
 ```
 
 ### I want to update all my licenses in my monorepo
@@ -343,13 +347,13 @@ Your repository is perhaps a monorepo and you have a lot of licenses. You would 
 
 ```yaml
 steps:
-  - uses: actions/checkout@v3
-    with:
-      fetch-depth: 0
-  - uses: FantasticFiasco/action-update-license-year@v3
-    with:
-      token: ${{ secrets.GITHUB_TOKEN }}
-      path: packages/*/LICENSE
+    - uses: actions/checkout@v3
+      with:
+          fetch-depth: 0
+    - uses: FantasticFiasco/action-update-license-year@v3
+      with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          path: packages/*/LICENSE
 ```
 
 ### I want to update the license in my source files
@@ -358,13 +362,13 @@ You have a header in each and every source file specifying your license. That's 
 
 ```yaml
 steps:
-  - uses: actions/checkout@v3
-    with:
-      fetch-depth: 0
-  - uses: FantasticFiasco/action-update-license-year@v3
-    with:
-      token: ${{ secrets.GITHUB_TOKEN }}
-      path: src/**/*.js
+    - uses: actions/checkout@v3
+      with:
+          fetch-depth: 0
+    - uses: FantasticFiasco/action-update-license-year@v3
+      with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          path: src/**/*.js
 ```
 
 ### I want to update my license and a custom source in the same PR
@@ -373,28 +377,28 @@ Additionally to your license file, your project includes other files which requi
 
 ```yaml
 jobs:
-  license:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      - uses: FantasticFiasco/action-update-license-year@v3
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+    license:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+              with:
+                  fetch-depth: 0
+            - uses: FantasticFiasco/action-update-license-year@v3
+              with:
+                  token: ${{ secrets.GITHUB_TOKEN }}
 
-  source:
-    needs: license
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      - uses: FantasticFiasco/action-update-license-year@v3
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          path: '*.js'
-          transform: (?<=my own copyright )(?<from>\d{4})?-?(\d{4})?
+    source:
+        needs: license
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+              with:
+                  fetch-depth: 0
+            - uses: FantasticFiasco/action-update-license-year@v3
+              with:
+                  token: ${{ secrets.GITHUB_TOKEN }}
+                  path: '*.js'
+                  transform: (?<=my own copyright )(?<from>\d{4})?-?(\d{4})?
 ```
 
 ### I want to GPG sign my commits
@@ -405,15 +409,15 @@ Just remember that the GPG key must be registered to a valid GitHub user, and th
 
 ```yaml
 steps:
-  - uses: actions/checkout@v3
-    with:
-      fetch-depth: 0
-  - uses: FantasticFiasco/action-update-license-year@v3
-    with:
-      token: ${{ secrets.GITHUB_TOKEN }}
-      commitAuthorEmail: <your github email>
-      gpgPrivateKey: ${{ secrets.gpgPrivateKey }}
-      gpgPassphrase: ${{ secrets.gpgPassphrase }}
+    - uses: actions/checkout@v3
+      with:
+          fetch-depth: 0
+    - uses: FantasticFiasco/action-update-license-year@v3
+      with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commitAuthorEmail: <your github email>
+          gpgPrivateKey: ${{ secrets.gpgPrivateKey }}
+          gpgPassphrase: ${{ secrets.gpgPassphrase }}
 ```
 
 ### I want my pull requests to follow a convention
@@ -422,19 +426,19 @@ Your pull requests might follow some convention. It might require some specific 
 
 ```yaml
 steps:
-  - uses: actions/checkout@v3
-    with:
-      fetch-depth: 0
-  - uses: FantasticFiasco/action-update-license-year@v3
-    with:
-      token: ${{ secrets.GITHUB_TOKEN }}
-      branchName: license/{{currentYear}}
-      commitTitle: update my license
-      commitBody: Let's keep legal happy.
-      prTitle: Update my license
-      prBody: It's that time of the year, let's update the license.
-      assignees: MyUser, SomeMaintainer
-      labels: documentation, legal
+    - uses: actions/checkout@v3
+      with:
+          fetch-depth: 0
+    - uses: FantasticFiasco/action-update-license-year@v3
+      with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branchName: license/{{currentYear}}
+          commitTitle: update my license
+          commitBody: Let's keep legal happy.
+          prTitle: Update my license
+          prBody: It's that time of the year, let's update the license.
+          assignees: MyUser, SomeMaintainer
+          labels: documentation, legal
 ```
 
 ### I want my pull requests to be automatically merged
@@ -443,22 +447,22 @@ Your pull requests can be merged and the branch deleted by utilizing [GitHub CLI
 
 ```yaml
 steps:
-  - uses: actions/checkout@v3
-    with:
-      fetch-depth: 0
-  - uses: FantasticFiasco/action-update-license-year@v3
-    with:
-      token: ${{ secrets.GITHUB_TOKEN }}
-  - name: Merge pull request
-    env:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    run: |
-      # Replace '--merge' with '--rebase' to rebase the commits onto the base
-      # branch, or with '--squash' to squash the commits into one commit and merge
-      # it into the base branch.
-      # For more information regarding the merge command, please see
-      # https://cli.github.com/manual/gh_pr_merge.
-      gh pr merge --merge --delete-branch
+    - uses: actions/checkout@v3
+      with:
+          fetch-depth: 0
+    - uses: FantasticFiasco/action-update-license-year@v3
+      with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+    - name: Merge pull request
+      env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+          # Replace '--merge' with '--rebase' to rebase the commits onto the base
+          # branch, or with '--squash' to squash the commits into one commit and merge
+          # it into the base branch.
+          # For more information regarding the merge command, please see
+          # https://cli.github.com/manual/gh_pr_merge.
+          gh pr merge --merge --delete-branch
 ```
 
 ### I want my pull requests to trigger new GitHub Actions workflows
@@ -471,12 +475,12 @@ Put the name of your secret in the `token` property:
 
 ```yaml
 steps:
-  - uses: actions/checkout@v3
-    with:
-      fetch-depth: 0
-  - uses: FantasticFiasco/action-update-license-year@v3
-    with:
-      token: ${{ secrets.LICENSE_SECRET }}
+    - uses: actions/checkout@v3
+      with:
+          fetch-depth: 0
+    - uses: FantasticFiasco/action-update-license-year@v3
+      with:
+          token: ${{ secrets.LICENSE_SECRET }}
 ```
 
 ## Contributors
@@ -499,5 +503,4 @@ The following users have made significant contributions to this project. Thank y
 </table>
 
 <!-- prettier-ignore-end -->
-
 <!-- ALL-CONTRIBUTORS-LIST:END -->
