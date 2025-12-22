@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ## Unreleased
 
+## 3.0.4 - 2025-12-22
+
+### :policeman: Security {#3_0_4-security}
+
+- Fixed security vulnerabilities in direct and transient dependencies
+
 ## 3.0.3 - 2025-03-02
 
 ### :policeman: Security {#3_0_3-security}
