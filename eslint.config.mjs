@@ -56,7 +56,6 @@ export default defineConfig([
         },
         rules: {
             'markdown/no-bare-urls': 'error',
-            'markdown/no-duplicate-headings': 'error',
         },
     },
 
