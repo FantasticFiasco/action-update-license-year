@@ -21,7 +21,7 @@ jobs:
       - uses: coverallsapp/github-action@master
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-      - run: ESLINT_USE_FLAT_CONFIG=false npm run lint
+      - run: npm run lint
       - run: npm run dist
       - run: node ./scripts/generate-docs.js
 

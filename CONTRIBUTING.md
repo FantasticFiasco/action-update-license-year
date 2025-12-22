@@ -1,4 +1,3 @@
-<!-- omit in toc -->
 # Regarding contributions
 
 All types of contributions are encouraged and valued. See the [Table of contents](#table-of-contents) for different ways to help and details about how this project handles them. Please make sure to read the relevant section before making your contribution. It will make it a lot easier for us maintainers and smooth out the experience for all involved. We look forward to your contributions.
@@ -12,18 +11,17 @@ The project has defined a [code of conduct](https://github.com/FantasticFiasco/a
 > - Refer this project in your project's readme
 > - Mention the project at local meetups and tell your friends/colleagues
 
-<!-- omit in toc -->
 ## Table of contents
 
 - [I have a question](#i-have-a-question)
 - [I want to contribute](#i-want-to-contribute)
-  - [Reporting bugs](#reporting-bugs)
-    - [Before submitting a bug report](#before-submitting-a-bug-report)
-    - [How do I submit a good bug report?](#how-do-i-submit-a-good-bug-report)
-  - [Suggesting enhancements](#suggesting-enhancements)
-    - [Before Submitting an Enhancement](#before-submitting-an-enhancement)
-    - [How do I submit a good enhancement suggestion?](#how-do-i-submit-a-good-enhancement-suggestion)
-  - [Your first code contribution](#your-first-code-contribution)
+    - [Reporting bugs](#reporting-bugs)
+        - [Before submitting a bug report](#before-submitting-a-bug-report)
+        - [How do I submit a good bug report?](#how-do-i-submit-a-good-bug-report)
+    - [Suggesting enhancements](#suggesting-enhancements)
+        - [Before Submitting an Enhancement](#before-submitting-an-enhancement)
+        - [How do I submit a good enhancement suggestion?](#how-do-i-submit-a-good-enhancement-suggestion)
+    - [Your first code contribution](#your-first-code-contribution)
 - [Creating a release](#creating-a-release)
 
 ## I have a question
@@ -51,11 +49,11 @@ A good bug report shouldn't leave others needing to chase you up for more inform
 - To see if other users have experienced (and potentially already solved) the same issue you are having, check if there is not already a bug report existing for your bug or error in the [bug tracker][issues_bugs].
 - Also make sure to search the internet to see if users outside of the GitHub community have discussed the issue.
 - Collect information about the bug:
-  - Stack trace
-  - OS and version (Windows, Linux, macOS, x86, ARM)
-  - Version of the interpreter, compiler, SDK, runtime environment, package manager, depending on what seems relevant
-  - Possibly your input and the output
-  - Can you reliably reproduce the issue? And can you also reproduce it with older versions?
+    - Stack trace
+    - OS and version (Windows, Linux, macOS, x86, ARM)
+    - Version of the interpreter, compiler, SDK, runtime environment, package manager, depending on what seems relevant
+    - Possibly your input and the output
+    - Can you reliably reproduce the issue? And can you also reproduce it with older versions?
 
 #### How do I submit a good bug report?
 
@@ -63,7 +61,7 @@ We use GitHub issues to track bugs and errors. If you run into an issue with the
 
 - Open an [issue][issues_new].
 - Explain the behavior you would expect and the actual behavior.
-- Please provide as much context as possible and describe the *reproduction steps* that someone else can follow to recreate the issue on their own.
+- Please provide as much context as possible and describe the _reproduction steps_ that someone else can follow to recreate the issue on their own.
 - Provide the information you collected in the previous section.
 
 Once it's filed:
