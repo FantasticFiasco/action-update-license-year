@@ -55,6 +55,7 @@ const updateInputs = () => {
     newReadme.push(originalReadme.slice(0, startIndex + INPUTS_START_TOKEN.length))
 
     // Build the new inputs section
+    newReadme.push('')
     newReadme.push('```yaml')
     newReadme.push(`- uses: ${ACTION_NAME}`)
     newReadme.push('  with:')
@@ -98,23 +99,23 @@ const updateInputs = () => {
             }
 
             // Append segment
-            newReadme.push(`    # ${segment}`.trimRight())
+            newReadme.push(`      # ${segment}`.trimRight())
 
             // Remaining
             description = description.slice(segment.length)
         }
 
         // Append blank line
-        newReadme.push(`    #`)
+        newReadme.push(`      #`)
 
         // Required
         if (input.required !== undefined) {
-            newReadme.push(`    # Required: ${input.required}`)
+            newReadme.push(`      # Required: ${input.required}`)
         }
 
         // Default
         if (input.default !== undefined) {
-            let defaultLine = '    # Default:'
+            let defaultLine = '      # Default:'
             if (input.default !== '') {
                 defaultLine += ` ${input.default}`
             }
@@ -122,12 +123,13 @@ const updateInputs = () => {
         }
 
         // Input name
-        newReadme.push(`    ${key}: ''`)
+        newReadme.push(`      ${key}: ''`)
 
         firstInput = false
     }
 
     newReadme.push('```')
+    newReadme.push('')
 
     // Append the end
     newReadme.push(originalReadme.slice(endIndex))
@@ -150,6 +152,7 @@ const updateOutputs = () => {
 
     // Append the beginning
     newReadme.push(originalReadme.slice(0, startIndex + OUTPUTS_START_TOKEN.length))
+    newReadme.push('')
 
     const outputs = yaml.outputs
     for (const key of Object.keys(outputs)) {
@@ -157,6 +160,8 @@ const updateOutputs = () => {
 
         newReadme.push(`- \`${key}\`: ${output.description.trim()}`)
     }
+
+    newReadme.push('')
 
     // Append the end
     newReadme.push(originalReadme.slice(endIndex))
