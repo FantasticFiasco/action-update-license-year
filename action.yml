@@ -107,6 +107,37 @@ inputs:
     default: ''
     required: false
 
+  minCommits:
+    description: >
+      Minimum number of qualifying commits in the current year required before updating licenses.
+      Set to 0 to disable this check (default behavior). When set to 1 or higher, the action will
+      only update licenses if there are at least this many commits matching the filter criteria.
+    default: "0"
+    required: false
+
+  minLines:
+    description: >
+      Minimum total lines changed (insertions + deletions) in the current year required before
+      updating licenses. Set to 0 to disable this check (default). Can be combined with minCommits.
+    default: "0"
+    required: false
+
+  excludeAuthors:
+    description: >
+      A regular expression pattern to exclude commits by author name or email. Useful for ignoring
+      automated commits from bots like Dependabot, Renovate, or GitHub Actions.
+      Example: "dependabot|renovate|github-actions"
+    default: ""
+    required: false
+
+  includePathSpecs:
+    description: >
+      Newline-separated list of git pathspecs to consider when counting commits. Only commits
+      affecting files matching these pathspecs will be counted. Supports git pathspec syntax
+      including globs and exclusions. Example: "src/**\nlib/**\n:!*.md"
+    default: ""
+    required: false
+
 outputs:
   currentYear:
     description: >

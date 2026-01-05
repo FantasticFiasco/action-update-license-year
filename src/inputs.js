@@ -83,6 +83,30 @@ const LABELS = {
     defaultValue: '',
 }
 
+const MIN_COMMITS = {
+    name: 'minCommits',
+    env: 'INPUT_MINCOMMITS',
+    defaultValue: 0,
+}
+
+const MIN_LINES = {
+    name: 'minLines',
+    env: 'INPUT_MINLINES',
+    defaultValue: 0,
+}
+
+const EXCLUDE_AUTHORS = {
+    name: 'excludeAuthors',
+    env: 'INPUT_EXCLUDEAUTHORS',
+    defaultValue: '',
+}
+
+const INCLUDE_PATH_SPECS = {
+    name: 'includePathSpecs',
+    env: 'INPUT_INCLUDEPATHSPECS',
+    defaultValue: '',
+}
+
 const CURRENT_YEAR = new Date().getFullYear()
 
 const VARIABLES = {
@@ -104,6 +128,10 @@ const parse = () => {
     const pullRequestBody = substituteVariables(getInput(PR_BODY.name) || PR_BODY.defaultValue)
     const assignees = splitCsv(getInput(ASSIGNEES.name) || ASSIGNEES.defaultValue)
     const labels = splitCsv(getInput(LABELS.name) || LABELS.defaultValue)
+    const minCommits = parseNonNegativeInt(getInput(MIN_COMMITS.name), MIN_COMMITS.defaultValue)
+    const minLines = parseNonNegativeInt(getInput(MIN_LINES.name), MIN_LINES.defaultValue)
+    const excludeAuthors = getInput(EXCLUDE_AUTHORS.name) || EXCLUDE_AUTHORS.defaultValue
+    const includePathSpecs = splitLines(getInput(INCLUDE_PATH_SPECS.name) || INCLUDE_PATH_SPECS.defaultValue)
 
     return {
         token,
@@ -120,6 +148,10 @@ const parse = () => {
         pullRequestBody,
         assignees,
         labels,
+        minCommits,
+        minLines,
+        excludeAuthors,
+        includePathSpecs,
     }
 }
 
@@ -171,6 +203,31 @@ const validateTransform = (transform) => {
     return transform
 }
 
+/**
+ * @param {string} value The input string value
+ * @param {number} defaultValue The default value if input is empty or invalid
+ */
+const parseNonNegativeInt = (value, defaultValue) => {
+    if (!value) {
+        return defaultValue
+    }
+    const parsed = parseInt(value, 10)
+    if (isNaN(parsed) || parsed < 0) {
+        return defaultValue
+    }
+    return parsed
+}
+
+/**
+ * @param {string} values A newline-separated list of values
+ */
+const splitLines = (values) => {
+    return values
+        .split('\n')
+        .map((value) => value.trim())
+        .filter((value) => value !== '')
+}
+
 module.exports = {
     parse,
     TOKEN,
@@ -187,5 +244,9 @@ module.exports = {
     PR_BODY,
     ASSIGNEES,
     LABELS,
+    MIN_COMMITS,
+    MIN_LINES,
+    EXCLUDE_AUTHORS,
+    INCLUDE_PATH_SPECS,
     CURRENT_YEAR,
 }
