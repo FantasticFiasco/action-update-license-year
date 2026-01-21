@@ -56,6 +56,10 @@ const mockInputs = {
     PR_BODY: jest.requireActual('../src/inputs').PR_BODY,
     ASSIGNEES: jest.requireActual('../src/inputs').ASSIGNEES,
     LABELS: jest.requireActual('../src/inputs').LABELS,
+    MIN_COMMITS: jest.requireActual('../src/inputs').MIN_COMMITS,
+    MIN_LINES: jest.requireActual('../src/inputs').MIN_LINES,
+    EXCLUDE_AUTHORS: jest.requireActual('../src/inputs').EXCLUDE_AUTHORS,
+    INCLUDE_PATH_SPECS: jest.requireActual('../src/inputs').INCLUDE_PATH_SPECS,
     CURRENT_YEAR: jest.requireActual('../src/inputs').CURRENT_YEAR,
 }
 jest.mock('../src/inputs', () => {
@@ -93,6 +97,14 @@ jest.mock('../src/transforms', () => {
     return mockTransforms
 })
 
+// ../src/commits
+const mockCommits = {
+    checkMeaningfulCommits: jest.fn(),
+}
+jest.mock('../src/commits', () => {
+    return mockCommits
+})
+
 const { setFailed } = require('@actions/core')
 const { run } = require('../src/main')
 const {
@@ -107,6 +119,10 @@ const {
     GPG_PASSPHRASE,
     PR_TITLE,
     PR_BODY,
+    MIN_COMMITS,
+    MIN_LINES,
+    EXCLUDE_AUTHORS,
+    INCLUDE_PATH_SPECS,
     CURRENT_YEAR,
 } = require('../src/inputs')
 
@@ -580,6 +596,110 @@ describe('action should', () => {
             expect(mockCore.setOutput).toHaveBeenCalledWith('pullRequestUrl', CREATE_PULL_REQUEST_SUCCESS.data.html_url)
         })
     })
+
+    describe('given minCommits or minLines configured', () => {
+        test('skip update when minCommits threshold not met', async () => {
+            setupInput({ minCommits: 5 })
+            mockCommits.checkMeaningfulCommits.mockResolvedValue({
+                qualifies: false,
+                commitCount: 2,
+                lineCount: 100,
+            })
+            await run()
+            expect(setFailed).toBeCalledTimes(0)
+            expect(mockCommits.checkMeaningfulCommits).toBeCalledWith({
+                currentYear: CURRENT_YEAR,
+                minCommits: 5,
+                minLines: 0,
+                excludeAuthors: '',
+                includePathSpecs: [],
+            })
+            expect(mockRepository.branchExists).toBeCalledTimes(0)
+            expect(mockFile.search).toBeCalledTimes(0)
+            expect(mockCore.setOutput).toBeCalledTimes(0)
+        })
+
+        test('skip update when minLines threshold not met', async () => {
+            setupInput({ minLines: 100 })
+            mockCommits.checkMeaningfulCommits.mockResolvedValue({
+                qualifies: false,
+                commitCount: 10,
+                lineCount: 50,
+            })
+            await run()
+            expect(setFailed).toBeCalledTimes(0)
+            expect(mockCommits.checkMeaningfulCommits).toBeCalledWith({
+                currentYear: CURRENT_YEAR,
+                minCommits: 0,
+                minLines: 100,
+                excludeAuthors: '',
+                includePathSpecs: [],
+            })
+            expect(mockRepository.branchExists).toBeCalledTimes(0)
+            expect(mockFile.search).toBeCalledTimes(0)
+            expect(mockCore.setOutput).toBeCalledTimes(0)
+        })
+
+        test('proceed with update when thresholds are met', async () => {
+            setupInput({ minCommits: 5, minLines: 100 })
+            mockCommits.checkMeaningfulCommits.mockResolvedValue({
+                qualifies: true,
+                commitCount: 10,
+                lineCount: 200,
+            })
+            mockFile.search.mockResolvedValue(['some-file'])
+            mockRepository.hasChanges.mockReturnValue(true)
+            mockRepository.createPullRequest.mockResolvedValue(CREATE_PULL_REQUEST_SUCCESS)
+            await run()
+            expect(setFailed).toBeCalledTimes(0)
+            expect(mockCommits.checkMeaningfulCommits).toBeCalledWith({
+                currentYear: CURRENT_YEAR,
+                minCommits: 5,
+                minLines: 100,
+                excludeAuthors: '',
+                includePathSpecs: [],
+            })
+            expect(mockRepository.branchExists).toBeCalledTimes(1)
+            expect(mockFile.search).toBeCalledTimes(1)
+            expect(mockCore.setOutput).toBeCalledWith('currentYear', CURRENT_YEAR)
+        })
+
+        test('pass excludeAuthors and includePathSpecs to checkMeaningfulCommits', async () => {
+            setupInput({
+                minCommits: 1,
+                excludeAuthors: 'dependabot|renovate',
+                includePathSpecs: ['src/**', 'lib/**'],
+            })
+            mockCommits.checkMeaningfulCommits.mockResolvedValue({
+                qualifies: true,
+                commitCount: 5,
+                lineCount: 100,
+            })
+            mockFile.search.mockResolvedValue(['some-file'])
+            mockRepository.hasChanges.mockReturnValue(true)
+            mockRepository.createPullRequest.mockResolvedValue(CREATE_PULL_REQUEST_SUCCESS)
+            await run()
+            expect(setFailed).toBeCalledTimes(0)
+            expect(mockCommits.checkMeaningfulCommits).toBeCalledWith({
+                currentYear: CURRENT_YEAR,
+                minCommits: 1,
+                minLines: 0,
+                excludeAuthors: 'dependabot|renovate',
+                includePathSpecs: ['src/**', 'lib/**'],
+            })
+        })
+
+        test('skip commit check when minCommits and minLines are both 0', async () => {
+            setupInput({ minCommits: 0, minLines: 0 })
+            mockFile.search.mockResolvedValue(['some-file'])
+            mockRepository.hasChanges.mockReturnValue(true)
+            mockRepository.createPullRequest.mockResolvedValue(CREATE_PULL_REQUEST_SUCCESS)
+            await run()
+            expect(setFailed).toBeCalledTimes(0)
+            expect(mockCommits.checkMeaningfulCommits).toBeCalledTimes(0)
+            expect(mockRepository.branchExists).toBeCalledTimes(1)
+        })
+    })
 })
 
 /**
@@ -599,6 +719,10 @@ describe('action should', () => {
  * @property {string} [pullRequestBody]
  * @property {string[]} [assignees]
  * @property {string[]} [labels]
+ * @property {number} [minCommits]
+ * @property {number} [minLines]
+ * @property {string} [excludeAuthors]
+ * @property {string[]} [includePathSpecs]
  */
 const setupInput = (config) => {
     mockInputs.parse.mockReturnValue({
@@ -616,6 +740,10 @@ const setupInput = (config) => {
         pullRequestBody: config.pullRequestBody || PR_BODY.defaultValue,
         assignees: config.assignees || [],
         labels: config.labels || [],
+        minCommits: config.minCommits !== undefined ? config.minCommits : MIN_COMMITS.defaultValue,
+        minLines: config.minLines !== undefined ? config.minLines : MIN_LINES.defaultValue,
+        excludeAuthors: config.excludeAuthors || EXCLUDE_AUTHORS.defaultValue,
+        includePathSpecs: config.includePathSpecs || [],
     })
 }
 

@@ -166,6 +166,41 @@ The action has support for the following inputs:
       # Required: false
       # Default:
       labels: ''
+
+      # Minimum number of qualifying commits in the current year required before
+      # updating licenses. Set to 0 to disable this check (default behavior). When
+      # set to 1 or higher, the action will only update licenses if there are at
+      # least this many commits matching the filter criteria.
+      #
+      # Required: false
+      # Default: 0
+      minCommits: ''
+  
+      # Minimum total lines changed (insertions + deletions) in the current year
+      # required before updating licenses. Set to 0 to disable this check (default).
+      # Can be combined with minCommits.
+      #
+      # Required: false
+      # Default: 0
+      minLines: ''
+  
+      # A regular expression pattern to exclude commits by author name or email.
+      # Useful for ignoring automated commits from bots like Dependabot, Renovate,
+      # or GitHub Actions.
+      # Example: "dependabot|renovate|github-actions"
+      #
+      # Required: false
+      # Default:
+      excludeAuthors: ''
+  
+      # Newline-separated list of git pathspecs to consider when counting commits.
+      # Only commits affecting files matching these pathspecs will be counted.
+      # Supports git pathspec syntax including globs and exclusions.
+      # Example: "src/**\nlib/**\n:!*.md"
+      #
+      # Required: false
+      # Default:
+      includePathSpecs: ''
 ```
 
 <!-- end inputs -->
@@ -201,6 +236,7 @@ The following chapter will showcase some common scenarios and their GitHub Actio
 - [I want my pull requests to follow a convention](#i-want-my-pull-requests-to-follow-a-convention)
 - [I want my pull requests to be automatically merged](#i-want-my-pull-requests-to-be-automatically-merged)
 - [I want my pull requests to trigger new GitHub Actions workflows](#i-want-my-pull-requests-to-trigger-new-github-actions-workflows)
+- [I only want to update my license if meaningful commits were made](#i-only-want-to-update-my-license-if-meaningful-commits-were-made)
 
 ### I'm new to GitHub Actions and don't know where to start
 
@@ -482,6 +518,37 @@ steps:
       with:
           token: ${{ secrets.LICENSE_SECRET }}
 ```
+
+### I only want to update my license if meaningful commits were made
+
+You might feel that updating the copyright year without any actual code changes in that year misrepresents project activity. You can configure the action to only update the license when meaningful commits have been made.
+
+```yaml
+steps:
+  - uses: actions/checkout@v3
+    with:
+      fetch-depth: 0
+  - uses: FantasticFiasco/action-update-license-year@v3
+    with:
+      token: ${{ secrets.GITHUB_TOKEN }}
+      # Require at least 1 qualifying commit
+      minCommits: 1
+      # Require at least 10 lines changed
+      minLines: 10
+      # Ignore commits from bots
+      excludeAuthors: dependabot|renovate|github-actions
+      # Only count commits affecting source code
+      includePathSpecs: |
+        src/**
+        lib/**
+        :!*.md
+```
+
+This configuration will only update the license if:
+- At least 1 commit was made in the current year
+- At least 10 lines were changed
+- The commits were not made by Dependabot, Renovate, or GitHub Actions
+- The commits affected files in `src/` or `lib/` directories (excluding markdown files)
 
 ## Contributors
 
