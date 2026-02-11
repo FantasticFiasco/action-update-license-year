@@ -1,6 +1,7 @@
 const { setFailed, info } = require('@actions/core')
 const { context } = require('@actions/github')
 
+const commits = require('./commits')
 const file = require('./file')
 const gpg = require('./gpg')
 const inputs = require('./inputs')
@@ -33,6 +34,10 @@ const run = async () => {
             pullRequestBody,
             assignees,
             labels,
+            minCommits,
+            minLines,
+            excludeAuthors,
+            includePathSpecs,
         } = inputs.parse()
 
         // Authenticate
@@ -58,6 +63,27 @@ const run = async () => {
 
         // Print current year
         info(`Current year is "${currentYear}"`)
+
+        // Check if meaningful commits exist (when minCommits or minLines is configured)
+        if (minCommits > 0 || minLines > 0) {
+            info(`Checking for meaningful commits (minCommits: ${minCommits}, minLines: ${minLines})`)
+            const { qualifies, commitCount, lineCount } = await commits.checkMeaningfulCommits({
+                currentYear,
+                minCommits,
+                minLines,
+                excludeAuthors,
+                includePathSpecs,
+            })
+
+            info(`Found ${commitCount} qualifying commit(s) with ${lineCount} line(s) changed`)
+
+            if (!qualifies) {
+                info(`Thresholds not met (commits: ${commitCount}/${minCommits}, lines: ${lineCount}/${minLines}), skipping license update`)
+                return
+            }
+
+            info(`Thresholds met, proceeding with license update`)
+        }
 
         // Checkout branch
         const branchExists = await repo.branchExists(branchName)
