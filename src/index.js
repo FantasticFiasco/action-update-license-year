@@ -1,4 +1,4 @@
-import * as main from './main.js'
+import { run } from './main.js'
 ;(async () => {
-    await main.run()
+    await run()
 })()

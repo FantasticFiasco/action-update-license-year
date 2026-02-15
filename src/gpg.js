@@ -1,7 +1,7 @@
 import { writeFile } from 'fs/promises'
 
-import * as processes from './os/processes.js'
-import * as temp from './os/temp.js'
+import { exec } from './os/processes.js'
+import { file } from './os/temp.js'
 
 /**
  * @param {{importPrivateKey: (privateKey: string) => Promise<{stdout: string, stderr: string}>}} cli
@@ -21,7 +21,7 @@ export const importPrivateKey = async (cli, privateKeyEnvName) => {
 
 const cli = {
     importPrivateKey: async function (/** @type {string} */ privateKeyEnvName) {
-        const filePath = temp.file('gpg_import')
+        const filePath = file('gpg_import')
 
         // Node.js is running processes using sh, but in this case we need support for process
         // substitution. That's the reason for the shebang workaround.
@@ -30,7 +30,7 @@ const cli = {
             mode: 0o700,
         })
 
-        return await processes.exec(filePath, {
+        return await exec(filePath, {
             env: {
                 ...process.env,
                 privateKeyEnvName: process.env[privateKeyEnvName],
@@ -44,7 +44,7 @@ const cli = {
  * @returns The GPG program file path
  */
 export const createGpgProgram = async (passphraseEnvName) => {
-    const filePath = temp.file('git_gpg_signer')
+    const filePath = file('git_gpg_signer')
     const data = `gpg2 --pinentry-mode loopback --passphrase "$${passphraseEnvName}" --no-tty "$@"`
     await writeFile(filePath, data, {
         mode: 0o700,
