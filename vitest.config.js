@@ -5,6 +5,7 @@ export default defineConfig({
         environment: 'node',
         coverage: {
             include: ['src/**/*.js'],
+            reporter: ['text', 'lcov', 'html'],
         },
     },
 })
