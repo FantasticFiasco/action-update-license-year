@@ -1,7 +1,11 @@
-const fs = require('fs')
-const path = require('path')
+import { describe, test, expect } from 'vitest'
+import fs from 'fs'
+import path from 'path'
+import { fileURLToPath } from 'url'
 
-const gpg = require('../src/gpg')
+import * as gpg from '../src/gpg.js'
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 describe('#importPrivateKey should', () => {
     test('return key id', async () => {

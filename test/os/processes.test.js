@@ -1,4 +1,5 @@
-const processes = require('../../src/os/processes')
+import { describe, test, expect } from 'vitest'
+import * as processes from '../../src/os/processes.js'
 
 describe('#exec should', () => {
     test('successfully run command and write to stdout', async () => {

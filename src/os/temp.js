@@ -1,9 +1,9 @@
-const os = require('os')
-const path = require('path')
+import os from 'os'
+import path from 'path'
 
-const { runnerTemp } = require('../github-actions-runner/env')
+import { runnerTemp } from '../github-actions-runner/env.js'
 
-const dir = () => {
+export const dir = () => {
     if (runnerTemp) {
         return runnerTemp
     }
@@ -13,11 +13,6 @@ const dir = () => {
 /**
  * @param {string} fileName
  */
-const file = (fileName) => {
+export const file = (fileName) => {
     return path.join(dir(), fileName)
-}
-
-module.exports = {
-    dir,
-    file,
 }

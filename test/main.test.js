@@ -1,10 +1,12 @@
+import { describe, test, expect, beforeEach, afterEach, vi } from 'vitest'
+
 // @actions/core
 const mockCore = {
-    info: jest.fn(),
-    setFailed: jest.fn(),
-    setOutput: jest.fn(),
+    info: vi.fn(),
+    setFailed: vi.fn(),
+    setOutput: vi.fn(),
 }
-jest.mock('@actions/core', () => {
+vi.mock('@actions/core', () => {
     return mockCore
 })
 
@@ -17,85 +19,74 @@ const mockGithub = {
         },
     },
 }
-jest.mock('@actions/github', () => {
+vi.mock('@actions/github', () => {
     return mockGithub
 })
 
 // ../src/file
 const mockFile = {
-    search: jest.fn(),
+    search: vi.fn(),
 }
-jest.mock('../src/file', () => {
+vi.mock('../src/file.js', () => {
     return mockFile
 })
 
 // ../src/gpg
 const mockGpg = {
-    importPrivateKey: jest.fn(),
-    cli: jest.fn(),
-    createGpgProgram: jest.fn(),
+    importPrivateKey: vi.fn(),
+    cli: vi.fn(),
+    createGpgProgram: vi.fn(),
 }
-jest.mock('../src/gpg', () => {
+vi.mock('../src/gpg.js', () => {
     return mockGpg
 })
 
 // ../src/inputs
-const mockInputs = {
-    parse: jest.fn(),
-    TOKEN: jest.requireActual('../src/inputs').TOKEN,
-    PATH: jest.requireActual('../src/inputs').PATH,
-    TRANSFORM: jest.requireActual('../src/inputs').TRANSFORM,
-    BRANCH_NAME: jest.requireActual('../src/inputs').BRANCH_NAME,
-    COMMIT_TITLE: jest.requireActual('../src/inputs').COMMIT_TITLE,
-    COMMIT_BODY: jest.requireActual('../src/inputs').COMMIT_BODY,
-    COMMIT_AUTHOR_NAME: jest.requireActual('../src/inputs').COMMIT_AUTHOR_NAME,
-    COMMIT_AUTHOR_EMAIL: jest.requireActual('../src/inputs').COMMIT_AUTHOR_EMAIL,
-    GPG_PRIVATE_KEY: jest.requireActual('../src/inputs').GPG_PRIVATE_KEY,
-    GPG_PASSPHRASE: jest.requireActual('../src/inputs').GPG_PASSPHRASE,
-    PR_TITLE: jest.requireActual('../src/inputs').PR_TITLE,
-    PR_BODY: jest.requireActual('../src/inputs').PR_BODY,
-    ASSIGNEES: jest.requireActual('../src/inputs').ASSIGNEES,
-    LABELS: jest.requireActual('../src/inputs').LABELS,
-    CURRENT_YEAR: jest.requireActual('../src/inputs').CURRENT_YEAR,
-}
-jest.mock('../src/inputs', () => {
-    return mockInputs
+vi.mock('../src/inputs.js', async () => {
+    const actual = await vi.importActual('../src/inputs.js')
+    return {
+        ...actual,
+        parse: vi.fn(),
+    }
 })
 
 // ../src/repository
 const mockRepository = {
-    authenticate: jest.fn(),
-    setupGpg: jest.fn(),
-    branchExists: jest.fn(),
-    checkoutBranch: jest.fn(),
-    readFile: jest.fn(),
-    writeFile: jest.fn(),
-    hasChanges: jest.fn(),
-    stageWrittenFiles: jest.fn(),
-    commit: jest.fn(),
-    push: jest.fn(),
-    getPullRequest: jest.fn(),
-    createPullRequest: jest.fn(),
-    addAssignees: jest.fn(),
-    addLabels: jest.fn(),
+    authenticate: vi.fn(),
+    setupGpg: vi.fn(),
+    branchExists: vi.fn(),
+    checkoutBranch: vi.fn(),
+    readFile: vi.fn(),
+    writeFile: vi.fn(),
+    hasChanges: vi.fn(),
+    stageWrittenFiles: vi.fn(),
+    commit: vi.fn(),
+    push: vi.fn(),
+    getPullRequest: vi.fn(),
+    createPullRequest: vi.fn(),
+    addAssignees: vi.fn(),
+    addLabels: vi.fn(),
 }
-jest.mock('../src/repository', () => {
-    return function () {
-        return mockRepository
+vi.mock('../src/repository.js', () => {
+    return {
+        default: function () {
+            return mockRepository
+        },
     }
 })
 
 // ../src/transforms
 const mockTransforms = {
-    applyTransform: jest.fn(),
+    applyTransform: vi.fn(),
 }
-jest.mock('../src/transforms', () => {
+vi.mock('../src/transforms.js', () => {
     return mockTransforms
 })
 
-const { setFailed } = require('@actions/core')
-const { run } = require('../src/main')
+const { setFailed } = await import('@actions/core')
+const { run } = await import('../src/main.js')
 const {
+    parse,
     PATH,
     TRANSFORM,
     BRANCH_NAME,
@@ -108,11 +99,11 @@ const {
     PR_TITLE,
     PR_BODY,
     CURRENT_YEAR,
-} = require('../src/inputs')
+} = await import('../src/inputs.js')
 
 describe('action should', () => {
     beforeEach(() => {
-        jest.resetAllMocks()
+        vi.resetAllMocks()
 
         process.env.GITHUB_WORKSPACE = '/some/workspace'
         setupInput({})
@@ -601,7 +592,7 @@ describe('action should', () => {
  * @property {string[]} [labels]
  */
 const setupInput = (config) => {
-    mockInputs.parse.mockReturnValue({
+    vi.mocked(parse).mockReturnValue({
         token: config.token || 'some token',
         path: config.path || PATH.defaultValue,
         transform: config.transform || TRANSFORM.defaultValue,

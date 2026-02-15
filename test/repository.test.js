@@ -1,19 +1,23 @@
-const fs = require('fs')
-const os = require('os')
-const path = require('path')
+import { describe, test, expect, beforeEach, afterEach, vi } from 'vitest'
+import fs from 'fs'
+import os from 'os'
+import path from 'path'
+import { fileURLToPath } from 'url'
 
-const processes = require('../src/os/processes')
-const { retry } = require('./retry')
+import * as processes from '../src/os/processes.js'
+import { retry } from './retry.js'
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 const mockOctokit = {
     rest: {
         pulls: {
-            list: jest.fn(),
-            create: jest.fn(),
+            list: vi.fn(),
+            create: vi.fn(),
         },
         issues: {
-            addAssignees: jest.fn(),
-            addLabels: jest.fn(),
+            addAssignees: vi.fn(),
+            addLabels: vi.fn(),
         },
     },
 }
@@ -24,11 +28,11 @@ const mockGithub = {
     },
 }
 
-jest.mock('@actions/github', () => {
+vi.mock('@actions/github', () => {
     return mockGithub
 })
 
-const Repository = require('../src/repository')
+const Repository = (await import('../src/repository.js')).default
 
 // The path to the root of this git repo
 const thisRepoDir = path.join(__dirname, '..')
@@ -48,7 +52,7 @@ beforeEach(async () => {
     await processes.exec('git add README.md')
     await processes.exec('git commit -m "docs(readme): add"')
 
-    jest.resetAllMocks()
+    vi.resetAllMocks()
 })
 
 afterEach(async () => {

@@ -1,14 +1,14 @@
-const { setFailed, info } = require('@actions/core')
-const { context } = require('@actions/github')
+import { setFailed, info } from '@actions/core'
+import { context } from '@actions/github'
 
-const file = require('./file')
-const gpg = require('./gpg')
-const inputs = require('./inputs')
-const outputs = require('./outputs')
-const Repository = require('./repository')
-const transforms = require('./transforms')
+import * as file from './file.js'
+import * as gpg from './gpg.js'
+import * as inputs from './inputs.js'
+import * as outputs from './outputs.js'
+import Repository from './repository.js'
+import * as transforms from './transforms.js'
 
-const run = async () => {
+export const run = async () => {
     try {
         const cwd = process.env.GITHUB_WORKSPACE
         if (cwd === undefined) {
@@ -144,8 +144,4 @@ const run = async () => {
  */
 const singleLine = (text) => {
     return text.replace(/\n/g, '\\n')
-}
-
-module.exports = {
-    run,
 }

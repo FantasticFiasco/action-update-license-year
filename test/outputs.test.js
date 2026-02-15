@@ -1,12 +1,14 @@
+import { vi, describe, test, expect } from 'vitest'
+
 // @actions/core
 const mockCore = {
-    setOutput: jest.fn(),
+    setOutput: vi.fn(),
 }
-jest.mock('@actions/core', () => {
+vi.mock('@actions/core', () => {
     return mockCore
 })
 
-const outputs = require('../src/outputs')
+const outputs = await import('../src/outputs.js')
 
 describe('#set should', () => {
     test('correctly set all outputs', () => {

@@ -1,11 +1,16 @@
 // @ts-nocheck
-const { readFileSync, writeFileSync } = require('fs')
-const { EOL } = require('os')
-const { join } = require('path')
-const { load } = require('js-yaml')
+import { readFileSync, writeFileSync } from 'fs'
+import { EOL } from 'os'
+import path from 'path'
+import { fileURLToPath } from 'url'
+import { load } from 'js-yaml'
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 const getPackageMajorVersion = () => {
-    const version = require(join(__dirname, '..', 'package.json')).version
+    const packageJsonPath = path.join(__dirname, '..', 'package.json')
+    const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf-8'))
+    const version = packageJson.version
     const match = /(\d+)\.\d+\.\d+/.exec(version)
     if (!match) {
         throw new Error(`Package version '${version}' did not meet expected format`)
@@ -14,8 +19,8 @@ const getPackageMajorVersion = () => {
 }
 
 const ACTION_NAME = `FantasticFiasco/action-update-license-year@v${getPackageMajorVersion()}`
-const METADATA_PATH = join(__dirname, '..', 'action.yml')
-const README_PATH = join(__dirname, '..', 'README.md')
+const METADATA_PATH = path.join(__dirname, '..', 'action.yml')
+const README_PATH = path.join(__dirname, '..', 'README.md')
 const INPUTS_START_TOKEN = '<!-- start inputs -->'
 const INPUTS_END_TOKEN = '<!-- end inputs -->'
 const OUTPUTS_START_TOKEN = '<!-- start outputs -->'

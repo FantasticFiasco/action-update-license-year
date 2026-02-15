@@ -1,7 +1,7 @@
-const { getOctokit } = require('@actions/github')
-const fs = require('fs').promises
+import { getOctokit } from '@actions/github'
+import fs from 'fs'
 
-const processes = require('./os/processes')
+import * as processes from './os/processes.js'
 
 class Repository {
     /**
@@ -95,7 +95,7 @@ class Repository {
      */
     async readFile(path) {
         try {
-            const content = await fs.readFile(path, { encoding: 'utf8' })
+            const content = await fs.promises.readFile(path, { encoding: 'utf8' })
             return content
         } catch (err) {
             // @ts-ignore
@@ -110,7 +110,7 @@ class Repository {
      */
     async writeFile(path, content) {
         try {
-            await fs.writeFile(path, content, { encoding: 'utf8', flag: 'r+' })
+            await fs.promises.writeFile(path, content, { encoding: 'utf8', flag: 'r+' })
             this._writtenFiles.push(path)
         } catch (err) {
             // @ts-ignore
@@ -264,4 +264,4 @@ class Repository {
     }
 }
 
-module.exports = Repository
+export default Repository

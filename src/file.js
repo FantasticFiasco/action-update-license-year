@@ -1,10 +1,10 @@
-const { create } = require('@actions/glob')
-const fs = require('fs')
+import { create } from '@actions/glob'
+import fs from 'fs'
 
 /**
  * @param {string} pattern
  */
-const search = async (pattern) => {
+export const search = async (pattern) => {
     const globber = await create(pattern)
     const paths = await globber.glob()
     const files = paths.filter((path) => {
@@ -12,8 +12,4 @@ const search = async (pattern) => {
     })
 
     return files
-}
-
-module.exports = {
-    search,
 }

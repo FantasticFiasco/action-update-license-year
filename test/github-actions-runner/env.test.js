@@ -1,6 +1,7 @@
-const fs = require('fs')
+import { describe, test, expect } from 'vitest'
+import fs from 'fs'
 
-const { ci, runnerTemp } = require('../../src/github-actions-runner/env')
+import { ci, runnerTemp } from '../../src/github-actions-runner/env.js'
 
 describe('#runnerTemp should', () => {
     test('return an existing directory', () => {

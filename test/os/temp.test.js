@@ -1,7 +1,8 @@
-const fs = require('fs')
-const path = require('path')
+import { describe, test, expect } from 'vitest'
+import fs from 'fs'
+import path from 'path'
 
-const temp = require('../../src/os/temp')
+import * as temp from '../../src/os/temp.js'
 
 describe('#tempDir should', () => {
     test('return an existing directory', () => {
