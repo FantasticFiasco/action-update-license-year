@@ -34,7 +34,7 @@
     "@actions/glob": "0.5.1"
   },
   "devDependencies": {
-    "@eslint/json": "0.14.0",
+    "@eslint/json": "1.0.0",
     "@eslint/markdown": "7.5.1",
     "@types/jest": "30.0.0",
     "@types/js-yaml": "4.0.9",
