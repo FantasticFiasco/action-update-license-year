@@ -1,6 +1,6 @@
-import { describe, test, expect } from 'vitest'
 import fs from 'fs'
 import path from 'path'
+import { describe, expect, test } from 'vitest'
 
 import * as temp from '../../src/os/temp.js'
 

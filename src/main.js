@@ -1,4 +1,4 @@
-import { setFailed, info } from '@actions/core'
+import { info, setFailed } from '@actions/core'
 import { context } from '@actions/github'
 
 import * as file from './file.js'

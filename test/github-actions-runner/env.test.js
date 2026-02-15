@@ -1,5 +1,5 @@
-import { describe, test, expect } from 'vitest'
 import fs from 'fs'
+import { describe, expect, test } from 'vitest'
 
 import { ci, runnerTemp } from '../../src/github-actions-runner/env.js'
 

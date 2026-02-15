@@ -1,8 +1,8 @@
-import { describe, test, expect, beforeEach, afterEach, vi } from 'vitest'
 import fs from 'fs'
 import os from 'os'
 import path from 'path'
 import { fileURLToPath } from 'url'
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 
 import * as processes from '../src/os/processes.js'
 import { retry } from './retry.js'

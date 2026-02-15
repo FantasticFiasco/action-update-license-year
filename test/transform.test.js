@@ -1,7 +1,7 @@
-import { describe, test, expect } from 'vitest'
 import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
+import { describe, expect, test } from 'vitest'
 
 import * as transforms from '../src/transforms.js'
 

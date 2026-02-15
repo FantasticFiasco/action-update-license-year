@@ -1,9 +1,9 @@
 // @ts-nocheck
 import { readFileSync, writeFileSync } from 'fs'
+import { load } from 'js-yaml'
 import { EOL } from 'os'
 import path from 'path'
 import { fileURLToPath } from 'url'
-import { load } from 'js-yaml'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 

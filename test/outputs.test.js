@@ -1,4 +1,4 @@
-import { vi, describe, test, expect } from 'vitest'
+import { describe, expect, test, vi } from 'vitest'
 
 // @actions/core
 const mockCore = {

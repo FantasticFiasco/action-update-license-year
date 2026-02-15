@@ -1,7 +1,7 @@
-import { describe, test, expect, beforeAll, afterAll } from 'vitest'
 import fs from 'fs'
 import os from 'os'
 import path from 'path'
+import { afterAll, beforeAll, describe, expect, test } from 'vitest'
 
 import * as file from '../src/file.js'
 

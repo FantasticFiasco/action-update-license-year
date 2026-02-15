@@ -1,5 +1,5 @@
-import { promisify } from 'util'
 import { exec as execCp } from 'child_process'
+import { promisify } from 'util'
 
 const execAsync = promisify(execCp)
 
