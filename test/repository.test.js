@@ -32,7 +32,7 @@ vi.mock('@actions/github', () => {
     return mockGithub
 })
 
-const Repository = (await import('../src/repository.js')).default
+const { Repository } = await import('../src/repository.js')
 
 // The path to the root of this git repo
 const thisRepoDir = path.join(__dirname, '..')

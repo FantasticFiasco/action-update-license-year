@@ -3,7 +3,7 @@ import { readFile, writeFile } from 'fs/promises'
 
 import { exec } from './os/processes.js'
 
-class Repository {
+export class Repository {
     /**
      * @param {string} owner The owner of the repository
      * @param {string} name The name of the repository
@@ -261,5 +261,3 @@ class Repository {
         }
     }
 }
-
-export default Repository
