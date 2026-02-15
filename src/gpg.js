@@ -19,7 +19,7 @@ export const importPrivateKey = async (cli, privateKeyEnvName) => {
     return match[1]
 }
 
-const cli = {
+export const cli = {
     importPrivateKey: async function (/** @type {string} */ privateKeyEnvName) {
         const filePath = file('gpg_import')
 
@@ -51,5 +51,3 @@ export const createGpgProgram = async (passphraseEnvName) => {
     })
     return filePath
 }
-
-export { cli }
