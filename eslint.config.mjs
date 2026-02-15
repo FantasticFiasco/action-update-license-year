@@ -7,7 +7,7 @@ export default defineConfig([
     /**
      * Global ignores
      */
-    globalIgnores(['dist/']),
+    globalIgnores(['coverage/', 'dist/']),
 
     /**
      * JavaScript
