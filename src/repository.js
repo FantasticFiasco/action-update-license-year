@@ -56,12 +56,12 @@ class Repository {
     async branchExists(name) {
         try {
             const hasLocalBranch = async () => {
-                const { stdout } = await processes.exec(`git branch --list "${name}"`)
+                const { stdout } = await exec(`git branch --list "${name}"`)
                 return stdout.includes(name)
             }
 
             const hasRemoteBranch = async () => {
-                const { stdout } = await processes.exec(`git ls-remote --heads origin "${name}"`)
+                const { stdout } = await exec(`git ls-remote --heads origin "${name}"`)
                 return stdout.includes(name)
             }
 
