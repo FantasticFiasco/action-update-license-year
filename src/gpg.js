@@ -1,4 +1,4 @@
-import fs from 'fs'
+import { writeFile } from 'fs/promises'
 
 import * as processes from './os/processes.js'
 import * as temp from './os/temp.js'
@@ -26,7 +26,7 @@ const cli = {
         // Node.js is running processes using sh, but in this case we need support for process
         // substitution. That's the reason for the shebang workaround.
         const data = `#!/bin/bash\n\ngpg2 --batch --yes --import <(echo "$${privateKeyEnvName}")`
-        await fs.promises.writeFile(filePath, data, {
+        await writeFile(filePath, data, {
             mode: 0o700,
         })
 
@@ -46,7 +46,7 @@ const cli = {
 export const createGpgProgram = async (passphraseEnvName) => {
     const filePath = temp.file('git_gpg_signer')
     const data = `gpg2 --pinentry-mode loopback --passphrase "$${passphraseEnvName}" --no-tty "$@"`
-    await fs.promises.writeFile(filePath, data, {
+    await writeFile(filePath, data, {
         mode: 0o700,
     })
     return filePath

@@ -2,13 +2,13 @@
 import { readFileSync, writeFileSync } from 'fs'
 import { load } from 'js-yaml'
 import { EOL } from 'os'
-import path from 'path'
+import { dirname, join } from 'path'
 import { fileURLToPath } from 'url'
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url))
+const __dirname = dirname(fileURLToPath(import.meta.url))
 
 const getPackageMajorVersion = () => {
-    const packageJsonPath = path.join(__dirname, '..', 'package.json')
+    const packageJsonPath = join(__dirname, '..', 'package.json')
     const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf-8'))
     const version = packageJson.version
     const match = /(\d+)\.\d+\.\d+/.exec(version)
@@ -19,8 +19,8 @@ const getPackageMajorVersion = () => {
 }
 
 const ACTION_NAME = `FantasticFiasco/action-update-license-year@v${getPackageMajorVersion()}`
-const METADATA_PATH = path.join(__dirname, '..', 'action.yml')
-const README_PATH = path.join(__dirname, '..', 'README.md')
+const METADATA_PATH = join(__dirname, '..', 'action.yml')
+const README_PATH = join(__dirname, '..', 'README.md')
 const INPUTS_START_TOKEN = '<!-- start inputs -->'
 const INPUTS_END_TOKEN = '<!-- end inputs -->'
 const OUTPUTS_START_TOKEN = '<!-- start outputs -->'
