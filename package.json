@@ -23,7 +23,6 @@
   "scripts": {
     "type-check": "tsc --noEmit",
     "test": "vitest run",
-    "test:watch": "vitest",
     "lint": "prettier --check . && eslint .",
     "lint:fix": "prettier --write . && eslint --fix . ",
     "coverage": "vitest run --coverage",
