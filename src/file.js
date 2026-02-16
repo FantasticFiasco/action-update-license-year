@@ -1,19 +1,15 @@
-const { create } = require('@actions/glob')
-const fs = require('fs')
+import { create } from '@actions/glob'
+import { statSync } from 'fs'
 
 /**
  * @param {string} pattern
  */
-const search = async (pattern) => {
+export const search = async (pattern) => {
     const globber = await create(pattern)
     const paths = await globber.glob()
     const files = paths.filter((path) => {
-        return fs.statSync(path).isFile()
+        return statSync(path).isFile()
     })
 
     return files
-}
-
-module.exports = {
-    search,
 }

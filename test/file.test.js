@@ -1,8 +1,9 @@
-const fs = require('fs')
-const os = require('os')
-const path = require('path')
+import fs from 'fs'
+import os from 'os'
+import path from 'path'
+import { afterAll, beforeAll, describe, expect, test } from 'vitest'
 
-const file = require('../src/file')
+import * as file from '../src/file.js'
 
 describe('#search', () => {
     let tempDir = ''

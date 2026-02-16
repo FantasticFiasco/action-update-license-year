@@ -1,4 +1,5 @@
-const inputs = require('../src/inputs')
+import { beforeEach, describe, expect, test } from 'vitest'
+import * as inputs from '../src/inputs.js'
 
 const INPUTS = {
     TOKEN: inputs.TOKEN,
