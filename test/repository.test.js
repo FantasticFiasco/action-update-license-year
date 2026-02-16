@@ -208,7 +208,7 @@ describe('#commit should', () => {
     test('throw error given no staged files', async () => {
         const repo = new Repository('some owner', 'some name', 'some token')
         const promise = repo.commit('some commit message')
-        expect(promise).rejects.toBeDefined()
+        await expect(promise).rejects.toBeDefined()
     })
 })
 
