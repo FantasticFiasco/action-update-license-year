@@ -5,7 +5,7 @@ import { search } from './file.js'
 import { cli, createGpgProgram, importPrivateKey } from './gpg.js'
 import { GPG_PASSPHRASE, GPG_PRIVATE_KEY, parse } from './inputs.js'
 import { set } from './outputs.js'
-import Repository from './repository.js'
+import { Repository } from './repository.js'
 import { applyTransform } from './transforms.js'
 
 export const run = async () => {
