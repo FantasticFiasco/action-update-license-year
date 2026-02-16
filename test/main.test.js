@@ -69,7 +69,7 @@ const mockRepository = {
 }
 vi.mock('../src/repository.js', () => {
     return {
-        default: function () {
+        Repository: function () {
             return mockRepository
         },
     }
