@@ -1,14 +1,14 @@
-const { setFailed, info } = require('@actions/core')
-const { context } = require('@actions/github')
+import { info, setFailed } from '@actions/core'
+import { context } from '@actions/github'
 
-const file = require('./file')
-const gpg = require('./gpg')
-const inputs = require('./inputs')
-const outputs = require('./outputs')
-const Repository = require('./repository')
-const transforms = require('./transforms')
+import { search } from './file.js'
+import { cli, createGpgProgram, importPrivateKey } from './gpg.js'
+import { GPG_PASSPHRASE, GPG_PRIVATE_KEY, parse } from './inputs.js'
+import { set } from './outputs.js'
+import { Repository } from './repository.js'
+import { applyTransform } from './transforms.js'
 
-const run = async () => {
+export const run = async () => {
     try {
         const cwd = process.env.GITHUB_WORKSPACE
         if (cwd === undefined) {
@@ -33,7 +33,7 @@ const run = async () => {
             pullRequestBody,
             assignees,
             labels,
-        } = inputs.parse()
+        } = parse()
 
         // Authenticate
         const repo = new Repository(owner, repoName, token)
@@ -46,8 +46,8 @@ const run = async () => {
             }
 
             info('Setup GPG to sign commits')
-            const keyId = await gpg.importPrivateKey(gpg.cli, inputs.GPG_PRIVATE_KEY.env)
-            const gpgProgramFilePath = await gpg.createGpgProgram(inputs.GPG_PASSPHRASE.env)
+            const keyId = await importPrivateKey(cli, GPG_PRIVATE_KEY.env)
+            const gpgProgramFilePath = await createGpgProgram(GPG_PASSPHRASE.env)
             await repo.setupGpg(keyId, gpgProgramFilePath)
         }
 
@@ -65,7 +65,7 @@ const run = async () => {
         await repo.checkoutBranch(branchName, !branchExists)
 
         // Search for files to update
-        const files = await file.search(path)
+        const files = await search(path)
         if (files.length === 0) {
             throw new Error(`Found no files matching the path "${singleLine(path)}"`)
         }
@@ -75,7 +75,7 @@ const run = async () => {
         for (const file of files) {
             const relativeFile = file.replace(cwd, '.')
             const content = await repo.readFile(file)
-            const updatedContent = transforms.applyTransform(transform, content, currentYear, relativeFile)
+            const updatedContent = applyTransform(transform, content, currentYear, relativeFile)
             if (updatedContent !== content) {
                 info(`Update license in "${relativeFile}"`)
                 await repo.writeFile(file, updatedContent)
@@ -132,7 +132,7 @@ const run = async () => {
         }
 
         // Set outputs
-        outputs.set(currentYear, branchName, pullRequestNumber, pullRequestUrl)
+        set(currentYear, branchName, pullRequestNumber, pullRequestUrl)
     } catch (err) {
         // @ts-ignore
         setFailed(err.message)
@@ -144,8 +144,4 @@ const run = async () => {
  */
 const singleLine = (text) => {
     return text.replace(/\n/g, '\\n')
-}
-
-module.exports = {
-    run,
 }

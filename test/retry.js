@@ -1,7 +1,7 @@
 /**
  * @param {() => Promise<void>} action
  */
-const retry = async (action) => {
+export const retry = async (action) => {
     var times = 10
     var error
 
@@ -23,8 +23,4 @@ const retry = async (action) => {
  */
 const sleep = (ms) => {
     return new Promise((resolve) => setTimeout(resolve, ms))
-}
-
-module.exports = {
-    retry,
 }

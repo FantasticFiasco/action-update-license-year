@@ -49,7 +49,7 @@ const DEFAULT_LICENSE_TRANSFORMS = [
  * @param {number} currentYear
  * @param {string} fileName
  */
-const applyTransform = (transform, license, currentYear, fileName) => {
+export const applyTransform = (transform, license, currentYear, fileName) => {
     return transform === ''
         ? applyDefaultTransform(license, currentYear, fileName)
         : applyCustomTransform(transform, license, currentYear, fileName)
@@ -121,8 +121,4 @@ const applyLicenseTransform = (licenseTransform, license, currentYear) => {
     })
 
     return license
-}
-
-module.exports = {
-    applyTransform,
 }

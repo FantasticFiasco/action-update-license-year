@@ -1,11 +1,16 @@
 // @ts-nocheck
-const { readFileSync, writeFileSync } = require('fs')
-const { EOL } = require('os')
-const { join } = require('path')
-const { load } = require('js-yaml')
+import { readFileSync, writeFileSync } from 'fs'
+import { load } from 'js-yaml'
+import { EOL } from 'os'
+import { dirname, join } from 'path'
+import { fileURLToPath } from 'url'
+
+const __dirname = dirname(fileURLToPath(import.meta.url))
 
 const getPackageMajorVersion = () => {
-    const version = require(join(__dirname, '..', 'package.json')).version
+    const packageJsonPath = join(__dirname, '..', 'package.json')
+    const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf-8'))
+    const version = packageJson.version
     const match = /(\d+)\.\d+\.\d+/.exec(version)
     if (!match) {
         throw new Error(`Package version '${version}' did not meet expected format`)

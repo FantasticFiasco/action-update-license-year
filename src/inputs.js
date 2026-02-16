@@ -1,95 +1,95 @@
-const { getInput } = require('@actions/core')
+import { getInput } from '@actions/core'
 
-const TOKEN = {
+export const TOKEN = {
     name: 'token',
     env: 'INPUT_TOKEN',
 }
 
-const PATH = {
+export const PATH = {
     name: 'path',
     env: 'INPUT_PATH',
     defaultValue: 'LICENSE',
 }
 
-const TRANSFORM = {
+export const TRANSFORM = {
     name: 'transform',
     env: 'INPUT_TRANSFORM',
     defaultValue: '',
 }
 
-const BRANCH_NAME = {
+export const BRANCH_NAME = {
     name: 'branchName',
     env: 'INPUT_BRANCHNAME',
     defaultValue: 'license/copyright-to-{{currentYear}}',
 }
 
-const COMMIT_TITLE = {
+export const COMMIT_TITLE = {
     name: 'commitTitle',
     env: 'INPUT_COMMITTITLE',
     defaultValue: 'docs(license): update copyright year(s)',
 }
 
-const COMMIT_BODY = {
+export const COMMIT_BODY = {
     name: 'commitBody',
     env: 'INPUT_COMMITBODY',
     defaultValue: '',
 }
 
-const COMMIT_AUTHOR_NAME = {
+export const COMMIT_AUTHOR_NAME = {
     name: 'commitAuthorName',
     env: 'INPUT_COMMITAUTHORNAME',
     defaultValue: 'github-actions',
 }
 
-const COMMIT_AUTHOR_EMAIL = {
+export const COMMIT_AUTHOR_EMAIL = {
     name: 'commitAuthorEmail',
     env: 'INPUT_COMMITAUTHOREMAIL',
     defaultValue: 'github-actions@github.com',
 }
 
-const GPG_PRIVATE_KEY = {
+export const GPG_PRIVATE_KEY = {
     name: 'gpgPrivateKey',
     env: 'INPUT_GPGPRIVATEKEY',
     defaultValue: '',
 }
 
-const GPG_PASSPHRASE = {
+export const GPG_PASSPHRASE = {
     name: 'gpgPassphrase',
     env: 'INPUT_GPGPASSPHRASE',
     defaultValue: '',
 }
 
-const PR_TITLE = {
+export const PR_TITLE = {
     name: 'prTitle',
     env: 'INPUT_PRTITLE',
     defaultValue: 'Update license copyright year(s)',
 }
 
-const PR_BODY = {
+export const PR_BODY = {
     name: 'prBody',
     env: 'INPUT_PRBODY',
     defaultValue: '',
 }
 
-const ASSIGNEES = {
+export const ASSIGNEES = {
     name: 'assignees',
     env: 'INPUT_ASSIGNEES',
     defaultValue: '',
 }
 
-const LABELS = {
+export const LABELS = {
     name: 'labels',
     env: 'INPUT_LABELS',
     defaultValue: '',
 }
 
-const CURRENT_YEAR = new Date().getFullYear()
+export const CURRENT_YEAR = new Date().getFullYear()
 
 const VARIABLES = {
     currentYear: CURRENT_YEAR.toString(),
 }
 
-const parse = () => {
+export const parse = () => {
     const token = getInput(TOKEN.name, { required: true })
     const path = getInput(PATH.name) || PATH.defaultValue
     const transform = validateTransform(getInput(TRANSFORM.name) || TRANSFORM.defaultValue)
@@ -169,23 +169,4 @@ const validateTransform = (transform) => {
     }
 
     return transform
-}
-
-module.exports = {
-    parse,
-    TOKEN,
-    PATH,
-    TRANSFORM,
-    BRANCH_NAME,
-    COMMIT_TITLE,
-    COMMIT_BODY,
-    COMMIT_AUTHOR_NAME,
-    COMMIT_AUTHOR_EMAIL,
-    GPG_PRIVATE_KEY,
-    GPG_PASSPHRASE,
-    PR_TITLE,
-    PR_BODY,
-    ASSIGNEES,
-    LABELS,
-    CURRENT_YEAR,
 }

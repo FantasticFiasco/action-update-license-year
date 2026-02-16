@@ -3,7 +3,7 @@ description: Updates the copyright year(s) in your license file and creates a pu
 author: Mattias Kindborg <mattias.kindborg@gmail.com> (https://twitter.com/FantasticFiasco)
 
 runs:
-  using: node16
+  using: node20
   main: ./dist/index.js
 
 branding:

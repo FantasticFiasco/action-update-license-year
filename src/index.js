@@ -1,5 +1,4 @@
-const main = require('./main')
-
+import { run } from './main.js'
 ;(async () => {
-    await main.run()
+    await run()
 })()
