@@ -41,7 +41,7 @@
     "@types/node": "24.12.2",
     "@vercel/ncc": "0.38.4",
     "@vitest/coverage-v8": "4.1.4",
-    "eslint": "10.2.0",
+    "eslint": "10.2.1",
     "eslint-config-prettier": "10.1.8",
     "eslint-plugin-prettier": "5.5.5",
     "js-yaml": "4.1.1",
