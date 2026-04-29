@@ -30,7 +30,7 @@
     "release": "npm run dist && node ./scripts/generate-docs.js"
   },
   "dependencies": {
-    "@actions/core": "3.0.0",
+    "@actions/core": "3.0.1",
     "@actions/github": "9.1.0",
     "@actions/glob": "0.6.1"
   },
