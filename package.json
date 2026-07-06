@@ -39,7 +39,7 @@
     "@eslint/markdown": "8.0.2",
     "@types/js-yaml": "4.0.9",
     "@types/node": "24.13.2",
-    "@vercel/ncc": "0.44.0",
+    "@vercel/ncc": "0.44.1",
     "@vitest/coverage-v8": "4.1.9",
     "eslint": "10.6.0",
     "eslint-config-prettier": "10.1.8",
