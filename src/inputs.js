@@ -134,7 +134,7 @@ const substituteVariables = (text) => {
         '(\\w+)'      +  // 'variable'    variable name
         '\\s*}}',        // ' }}'
         'g'              // global
-    );
+    )
 
     let match
     while ((match = variableRegExp.exec(text)) !== null) {

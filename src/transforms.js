@@ -7,7 +7,7 @@ const AGPL_3_ONLY = new RegExp(
     '(-\\d{4})?'                              +  // '(-YYYY)?'
     '(?!\\s+free\\s+software\\s+foundation)',    // ' Free Software Foundation'  negative lookahead
     'gmi'                                        // Global/Multi-line/Insensitive
-);
+)
 
 // Regular expressions capable of transforming the following license files:
 // - Apache 2.0 (Apache-2.0)
@@ -18,7 +18,7 @@ const APACHE_2_MIT = new RegExp(
     '(?<from>\\d{4})'                         +  // 'YYYY'                       group named 'from'
     '(-\\d{4})?',                                // '(-YYYY)?'
     'gmi'                                        // Global/Multi-line/Insensitive
-);
+)
 
 // Regular expressions capable of transforming the following license files:
 // - BSD 2-clause "Simplified" (BSD-2-Clause)
