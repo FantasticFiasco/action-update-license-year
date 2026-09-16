@@ -38,7 +38,7 @@
     "@eslint/json": "2.1.0",
     "@eslint/markdown": "8.0.3",
     "@types/js-yaml": "4.0.9",
-    "@types/node": "24.13.3",
+    "@types/node": "24.13.4",
     "@vercel/ncc": "0.45.0",
     "@vitest/coverage-v8": "4.1.11",
     "eslint": "10.10.0",
