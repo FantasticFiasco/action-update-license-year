@@ -36,7 +36,7 @@
   },
   "devDependencies": {
     "@eslint/json": "2.1.1",
-    "@eslint/markdown": "8.0.3",
+    "@eslint/markdown": "9.0.0",
     "@types/js-yaml": "4.0.9",
     "@types/node": "24.19.2",
     "@vercel/ncc": "0.45.0",
